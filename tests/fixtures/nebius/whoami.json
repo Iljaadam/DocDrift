@@ -1,0 +1,15 @@
+{
+  "token_uuid": "55555555-5555-4555-8555-555555555555",
+  "token_expiration": null,
+  "permissions": {
+    "spawn": true,
+    "spawn_disposable": true,
+    "cancel": true,
+    "list": true
+  },
+  "operations_stat": {},
+  "limits": {
+    "instance_max_timeout": 3600,
+    "instance_max_concurrency": 50
+  }
+}

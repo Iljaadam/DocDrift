@@ -32,6 +32,7 @@ def main() -> None:
     github.add_argument('repository', help='owner/name or a canonical HTTPS GitHub repository URL')
     github.add_argument('--ref', default='HEAD')
     github.add_argument('--doc', action='append', default=None)
+    commands.add_parser('sandbox-contract-demo', help='Exercise synthetic Sandbox responses offline; no credentials or provider calls')
     run = commands.add_parser('run', help='Run a curator-profiled manual repair in fresh local Docker containers')
     run.add_argument('repository', type=Path)
     run.add_argument('--ref', default='HEAD')
@@ -53,6 +54,10 @@ def main() -> None:
             result = inspect_repository(args.repository, args.ref, args.doc or ['README.md'])
         elif args.command == 'inspect-github':
             result = inspect_github(args.repository, args.ref, args.doc or ['README.md'])
+        elif args.command == 'sandbox-contract-demo':
+            from .contract_demo import run_contract_demo
+            result = run_contract_demo(args.state_dir)
+            result = {key: result[key] for key in ['run_id', 'mode', 'status', 'live_requests', 'code_executions', 'paid_calls', 'behavior_verified', 'checks', 'report_path']}
         elif args.command == 'run':
             result = start_run(args.repository, args.ref, args.profile, args.replacement, args.state_dir, args.image)
         elif args.command == 'demo':

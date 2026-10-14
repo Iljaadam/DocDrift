@@ -11,9 +11,11 @@ diff, logs, source snapshots, frozen checks, operation identities, and a checksu
 ZIP. The included renamed-method example is an owned fixture.
 
 The architecture is preserved in [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
-Live Nebius execution and the Nemotron repair loop remain pending. The CLI
-offers no provider credentials, live execution switch, or spending options.
-NewsBias infrastructure is separate.
+[STATUS.md](STATUS.md) records completed work and the remaining access gate.
+The Nebius REST contract and durable submission journal can now be exercised
+offline with synthetic responses. Live Sandbox execution and the Nemotron repair
+loop remain unconnected to the engine. The CLI offers no provider credentials,
+live execution switch, or spending options. NewsBias infrastructure is separate.
 
 ## Run from a checkout
 
@@ -69,6 +71,25 @@ oversized inputs. Inspection reports `execution: not_run` and
 `behavior_verified: false`. The chosen upstream commit is an inspected candidate;
 this command establishes no documentation failure or verified behavior.
 See [public snapshot boundaries](docs/GITHUB_SNAPSHOTS.md).
+
+Exercise the documented Sandbox request and recovery contract locally:
+
+```sh
+uv run --no-sync docdrift sandbox-contract-demo
+```
+
+Every provider response, stream, and resource value in this command is synthetic.
+It performs no network calls, inference, or repository execution and needs no API
+key. It exercises frozen uploads, offline requests, an interruption after durable
+acceptance, recovery of the same ID, refusal to repeat an ambiguous submission,
+nonzero process status despite service success, cancellation, and artifact bytes.
+The resulting labeled report is saved under `.docdrift/contracts/<run-id>/`.
+See [the REST contract and live-access gaps](docs/NEBIUS_CONTRACT.md).
+
+Live mutation methods reject before contacting a transport. The only mutation
+path requires an explicitly selected `httpx.MockTransport`. Account-specific
+credit coverage and protection against personal charges remain unconfirmed;
+the user's personal spending limit is $0.
 
 ## Curated local repository
 

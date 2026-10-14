@@ -1,0 +1,21 @@
+{
+  "provenance": "synthetic_documented_shape_not_a_live_recording",
+  "reviewed_at": "2026-10-14",
+  "sources": [
+    "https://docs.tokenfactory.nebius.com/api-reference/sandboxes/instances/spawn-a-new-container-instance",
+    "https://docs.tokenfactory.nebius.com/api-reference/sandboxes/operations/get-an-operation-status",
+    "https://docs.tokenfactory.nebius.com/api-reference/sandboxes/auth/get-current-token-information"
+  ],
+  "files": {
+    "accepted.json": "688c2909fb30d62fb9e7713a21831d4ffaa1ad6f59ce8829468b2c679b9d614d",
+    "cancelled.json": "8505a564b2d382fdc88a76f4671f8667ae7ea014b276cae2d022cd1fdfbb25a2",
+    "image.json": "fb03c4818b37ba03b7525a9ddb8776f8be4c6d28d0b2f5705320a047d6b84def",
+    "nonzero.json": "32fe225d952a641e9cd23fce1185df94993b20363618218cd287ee1833abf4d0",
+    "queued.json": "2b74ae16f676feda783e069d968e689b0af35a2f8d948eeea8094d13ac4b8119",
+    "retained.json": "f9c0267b3ed3558c7aa91275ce9b41c30c1e2a03bf5d601951a5e174ac5a4bd2",
+    "service_failure.json": "2ca46d5072501139d90d6a15c72b9f23f7e5df5a7880f60431f8a6a78e9fd04b",
+    "success.json": "17320cdf8b99726050d0a3d6c4a2074e07015ec98abe737baec95f83b6c752d1",
+    "timed_out.json": "c42dfab707bb8f72fc9f7df4b6a8b375f8ef17a19a48de92a00e196fd04e5108",
+    "whoami.json": "4fcfcd7370218da5cddb7eb6446f4cbd5f6520c94a20862060328c03c2c60996"
+  }
+}
