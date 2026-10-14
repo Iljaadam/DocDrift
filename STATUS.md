@@ -4,13 +4,14 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 
 ## Checklist
 
-Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
+Token Factory: $1 trial key (no card), stored in `~/.config/docdrift/nebius.env`.
+Still blocked: Nebius Sandboxes access (Builder Program pending); all execution is local Docker.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
 - [ ] Builder approval / free credits granted, $0 personal-charge protection confirmed by user
 - [x] ~~Fallback: separate $25 Token Factory credits~~ not viable (Oct 14): needs a form plus a wait, and the promo code only applies after $25 of own spend, which breaks the $0 cap. Builder is the only access path.
-- [ ] Live Nemotron tool-call response recorded
+- [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
 - [ ] Sandbox permission; offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
 **Manual vertical slice (milestone 1)**
@@ -21,8 +22,8 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 **Model repair (milestone 2)**
 - [x] Tool loop, one-shot baseline, Token Factory client built and tested offline (`docs/MODEL_REPAIR.md`)
 - [x] Safe stop on malformed proposals and budget limits (tested with synthetic responses)
-- [ ] First live call: confirm Nemotron model ID and `tools` support; log in `docs/FEEDBACK_LOG.md`
-- [ ] Live Nemotron repair passes independent checks
+- [x] First live call: `nvidia/nemotron-3-super-120b-a12b`; `tools` supported (F1, F2)
+- [x] Live Nemotron repair passes independent checks on renamed_method (F3; local Docker execution)
 - [x] Exact-AST check relaxed to outputs + required call + data flow (`docs/MODEL_REPAIR.md`)
 
 **Verification challenge (milestone 3)**
@@ -44,10 +45,10 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 - [ ] Devpost write-up (draft: `docs/SUBMISSION_DRAFT.md`, numbers TBD) and submission
 
 **Decision dates**
-- Oct 22: still no Builder approval → user decides: honest Docker-only submission
-  (Coding eligibility doubtful, no Nemotron), or stop. No paid fallback exists under the $0 cap.
-- Any approval after ~Oct 26 leaves too little time for the full plan: cut to one live repair,
-  the challenge, evidence export, and the video.
+- Oct 22: still no Sandbox access → user decides: submit with real Nemotron on Token Factory
+  and local Docker execution, clearly labelled (Coding eligibility uncertain), or stop.
+- Sandbox access after ~Oct 26: swap only the final verification onto Sandboxes; keep the rest.
+- Watch the $1 trial balance: evaluation runs cost tokens (first repair ~7k tokens).
 
 Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 
@@ -68,6 +69,10 @@ Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 - 2026-10-14 (later): $25 Token Factory fallback ruled out (needs $25 own spend first).
   Builder approval is the single gate. Next offline work: wire Sandbox adapter into
   repair/evaluate; text-protocol fallback if `tools` is unsupported.
+- 2026-10-14 (later): $1 Token Factory trial key received. Listed models, confirmed
+  tool calling, and ran the first live agent repair: renamed_method `behavior_verified`
+  in 5 calls / ~7k tokens. Text fallback no longer needed. Next: live development-split
+  evaluation (one_shot vs agent), then Sandbox wiring.
 
 ## Evidence detail (as of October 14)
 

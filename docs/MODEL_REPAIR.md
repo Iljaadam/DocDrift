@@ -33,12 +33,11 @@ runs, 2 malformed responses, 2048 completion tokens per call, 60k total tokens.
 `Authorization: Bearer $NEBIUS_API_KEY`, `temperature: 0`, and no automatic
 retry. The model ID has no default; pass the exact Nemotron ID.
 
-Unverified until the first live call (record results in `docs/FEEDBACK_LOG.md`):
-
-- Which Nemotron model IDs are available, and whether they support the
-  `tools` parameter. If not, `agent` needs a JSON-in-text fallback.
-- Usage field names and token accounting.
-- Rate limits and latency.
+Verified live on October 14 (`docs/FEEDBACK_LOG.md` F1–F3): four Nemotron
+models are listed; `nvidia/nemotron-3-super-120b-a12b` supports `tools` in the
+standard OpenAI shape and reports `usage` (reasoning tokens count as completion
+tokens). Its first agent repair of the renamed-method fixture verified in 5
+calls. Context window, rate limits, and per-token price are still unknown.
 
 ## Evaluation (`src/docdrift/evaluation.py`)
 
