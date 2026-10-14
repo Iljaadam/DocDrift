@@ -1,0 +1,50 @@
+name: Manual offline validation
+
+# Pushing this file never starts a hosted runner. The repository is private and
+# the user's personal spending limit is $0; included Actions quota is unconfirmed.
+on:
+  workflow_dispatch:
+    inputs:
+      free_actions_quota_confirmed:
+        description: "Confirm unused included Actions minutes and a spending stop before enabling this job"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: ${{ inputs.free_actions_quota_confirmed == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      UV_CACHE_DIR: ${{ runner.temp }}/docdrift-uv-cache
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the requested commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install the pinned uv tool
+        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.11.26"
+          python-version: "3.12"
+          enable-cache: false
+          cache-python: false
+      - name: Install Python 3.12
+        run: uv python install 3.12
+      - name: Install the locked development environment
+        run: uv sync --locked --extra dev
+      - name: Run local tests without provider execution
+        run: .venv/bin/python -m pytest
+      - name: Build and validate installed distributions offline
+        run: .venv/bin/python scripts/check_distribution.py --build --dist-dir dist --cache-dir "$UV_CACHE_DIR"
+      # No cache or artifact uploads: avoid storage consumption while billing is
+      # unconfirmed. No Docker commands, provider secrets, release or deploy step.
