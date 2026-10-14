@@ -78,11 +78,30 @@ Docker: 1 baseline + 1 agent snippet + 12 engine operations, `behavior_verified`
 
 ## Verification contract for model repairs
 
-Relaxed on October 14 from an exact known-repair AST match. A repair is
-`behavior_verified` when, for every frozen input, the output JSON matches
-exactly, the required API call is present, and its return value reaches the
-`print` (`profile.operation_reaches_output`). Top-level reassignment from a
-value that does not carry the result removes the flow, so the dummy-call trick
-still fails. Known gap: in-place mutation of the returned object is not
-tracked; the varied-input output checks remain the behavior oracle.
+Relaxed on October 14 from an exact known-repair AST match (decision D3 in
+`STATUS.md`). A repair is `behavior_verified` when, for every frozen input, the
+output JSON matches exactly, the required API call is present, and its return
+value definitely reaches a top-level `print` (`profile.operation_reaches_output`).
 `known_repair_ast_match` is still recorded per result for information.
+
+The flow check is a must-analysis of straight-line top-level code:
+
+- A name carries the result only if its latest top-level binding derives from
+  the call or another carrying name. Bindings inside `if`, loops, `with`, `try`,
+  `match`, or definitions clear the name; prints there do not count.
+- `x if c else y` needs both arms to carry; `and` needs every operand; `or`
+  needs its first operand (so `api() or {}` is fine).
+- Calls pass positional arguments through only for builtins, imported names,
+  receiver instances, and methods of a carrying value. Helpers defined in the
+  example do not, and rebinding the receiver, `print`, or an import rejects.
+
+Threat model: natural model shortcuts (dummy call beside a reimplementation,
+conditional fallback, dead-branch print). Eleven constructed bypasses are
+rejected in `tests/test_profile.py`. Not covered: in-place mutation of the
+result, and deliberately obfuscated code (selecting from containers, `getattr`,
+`exec`). The varied-input output checks remain the behavior oracle.
+
+History: the first relaxed version (commit `89477a1`, Oct 14) let branch
+assignments only add flow; it accepted all eleven bypasses and was replaced the
+same day. All nine live model repairs made with it also pass the stricter
+check, so no recorded verdict changed.

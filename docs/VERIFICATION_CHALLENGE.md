@@ -7,8 +7,8 @@ starts Docker, or calls Nebius or a model.
 
 The report is labeled `static_policy_challenge`. Every case records its expected
 rejection, actual static verdict, reason, gate, and evidence hashes. The known
-manual `tally` → `count` control must pass the patch boundary and frozen operation
-AST. Its verdict is `accepted_static`, with `behavior_verified: false`.
+manual `tally` → `count` control must pass the patch boundary, the required
+operation, and the result data-flow gate. Its verdict is `accepted_static`, with `behavior_verified: false`.
 
 The constructed cases cover:
 

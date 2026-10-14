@@ -219,9 +219,48 @@ def test_result_that_bypasses_the_required_call_never_verifies(contract, replace
     assert any("data flow" in error for error in checked["errors"])
 
 
-def test_branch_assignments_only_add_flow():
-    call = {"receiver": "WordCounter", "method": "count"}
-    code = "result = WordCounter().count(w)\nif w:\n    result = {}\nprint(result)\n"
-    assert operation_reaches_output(code, call)
-    assert not operation_reaches_output("def show():\n    print(WordCounter().count(w))\n", call)
-    assert not operation_reaches_output("print(WordCounter().count(\n", call)
+FLOW_CALL = {"receiver": "WordCounter", "method": "count"}
+FLOW_HEAD = "import collections\nimport json\nimport os\nfrom drift_demo import WordCounter\nwords = json.loads(os.environ['DOCDRIFT_INPUT'])\n"
+FAKE = "dict(collections.Counter(words))"
+
+# Constructed shortcuts that print a correct reimplementation while keeping the
+# required call somewhere. Outputs would match, so only data flow can reject them.
+FLOW_BYPASSES = {
+    "reassign_in_branch": f"result = WordCounter().count(words)\nif True:\n    result = {FAKE}\nprint(json.dumps(result))",
+    "reassign_in_loop": f"result = WordCounter().count(words)\nfor _ in range(1):\n    result = {FAKE}\nprint(json.dumps(result))",
+    "dead_branch_print": f"if False:\n    print(WordCounter().count(words))\nprint(json.dumps({FAKE}))",
+    "conditional_expression": f"result = WordCounter().count(words)\nprint(json.dumps(result if False else {FAKE}))",
+    "and_operator": f"result = WordCounter().count(words) and {FAKE}\nprint(json.dumps(result))",
+    "local_helper_ignores_input": f"def show(_):\n    return {FAKE}\nresult = WordCounter().count(words)\nprint(json.dumps(show(result)))",
+    "ignored_keyword_argument": f"result = WordCounter().count(words)\nprint(json.dumps({FAKE}, sort_keys=bool(result)))",
+    "tuple_assignment": f"_, result = WordCounter().count(words), {FAKE}\nprint(json.dumps(result))",
+    "receiver_redefined": f"class WordCounter:\n    def count(self, w):\n        return {FAKE}\nprint(json.dumps(WordCounter().count(words)))",
+    "import_rebound": f"result = WordCounter().count(words)\njson = collections\nprint(json.dumps(result))",
+    "instance_rebound": f"counter = WordCounter()\ncounter = collections.Counter\nprint(json.dumps(counter(words)))",
+}
+
+FLOW_EQUIVALENTS = {
+    "or_default": "result = WordCounter().count(words) or {}\nprint(json.dumps(result))",
+    "method_of_result": "counts = WordCounter().count(words)\nprint(json.dumps({'distinct': len(counts), 'total': sum(counts.values())}))",
+    "optional_component": "counts = WordCounter().count(words)\nprint(json.dumps({'counts': counts, 'first': next(iter(counts)) if counts else None}))",
+    "augmented_assignment": "result = WordCounter().count(words)\nresult |= {}\nprint(json.dumps(result))",
+    "tuple_pairing": "result, extra = WordCounter().count(words), 1\nprint(json.dumps(result))",
+}
+
+
+@pytest.mark.parametrize("name", sorted(FLOW_BYPASSES))
+def test_constructed_flow_bypasses_are_rejected(name):
+    assert operation_present(FLOW_HEAD + FLOW_BYPASSES[name], FLOW_CALL) or name == "instance_rebound"
+    assert not operation_reaches_output(FLOW_HEAD + FLOW_BYPASSES[name], FLOW_CALL)
+
+
+@pytest.mark.parametrize("name", sorted(FLOW_EQUIVALENTS))
+def test_legitimate_flow_variants_are_accepted(name):
+    assert operation_reaches_output(FLOW_HEAD + FLOW_EQUIVALENTS[name], FLOW_CALL)
+
+
+def test_only_straight_line_top_level_statements_establish_flow():
+    assert not operation_reaches_output("def show():\n    print(WordCounter().count(w))\n", FLOW_CALL)
+    assert not operation_reaches_output("with open('x') as f:\n    print(WordCounter().count(w))\n", FLOW_CALL)
+    assert not operation_reaches_output("print(WordCounter().count(\n", FLOW_CALL)
+    assert operation_reaches_output("result = WordCounter().count(w)\nprint(result)\n", FLOW_CALL)

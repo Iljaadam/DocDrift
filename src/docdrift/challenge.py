@@ -235,7 +235,7 @@ def run_challenge(fixture: Path, output: Path | None = None) -> dict:
             "loaded_or_executed": False,
         },
         "all_expectations_met": all(case["expectation_met"] for case in results),
-        "coverage_note": "Static patch boundaries, protected hashes, and the owned fixture's frozen operation AST only. No execution, output acceptance, healthy rerun, model repair, or remote qualification is established.",
+        "coverage_note": "Static patch boundaries, protected hashes, the required operation, and its result data flow only. No execution, output acceptance, healthy rerun, model repair, or remote qualification is established.",
     }
     if output is not None:
         output.parent.mkdir(parents=True, exist_ok=True)

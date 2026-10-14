@@ -67,7 +67,7 @@ Docker access may also require the workspace's execution approval mechanism.
 the bounded tool-using agent, and an execution-only baseline over the frozen
 inventory, verifying every proposal through the same engine. They run offline
 with synthetic `--replay` responses; `--live --model <id>` sends real Token
-Factory requests and is reserved until credits are confirmed. See
+Factory requests (approved for the $1 trial key on 2026-10-14). See
 [docs/MODEL_REPAIR.md](docs/MODEL_REPAIR.md).
 
 ## Work while provider access is pending
@@ -151,7 +151,7 @@ refused.
 Execution status and behavior status are distinct. Exit zero alone cannot verify
 behavior. Behavior verification requires exact JSON output across varied
 inputs, the required API call, and that call's result reaching the printed
-output (a conservative data-flow check). Equivalent rewrites of the known
+output (a static must-flow check of straight-line code). Equivalent rewrites of the known
 repair verify; whether the code matches the curator's known-repair AST is
 recorded for information only. These checks cover the declared fixture; they
 do not establish arbitrary semantic equivalence.

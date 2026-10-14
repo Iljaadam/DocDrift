@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import ast
+import builtins
 import hashlib
 import json
 import math
 from pathlib import Path
 
 from .snapshot import safe_path, sha256
+
+
+_BUILTINS = frozenset(dir(builtins))
 
 
 class ProfileError(ValueError):
@@ -120,62 +124,129 @@ def operation_present(code: str, call: dict[str, str]) -> bool:
     return False
 
 
-def operation_reaches_output(code: str, call: dict[str, str]) -> bool:
-    """Conservative data flow: the required call's return value must reach a ``print``.
+def _bound_names(node: ast.AST) -> tuple[set[str], set[str]]:
+    """Return (names bound by imports, names bound any other way) within ``node``."""
+    imported: set[str] = set()
+    defined: set[str] = set()
+    for item in ast.walk(node):
+        if isinstance(item, ast.alias):
+            imported.add((item.asname or item.name).split('.')[0])
+        elif isinstance(item, ast.Name) and isinstance(item.ctx, (ast.Store, ast.Del)):
+            defined.add(item.id)
+        elif isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            defined.add(item.name)
+        elif isinstance(item, ast.ExceptHandler) and item.name:
+            defined.add(item.name)
+        elif isinstance(item, (ast.MatchAs, ast.MatchStar)) and item.name:
+            defined.add(item.name)
+        elif isinstance(item, ast.MatchMapping) and item.rest:
+            defined.add(item.rest)
+    return imported, defined
 
-    Top-level assignments are strong updates, so reassigning a name from an
-    expression that does not carry the result removes it. Assignments nested
-    in compound statements can only add flow. Prints inside function or class
-    definitions do not count. In-place mutation of the result is not tracked;
-    the frozen output checks across varied inputs remain the behavior oracle.
+
+def operation_reaches_output(code: str, call: dict[str, str]) -> bool:
+    """Must-flow check: the required call's result definitely reaches a top-level ``print``.
+
+    Only straight-line top-level statements are trusted. A name carries the
+    result when its latest top-level binding derives from the required call or
+    from another carrying name; tuple assignments pair element by element. Any
+    binding inside a compound statement (``if``, loops, ``with``, ``try``,
+    ``match``, definitions) clears that name, and prints inside compound
+    statements do not count, because the analysis cannot prove they ran.
+    ``x if c else y`` carries only when both arms carry, ``a and b`` only when
+    every operand carries, and ``a or b`` only when its first operand carries.
+    A call passes its positional arguments through only when its callee is a
+    builtin, an imported name, a receiver instance, or a method of a carrying
+    value; helpers defined in the example do not. Rebinding the receiver,
+    ``print``, or an imported name rejects the example.
+
+    Threat model: non-adversarial shortcuts such as a dummy call beside a
+    reimplementation, a conditional fallback, or a print in a dead branch.
+    In-place mutation of a carried object and deliberately obfuscated code
+    (selecting from containers, ``getattr``, ``exec``) can still defeat a
+    static check; the varied-input output checks remain the behavior oracle.
     """
     try:
         tree = ast.parse(code)
     except SyntaxError:
         return False
     receiver, method = call['receiver'], call['method']
-    bound = {node.targets[0].id for node in ast.walk(tree) if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == receiver}
+    imported, defined = _bound_names(tree)
+    if defined & (imported | {receiver, 'print'}):
+        return False
     carried: set[str] = set()
+    instances: set[str] = set()
 
     def required(node: ast.AST) -> bool:
         if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute) or node.func.attr != method:
             return False
         value = node.func.value
-        return isinstance(value, ast.Name) and value.id in bound or isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == receiver
+        if isinstance(value, ast.Name):
+            return value.id in instances
+        return isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == receiver
+
+    def trusted(function: ast.AST) -> bool:
+        while isinstance(function, ast.Attribute):
+            function = function.value
+        if isinstance(function, ast.Name):
+            return function.id in imported | instances | carried or function.id in _BUILTINS and function.id not in defined
+        return isinstance(function, ast.Call) and trusted(function.func)
 
     def carries(node: ast.AST) -> bool:
-        return any(required(item) or isinstance(item, ast.Name) and isinstance(item.ctx, ast.Load) and item.id in carried for item in ast.walk(node))
+        if required(node):
+            return True
+        if isinstance(node, ast.Name):
+            return isinstance(node.ctx, ast.Load) and node.id in carried
+        if isinstance(node, ast.IfExp):
+            return carries(node.body) and carries(node.orelse)
+        if isinstance(node, ast.BoolOp):
+            return carries(node.values[0]) if isinstance(node.op, ast.Or) else all(carries(value) for value in node.values)
+        if isinstance(node, ast.Call):
+            return trusted(node.func) and (carries(node.func) or any(carries(argument) for argument in node.args))
+        if isinstance(node, ast.Lambda):
+            return False
+        return any(carries(child) for child in ast.iter_child_nodes(node))
 
-    def printed(statement: ast.stmt) -> bool:
-        for node in ast.walk(statement):
-            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'print':
-                if any(carries(argument) for argument in node.args + [keyword.value for keyword in node.keywords]):
-                    return True
-        return False
+    def assign(targets: list[ast.AST], value: ast.AST) -> None:
+        pairs = []
+        for target in targets:
+            if isinstance(target, (ast.Tuple, ast.List)) and isinstance(value, (ast.Tuple, ast.List)) and len(target.elts) == len(value.elts) and not any(isinstance(item, ast.Starred) for item in target.elts + value.elts):
+                pairs += [(_bound_names(item)[1], carries(part), None) for item, part in zip(target.elts, value.elts)]
+            else:
+                instance = isinstance(target, ast.Name) and isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == receiver
+                # Attribute and subscript stores mutate an object in place; they bind no name.
+                names = _bound_names(target)[1] if isinstance(target, (ast.Name, ast.Tuple, ast.List, ast.Starred)) else set()
+                pairs.append((names, carries(value), target.id if instance else None))
+        for names, flows, instance in pairs:
+            carried.difference_update(names)
+            instances.difference_update(names)
+            if flows:
+                carried.update(names)
+            if instance:
+                instances.add(instance)
 
-    def visit(statements: list[ast.stmt], strong: bool) -> bool:
-        for statement in statements:
-            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                continue
-            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and statement.value is not None:
-                targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
-                names = {node.id for target in targets for node in ast.walk(target) if isinstance(node, ast.Name)}
-                if carries(statement.value) or isinstance(statement, ast.AugAssign) and carries(statement.target):
-                    carried.update(names)
-                elif strong:
-                    carried.difference_update(names)
-            if isinstance(statement, ast.Expr) and printed(statement):
+    for statement in tree.body:
+        walrus = {node.target.id for node in ast.walk(statement) if isinstance(node, ast.NamedExpr)}
+        if isinstance(statement, ast.Expr):
+            value = statement.value
+            if isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == 'print' and any(carries(argument) for argument in value.args):
                 return True
-            for field in ('body', 'orelse', 'finalbody'):
-                nested = getattr(statement, field, None)
-                if isinstance(nested, list) and nested and isinstance(nested[0], ast.stmt) and visit(nested, False):
-                    return True
-            for handler in getattr(statement, 'handlers', []):
-                if visit(handler.body, False):
-                    return True
-        return False
-
-    return visit(tree.body, True)
+        elif isinstance(statement, (ast.Assign, ast.AnnAssign)) and statement.value is not None:
+            assign(statement.targets if isinstance(statement, ast.Assign) else [statement.target], statement.value)
+        elif isinstance(statement, ast.AugAssign) and isinstance(statement.target, ast.Name):
+            name = statement.target.id
+            flows = name in carried or carries(statement.value)
+            instances.discard(name)
+            carried.discard(name)
+            if flows:
+                carried.add(name)
+        elif not isinstance(statement, ast.AugAssign):
+            names = set().union(*_bound_names(statement))
+            carried.difference_update(names)
+            instances.difference_update(names)
+        carried.difference_update(walrus)
+        instances.difference_update(walrus)
+    return False
 
 
 def check_result(result: dict, case: dict, code: str, call: dict, operation_ast_sha256: str) -> dict:

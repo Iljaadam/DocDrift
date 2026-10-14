@@ -193,7 +193,7 @@ def summarize(rows: list[dict], strategies: list[str]) -> dict:
 def markdown_summary(report: dict) -> str:
     def ratio(part: int, whole: int) -> str:
         return f'{part}/{whole} ({100 * part / whole:.0f}%)' if whole else '0/0'
-    lines = [f"Evidence: **{report['evidence']}** · model: `{report['model']}` · held-out included: {report['include_held_out']}", '',
+    lines = [f"Evidence: **{report['evidence']}** · model: `{report['model']}` · execution: {report['execution_backend']} · held-out included: {report['include_held_out']}", '',
              '| Strategy | Drift detected | Verified repairs | False drift reports | Correct abstentions | Model calls | Tokens |',
              '|---|---|---|---|---|---|---|']
     for name, item in report['summary'].items():
