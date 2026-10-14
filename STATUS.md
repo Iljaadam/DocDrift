@@ -71,13 +71,39 @@ image identity, and safe result metadata. Raw resource `cost` fields are never
 interpreted as dollars. The CLI's `sandbox-contract-demo` runs offline without
 credentials, inference, or code execution and labels that limitation explicitly.
 
-Current validation: **365 automated tests pass**, covering the original local
+Current validation: **417 automated tests pass**, covering the original local
 slice, public snapshots, synthetic REST parsing, durable submission receipts,
-and independent checks that simulation cannot enable live mutations. The locked
+frozen evaluation artifacts, static challenges, distribution checks, and
+independent checks that simulation cannot enable live mutations. The locked
 development environment also installs from its populated local cache. The CLI
 contract demo completed with all checks passing and zero network calls, code
 executions, inference calls, or paid calls. The live public GitHub inspection is
 a separate read-only check, not a Nebius or behavioral verification result.
+
+The current implementation is now committed and pushed to `Iljaadam/DocDrift`.
+The first four commits separate the architecture, local manual slice, pinned
+public snapshots, and offline Nebius contracts. Subsequent work is likewise
+grouped by evaluation fixtures, static challenges, and distribution checks.
+
+Additional local work now includes a frozen fourteen-case inventory, two broken
+cases reserved for fresh held-out model runs, and a static rejection challenge.
+All sixteen deliberately constructed bad proposals reject; the known manual
+control is `accepted_static`, never behavior verified by the challenge. The
+same protected-input hash gate is now used by the execution engine.
+
+Fresh Docker smoke runs verified the supplied known repairs for all four owned
+broken fixtures. They preserved the three healthy neighbors across three inputs
+each. The return-shape fixture reproduced an original output-check failure with
+process exit zero. These are curator-owned manual plumbing checks with no model
+calls or scored evaluation. Their evidence remains in the local run store.
+
+The CLI wheel now includes nine immutable fixture files and its MIT license.
+An actual offline wheel installation into a fresh environment outside the
+checkout passed help, fixture inventory, synthetic Sandbox contracts, and the
+static challenge. A local distribution checker validates fixture/source/license
+hashes and wheel metadata. CI is manual-only, with its runner skipped by default
+until included Actions quota and protection against personal charges are
+confirmed. No hosted workflow was started.
 
 Milestone 1 is **not complete under the plan**: remote preparation,
 approved dependency acquisition, Nebius original reproduction,

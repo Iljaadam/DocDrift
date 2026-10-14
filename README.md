@@ -51,6 +51,12 @@ uv run --no-sync docdrift export <run-id>
 uv run --no-sync pytest
 ```
 
+The CLI wheel includes its frozen owned fixture and license, so inspection,
+synthetic contracts, and the static challenge also work outside a checkout.
+See [installed distribution validation](docs/DISTRIBUTION.md) for offline build
+and installation checks. Hosted CI is manual-only and its runner is disabled by
+default while the repository's included Actions quota remains unconfirmed.
+
 If this workspace restricts uv's usual cache locations, set `UV_CACHE_DIR` and
 `UV_PYTHON_INSTALL_DIR` to writable task-specific directories under `/tmp`.
 Docker access may also require the workspace's execution approval mechanism.
@@ -90,6 +96,23 @@ Live mutation methods reject before contacting a transport. The only mutation
 path requires an explicitly selected `httpx.MockTransport`. Account-specific
 credit coverage and protection against personal charges remain unconfirmed;
 the user's personal spending limit is $0.
+
+Check deliberately constructed bad patches without executing them:
+
+```sh
+uv run --no-sync docdrift challenge
+```
+
+The static challenge rejects deletion, relabeling, exception swallowing, skipped
+checks, hardcoded output, and protected-file edits. Its known manual control is
+accepted by static policy only; the report never counts this as behavioral
+verification. See [challenge coverage](docs/VERIFICATION_CHALLENGE.md).
+
+The [fourteen-case frozen inventory](fixtures/evaluation/README.md) now includes
+the remaining owned import, keyword, return-shape, healthy, unsupported, and setup
+contracts. Two broken cases are held out for later model evaluation. Public
+candidates and setup reproduction remain unresolved. Local supplied-patch smoke
+runs are recorded separately from model-generated repairs and scored evaluation.
 
 ## Curated local repository
 
