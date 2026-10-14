@@ -24,14 +24,17 @@ demo-able submission.
 3. `ARCHITECTURE_PLAN.md` only as needed, by section (grep `^## `). It holds
    the full milestone criteria, the 14-case evaluation, video script, and
    the order to cut scope.
-4. `docs/*.md` for the adapter, snapshot, challenge, and packaging details.
+4. `docs/*.md` for details. `docs/MODEL_REPAIR.md` covers the Nemotron repair
+   loop and evaluation harness; `docs/SUBMISSION_DRAFT.md` and
+   `docs/FEEDBACK_LOG.md` are the submission drafts.
 
 ## Hard rules
 
 - **$0 personal spend.** Only granted free credits. No live Nebius call
   (inference or Sandbox) until the user confirms credits are granted and
   personal charges are impossible. Live Sandbox mutations have no enable
-  switch on purpose.
+  switch on purpose. Inference has a `--live` flag (`repair`, `evaluate`):
+  never pass it without that confirmation.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.
@@ -49,7 +52,9 @@ uv run --no-sync docdrift demo --inspect-only
 uv run --no-sync docdrift demo --image python:3.12-slim   # local Docker slice
 uv run --no-sync docdrift sandbox-contract-demo           # offline, no creds
 uv run --no-sync docdrift challenge                        # bad-patch rejection
-uv run --no-sync python scripts/check_distribution.py
+.venv/bin/python scripts/check_distribution.py --build --dist-dir /tmp/docdrift-dist --cache-dir /tmp/docdrift-uv-cache
+uv run --no-sync docdrift evaluate --strategies execution_only    # baseline, local Docker
+uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic rehearsal
 ```
 
 Run state lives in `.docdrift/` (gitignored).

@@ -19,8 +19,11 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 - [ ] Same slice on Nebius Sandbox: remote prep, original reproduction, pristine re-verification, operation reconciliation
 
 **Model repair (milestone 2)**
-- [ ] Nemotron tool loop produces a minimal docs-only patch that passes independent checks
-- [ ] Safe stop on malformed proposals and budget limits
+- [x] Tool loop, one-shot baseline, Token Factory client built and tested offline (`docs/MODEL_REPAIR.md`)
+- [x] Safe stop on malformed proposals and budget limits (tested with synthetic responses)
+- [ ] First live call: confirm Nemotron model ID and `tools` support; log in `docs/FEEDBACK_LOG.md`
+- [ ] Live Nemotron repair passes independent checks
+- [ ] Decide: keep exact-AST check or relax it (see `docs/MODEL_REPAIR.md` → Known risk)
 
 **Verification challenge (milestone 3)**
 - [x] 16 constructed bad patches rejected by static gates
@@ -28,23 +31,24 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 
 **Evaluation and review (milestone 4)**
 - [x] 14-case inventory frozen; two held-out broken cases reserved
-- [ ] Execution-only and one-shot baselines (harness can be built offline now)
-- [ ] Run evaluation; honest counts and costs
+- [x] Execution-only and one-shot baselines + `docdrift evaluate` harness
+- [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
+- [ ] Run scored evaluation with live model; honest counts and costs
 - [ ] HTML review report (only after a real model repair passes)
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
 - [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
 - [ ] Video under 3 minutes (script in `ARCHITECTURE_PLAN.md` → Competition and demonstration)
-- [ ] Nebius/NVIDIA feedback log (start at first live call)
-- [ ] Devpost write-up and submission
+- [ ] Nebius/NVIDIA feedback log (template ready: `docs/FEEDBACK_LOG.md`)
+- [ ] Devpost write-up (draft: `docs/SUBMISSION_DRAFT.md`, numbers TBD) and submission
 
 **Decision dates**
 - Oct 18: still no Builder approval → pursue the $25 Token Factory fallback for inference.
 - Oct 22: still no Sandbox access → user decides: Docker-labelled Coding submission or track change.
 
-Offline work allowed while blocked: baseline harnesses, feedback-log
-template, video/write-up drafts. Avoid more local hardening.
+Offline prep is done. While blocked: only fix bugs or decide the AST-check
+question; avoid more local hardening.
 
 ## Session log
 
@@ -52,6 +56,11 @@ template, video/write-up drafts. Avoid more local hardening.
   fixtures, challenge, wheel packaging committed; 423 tests pass. Added
   `AGENTS.md`/`CLAUDE.md` and this checklist. Next: offline baseline harness;
   wait for Builder approval.
+- 2026-10-14 (later): Built offline model repair (one-shot + agent), Token
+  Factory client, `repair`/`evaluate` CLI, feedback-log template, submission
+  draft. 444 tests pass. Local Docker: execution-only baseline 3/4 drift
+  detected, 0/3 false reports, 4/4 abstentions; synthetic agent replay verified
+  end-to-end. No live inference. Next: first live call once credits confirmed.
 
 ## Evidence detail (as of October 14)
 
