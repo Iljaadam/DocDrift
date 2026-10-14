@@ -59,6 +59,10 @@ uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic re
 
 Run state lives in `.docdrift/` (gitignored).
 
+Token Factory key: `~/.config/docdrift/nebius.env` (mode 600, outside the
+repo; $1 trial). Load with `set -a; . ~/.config/docdrift/nebius.env; set +a`.
+Never print it, commit it, or copy it into the repo.
+
 ## Handoff protocol (end of every session)
 
 1. Tick/adjust items in the `STATUS.md` checklist.
