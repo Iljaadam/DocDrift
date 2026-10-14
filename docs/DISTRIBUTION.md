@@ -39,11 +39,21 @@ Sandbox demo remains contract evidence rather than remote execution evidence.
 ## Manual CI and the $0 limit
 
 The GitHub Actions workflow has only a `workflow_dispatch` trigger. Pushes and pull
-requests do not launch it. Its quota-confirmation input defaults to false, so the
-job is skipped before a runner starts. Do not enable the job until the repository
-owner has confirmed unused included Actions minutes and protection against paid
-overage. The workflow does not verify billing settings or enforce an account-level
-spending cap itself.
+requests do not schedule its hosted jobs. GitHub may still validate a pushed
+workflow definition and create a validation or failed-run record without starting
+any jobs. Its quota-confirmation input defaults to false, so a manual dispatch
+with that default also skips the job before a runner starts. Do not enable the job
+until the repository owner has confirmed unused included Actions minutes and
+protection against paid overage. The workflow does not verify billing settings or
+enforce an account-level spending cap itself.
+
+The initial pushed definition was rejected before scheduling because
+`runner.temp` is unavailable in a job-level `env` expression; that validation
+record had **zero jobs**. The cache now uses the literal
+`/tmp/docdrift-uv-cache` path. A focused regression check covers this context error
+and the manual-only spending gate. Full workflow validation uses `actionlint`;
+local lint and regression results do not establish that a hosted job ran.
+[GitHub's context availability reference](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability).
 
 For private repositories, GitHub meters hosted runners against the owner's
 included quota and charges usage beyond it when billing permits. This repository's
@@ -55,7 +65,9 @@ Python 3.12, the existing dependency lock, automated tests, and the distribution
 smoke. It has read-only repository permissions, pinned actions, no stored checkout
 credentials, no provider secrets, no deployment, and no cache/artifact uploads.
 Tool and package downloads during initial runner setup are separate from the
-offline artifact checks. No hosted workflow was triggered to implement this work.
+offline artifact checks. No hosted job was dispatched or executed to implement
+these checks. The initial rejected validation record is separate from actual
+hosted execution.
 
 Build and install behavior follows [uv's package guide](https://docs.astral.sh/uv/guides/package/).
 Packages built here are local test artifacts; nothing is published to PyPI,

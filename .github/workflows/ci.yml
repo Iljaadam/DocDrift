@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      UV_CACHE_DIR: ${{ runner.temp }}/docdrift-uv-cache
+      UV_CACHE_DIR: /tmp/docdrift-uv-cache
       PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Check out the requested commit

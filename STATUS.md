@@ -71,11 +71,12 @@ image identity, and safe result metadata. Raw resource `cost` fields are never
 interpreted as dollars. The CLI's `sandbox-contract-demo` runs offline without
 credentials, inference, or code execution and labels that limitation explicitly.
 
-Current validation: **417 automated tests pass**, covering the original local
+Current validation: **423 automated tests pass**, covering the original local
 slice, public snapshots, synthetic REST parsing, durable submission receipts,
-frozen evaluation artifacts, static challenges, distribution checks, and
-independent checks that simulation cannot enable live mutations. The locked
-development environment also installs from its populated local cache. The CLI
+frozen evaluation artifacts, static challenges, distribution checks, the manual
+workflow's context and spending gates, and independent checks that simulation
+cannot enable live mutations. The locked development environment also installs
+from its populated local cache. The CLI
 contract demo completed with all checks passing and zero network calls, code
 executions, inference calls, or paid calls. The live public GitHub inspection is
 a separate read-only check, not a Nebius or behavioral verification result.
@@ -103,7 +104,10 @@ checkout passed help, fixture inventory, synthetic Sandbox contracts, and the
 static challenge. A local distribution checker validates fixture/source/license
 hashes and wheel metadata. CI is manual-only, with its runner skipped by default
 until included Actions quota and protection against personal charges are
-confirmed. No hosted workflow was started.
+confirmed. GitHub initially rejected the workflow definition before scheduling
+any jobs: `runner.temp` is unavailable in a job-level environment. The corrected
+literal cache path passes actionlint 1.7.12. No hosted runner started, and no
+manual workflow was dispatched.
 
 Milestone 1 is **not complete under the plan**: remote preparation,
 approved dependency acquisition, Nebius original reproduction,
