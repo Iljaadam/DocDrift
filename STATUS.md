@@ -4,15 +4,20 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 
 ## Checklist
 
-Token Factory: $1 trial key (no card), stored in `~/.config/docdrift/nebius.env`.
-Still blocked: Nebius Sandboxes access (Builder Program pending); all execution is local Docker.
+Token Factory: $1 trial key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
+Sandboxes: permission never checked. The Sandbox API is on the same Token Factory host and
+takes a bearer key plus a `Project` header, so a read-only `GET whoami` with this key and the
+user's project ID would show it (needs user OK and the ID). All execution so far is local Docker.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
-- [ ] Builder approval / free credits granted, $0 personal-charge protection confirmed by user
-- [x] ~~Fallback: separate $25 Token Factory credits~~ not viable (Oct 14): needs a form plus a wait, and the promo code only applies after $25 of own spend, which breaks the $0 cap. Builder is the only access path.
+- [ ] Builder Program approval (pending since before Oct 14)
+- [x] Token Factory $1 trial key received; live inference approved by user (D5)
+- [ ] $25 Token Factory credits via the hackathon form: status unknown. (Correction: the
+  "promo code only after $25 own spend" restriction applies to Nebius cloud compute, not
+  Token Factory, per user on Oct 14. An earlier entry here wrongly called this route dead.)
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
-- [ ] Sandbox permission; offline execution, image reuse, result parsing, cancellation, artifact download checked live
+- [ ] Sandbox permission (read-only `whoami`, needs user OK); offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
 **Manual vertical slice (milestone 1)**
 - [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
@@ -24,7 +29,8 @@ Still blocked: Nebius Sandboxes access (Builder Program pending); all execution 
 - [x] Safe stop on malformed proposals and budget limits (tested with synthetic responses)
 - [x] First live call: `nvidia/nemotron-3-super-120b-a12b`; `tools` supported (F1, F2)
 - [x] Live Nemotron repair passes independent checks on renamed_method (F3; local Docker execution)
-- [x] Exact-AST check relaxed to outputs + required call + data flow (`docs/MODEL_REPAIR.md`)
+- [x] Exact-AST check relaxed to outputs + required call + must-flow (D3; hardened after the
+  first version accepted 11 constructed bypasses, `docs/MODEL_REPAIR.md`)
 
 **Verification challenge (milestone 3)**
 - [x] 16 constructed bad patches rejected by static gates
@@ -36,9 +42,10 @@ Still blocked: Nebius Sandboxes access (Builder Program pending); all execution 
 - [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
 - [x] Live development-split run: one_shot 2/2, agent 2/2 verified (F4)
 - [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
-- [ ] Decide: add a source-only case (no current-API neighbor) so agent vs one_shot separates (F5)
-- [ ] Scored held-out run (once; ideally after Sandbox wiring)
-- [ ] HTML review report (only after a real model repair passes)
+- [ ] Decide D9: add a source-only case (no current-API neighbor) so agent vs one_shot separates (F5)
+- [ ] Scored held-out run, once (D8)
+- [ ] HTML review report from real runs (unblocked: the plan's gate, a real model repair
+  passing independent checks, was met by F3)
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
@@ -53,7 +60,35 @@ Still blocked: Nebius Sandboxes access (Builder Program pending); all execution 
 - Sandbox access after ~Oct 26: swap only the final verification onto Sandboxes; keep the rest.
 - Watch the $1 trial balance: evaluation runs cost tokens (first repair ~7k tokens).
 
-Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
+**Next**, in order: (1) with user OK and project ID, read-only Sandbox `whoami`; (2) if permitted, wire the
+Sandbox adapter into `repair`/`evaluate`, otherwise build the HTML review report first;
+(3) settle D9 and add the case; (4) scored held-out run (D8).
+
+## Decisions
+
+Who decided what, and when. Don't reverse one without the user.
+
+- D1 (user, Oct 14): Pet project. Optimise for a working, honest, demo-able submission;
+  skip ceremony. `AGENTS.md` plus this file are the cross-agent handoff.
+- D2 (user): $0 personal spend; only granted free credits.
+- D3 (user, Oct 14): A repair is behavior-verified when every frozen input gives the exact
+  expected JSON, the required API call is present, and its result definitely reaches the
+  printed output. The known-repair AST match is recorded, not required. Rules and threat
+  model: `docs/MODEL_REPAIR.md`.
+- D4 (agent, Oct 14): Per-case repair budget: 8 model calls, 2 candidates, 4 sandbox runs,
+  2 malformed responses, 2048 completion tokens per call, 60k tokens total; temperature 0;
+  no automatic retry.
+- D5 (user, Oct 14): Live inference approved on the $1 Token Factory trial key. The user
+  was asked to confirm no card and no auto top-up and replied "yes go ahead".
+  Sandbox calls are not approved yet.
+- D6 (agent, Oct 14): Working model `nvidia/nemotron-3-super-120b-a12b`: tool calling
+  verified (F2). The other Nemotron IDs are listed in F1.
+- D7 (user, Oct 14): Broken-fixture README prose neutralised and re-frozen before any
+  held-out model run (F4, F5).
+- D8 (proposed by agent, awaiting user): run the held-out split once, after Sandbox wiring.
+  If there is no Sandbox by Oct 22, run it on local Docker and label it so.
+- D9 (proposed by agent, awaiting user): add a fixture whose fix needs the source (no
+  current-API neighbour, no traceback hint), so the agent can beat one-shot.
 
 ## Session log
 
@@ -82,8 +117,14 @@ Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 - 2026-10-14 (later): Rewrote broken-fixture README prose to stop stating the fix; re-froze
   manifests/index. Live dev rerun unchanged (one_shot and agent 2/2): healthy neighbors still
   show the current API (F5). Held-out not run yet.
+- 2026-10-14 (reconcile, max effort): Reviewed this session's low-effort work. Fixed: the
+  data-flow verifier accepted 11 constructed bypasses (now a must-flow check; all 9 saved
+  live repairs still pass); stale exact-AST wording in engine/challenge notes and docs;
+  the "$25 route dead" entry (user had corrected it); "no card" stated as a user fact;
+  Sandbox recorded as blocked on Builder although never checked. Added Decisions D1-D9 and
+  the commit-identity note in `AGENTS.md`. 468 tests pass.
 
-## Evidence detail (as of October 14)
+## Evidence detail (historical: written before the first live call on October 14)
 
 Continue the preserved architecture; the clone was
 initially empty, with no commits and no applicable `AGENTS.md`.

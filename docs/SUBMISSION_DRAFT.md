@@ -1,6 +1,9 @@
 # Submission draft (Devpost)
 
 Draft only. Every number marked `TBD` must come from an actual recorded run.
+All execution so far is local Docker. Every Nebius Sandbox claim below is
+conditional on Sandbox access (see `STATUS.md`); reword it before submitting
+if that access never arrives.
 Video shot list: `ARCHITECTURE_PLAN.md` → "Competition and demonstration".
 
 ## Tagline

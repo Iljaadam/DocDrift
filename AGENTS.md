@@ -30,18 +30,17 @@ demo-able submission.
 
 ## Hard rules
 
-- **$0 personal spend.** Only granted free credits. No live Nebius call
-  (inference or Sandbox) until the user confirms credits are granted and
-  personal charges are impossible. Live Sandbox mutations have no enable
-  switch on purpose. Inference has a `--live` flag (`repair`, `evaluate`):
-  never pass it without that confirmation.
+- **$0 personal spend.** Only granted free credits.
+  - Inference: approved by the user on 2026-10-14 for the $1 Token Factory
+    trial key (`--live` on `repair`/`evaluate`). Keep runs small and log
+    token use; the balance is tiny.
+  - Sandboxes: no live call yet, not even read-only, until the user approves.
+    Live Sandbox mutations have no enable switch on purpose.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.
 - Don't touch NewsBias (`/home/ubuntu/news-bias-tracker`), its timers,
   containers, or ports 80/443/8501. Host is aarch64.
-- Don't build the HTML review page before a real model repair passes
-  independent checks.
 
 ## Commands
 
@@ -59,6 +58,9 @@ uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic re
 
 Run state lives in `.docdrift/` (gitignored).
 
+Commits: no git identity is configured on this machine. Reuse the repo's author:
+`git -c user.name=Iljaadam -c user.email=64214807+Iljaadam@users.noreply.github.com commit ...`
+
 Token Factory key: `~/.config/docdrift/nebius.env` (mode 600, outside the
 repo; $1 trial). Load with `set -a; . ~/.config/docdrift/nebius.env; set +a`.
 Never print it, commit it, or copy it into the repo.
@@ -69,3 +71,4 @@ Never print it, commit it, or copy it into the repo.
 2. Add one dated line to `STATUS.md` → **Session log**: what changed, what
    is next, anything blocked.
 3. Make sure the test suite passes, then commit with a descriptive message.
+4. Record new decisions in `STATUS.md` → **Decisions** (who, when, what).

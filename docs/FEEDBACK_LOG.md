@@ -26,7 +26,8 @@ well as successes. One entry per finding. Never paste API keys.
 
 ## Entries
 
-Account: Token Factory $1 trial key (no card, per user). Execution in these
+Account: Token Factory $1 trial key. The user approved live calls on Oct 14 after
+being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execution in these
 entries is local Docker, not Nebius Sandboxes.
 
 ### F1 — Model listing works; four Nemotron models (2026-10-14)
@@ -76,8 +77,9 @@ entries is local Docker, not Nebius Sandboxes.
   Report: `.docdrift/evaluations/dev-live-1.json` (local, gitignored).
 - Effect on DocDrift: model plumbing works end to end. But the evaluation does not separate
   one_shot from agent, because every owned fixture README states the fix in prose (e.g. "The
-  installed package exposes `count` instead"), and Python 3.12 tracebacks add "Did you mean"
-  hints for renamed names. One-shot never needs the source.
+  installed package exposes `count` instead"). One-shot never needs the source. (Python 3.12
+  "Did you mean" traceback hints did not apply to these two cases; they do apply to the held-out
+  renamed import: "Did you mean: 'TokenJoiner'?".)
 - Suggestion (for us): neutral fixture prose and at least one case whose fix requires reading
   the source, before the scored held-out run.
 
