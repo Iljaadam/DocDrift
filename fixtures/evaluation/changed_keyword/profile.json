@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "name": "owned-changed-keyword",
+  "python": "3.12",
+  "documentation": [
+    "README.md"
+  ],
+  "setup": {
+    "kind": "source_tree",
+    "dependencies": []
+  },
+  "target": {
+    "path": "README.md",
+    "ordinal": 0
+  },
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {
+        "receiver": "TokenOrderer",
+        "method": "sort"
+      },
+      "operation_ast_sha256": "aa0aa96c70634e4cfd364d45542854ad4c8f2a26ba932338f66a50b644833ec0",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": []
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"pear\", \"apple\", \"pear\"]"
+          },
+          "expected_json": [
+            "pear",
+            "pear",
+            "apple"
+          ]
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"Z\", \"two words\"]"
+          },
+          "expected_json": [
+            "é",
+            "two words",
+            "Z",
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "ordinal": 1,
+      "role": "healthy",
+      "required_call": {
+        "receiver": "TokenOrderer",
+        "method": "sort"
+      },
+      "operation_ast_sha256": "0feeccbf9c03ae64e500c79d2ba738452c54ce76e133ad6fe613ae809fe3096c",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": {
+            "ordered": [],
+            "first": null
+          }
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"pear\", \"apple\", \"pear\"]"
+          },
+          "expected_json": {
+            "ordered": [
+              "apple",
+              "pear",
+              "pear"
+            ],
+            "first": "apple"
+          }
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"Z\", \"two words\"]"
+          },
+          "expected_json": {
+            "ordered": [
+              "",
+              "Z",
+              "two words",
+              "é"
+            ],
+            "first": ""
+          }
+        }
+      ]
+    }
+  ],
+  "checks": "checks.py",
+  "known_repair": "repair.py"
+}

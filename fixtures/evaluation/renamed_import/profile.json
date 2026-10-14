@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "name": "owned-renamed-import",
+  "python": "3.12",
+  "documentation": [
+    "README.md"
+  ],
+  "setup": {
+    "kind": "source_tree",
+    "dependencies": []
+  },
+  "target": {
+    "path": "README.md",
+    "ordinal": 0
+  },
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {
+        "receiver": "TokenJoiner",
+        "method": "join"
+      },
+      "operation_ast_sha256": "82bae66396e4a1dec6ebcc04e81cf7288fd425e53bd50ebd9135df73950b9601",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": ""
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"
+          },
+          "expected_json": "red|blue|red"
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"two words\"]"
+          },
+          "expected_json": "|é|two words"
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "ordinal": 1,
+      "role": "healthy",
+      "required_call": {
+        "receiver": "TokenJoiner",
+        "method": "join"
+      },
+      "operation_ast_sha256": "70e3ced21a27177ed0c310b749058e3fffbd878f5246bb025b3e4b946b435a65",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": {
+            "joined": "",
+            "length": 0
+          }
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"
+          },
+          "expected_json": {
+            "joined": "red|blue|red",
+            "length": 12
+          }
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"two words\"]"
+          },
+          "expected_json": {
+            "joined": "|é|two words",
+            "length": 12
+          }
+        }
+      ]
+    }
+  ],
+  "checks": "checks.py",
+  "known_repair": "repair.py"
+}

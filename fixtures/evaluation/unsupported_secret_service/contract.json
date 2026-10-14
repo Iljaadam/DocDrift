@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "kind": "unsupported",
+  "expected_inventory_status": "unsupported",
+  "reason_contains": "external network, secret, or service dependency",
+  "coverage": ["secret environment input", "external HTTP service"],
+  "execution_authorized": false,
+  "reproduction_status": "not_run"
+}

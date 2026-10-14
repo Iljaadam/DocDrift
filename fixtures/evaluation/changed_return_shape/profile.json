@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "name": "owned-changed-return-shape",
+  "python": "3.12",
+  "documentation": [
+    "README.md"
+  ],
+  "setup": {
+    "kind": "source_tree",
+    "dependencies": []
+  },
+  "target": {
+    "path": "README.md",
+    "ordinal": 0
+  },
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {
+        "receiver": "TokenStats",
+        "method": "measure"
+      },
+      "operation_ast_sha256": "9b602f764e9251964eaa7373b0652592a14f960605642dbab502f0de738b4715",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": 0
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"
+          },
+          "expected_json": 3
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"é\", \"two words\"]"
+          },
+          "expected_json": 4
+        }
+      ]
+    }
+  ],
+  "checks": "checks.py",
+  "known_repair": "repair.py"
+}

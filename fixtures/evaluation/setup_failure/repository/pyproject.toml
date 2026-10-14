@@ -1,0 +1,11 @@
+[build-system]
+requires = []
+build-backend = "drift_build"
+backend-path = ["."]
+
+[project]
+name = "docdrift-owned-setup-failure"
+version = "2.0.0"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+dependencies = []

@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "status": "frozen_not_evaluated",
+  "case_count": 14,
+  "owned_case_count": 11,
+  "public_candidate_count": 3,
+  "held_out_broken": [
+    "renamed_import_broken",
+    "changed_return_shape_broken"
+  ],
+  "cases": [
+    {
+      "id": "renamed_method_broken",
+      "ownership": "owned",
+      "kind": "broken",
+      "label": "documentation_drift",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/renamed_method",
+      "repository": "fixtures/renamed_method/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/renamed_method/profile.json",
+      "known_repair": "fixtures/renamed_method/repair.py",
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "predicted_original_failure": "process_exit",
+      "fixture_manifest_sha256": "7cf9408690c81b43d605f091923844e55e2ec522a9f079ecf9b455c8e5d721c8"
+    },
+    {
+      "id": "renamed_import_broken",
+      "ownership": "owned",
+      "kind": "broken",
+      "label": "documentation_drift",
+      "label_basis": "curator_authored_contract",
+      "split": "held_out",
+      "fixture": "fixtures/evaluation/renamed_import",
+      "repository": "fixtures/evaluation/renamed_import/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/evaluation/renamed_import/profile.json",
+      "known_repair": "fixtures/evaluation/renamed_import/repair.py",
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "predicted_original_failure": "process_exit"
+    },
+    {
+      "id": "changed_keyword_broken",
+      "ownership": "owned",
+      "kind": "broken",
+      "label": "documentation_drift",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/changed_keyword",
+      "repository": "fixtures/evaluation/changed_keyword/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/evaluation/changed_keyword/profile.json",
+      "known_repair": "fixtures/evaluation/changed_keyword/repair.py",
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "predicted_original_failure": "process_exit"
+    },
+    {
+      "id": "changed_return_shape_broken",
+      "ownership": "owned",
+      "kind": "broken",
+      "label": "documentation_drift",
+      "label_basis": "curator_authored_contract",
+      "split": "held_out",
+      "fixture": "fixtures/evaluation/changed_return_shape",
+      "repository": "fixtures/evaluation/changed_return_shape/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/evaluation/changed_return_shape/profile.json",
+      "known_repair": "fixtures/evaluation/changed_return_shape/repair.py",
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "predicted_original_failure": "frozen_acceptance_check"
+    },
+    {
+      "id": "renamed_method_healthy",
+      "ownership": "owned",
+      "kind": "healthy",
+      "label": "no_failure_found",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/renamed_method",
+      "repository": "fixtures/renamed_method/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 1
+      },
+      "profile": "fixtures/renamed_method/profile.json",
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "fixture_manifest_sha256": "7cf9408690c81b43d605f091923844e55e2ec522a9f079ecf9b455c8e5d721c8"
+    },
+    {
+      "id": "renamed_import_healthy",
+      "ownership": "owned",
+      "kind": "healthy",
+      "label": "no_failure_found",
+      "label_basis": "curator_authored_contract",
+      "split": "held_out",
+      "fixture": "fixtures/evaluation/renamed_import",
+      "repository": "fixtures/evaluation/renamed_import/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 1
+      },
+      "profile": "fixtures/evaluation/renamed_import/profile.json",
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false
+    },
+    {
+      "id": "changed_keyword_healthy",
+      "ownership": "owned",
+      "kind": "healthy",
+      "label": "no_failure_found",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/changed_keyword",
+      "repository": "fixtures/evaluation/changed_keyword/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 1
+      },
+      "profile": "fixtures/evaluation/changed_keyword/profile.json",
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false
+    },
+    {
+      "id": "secret_service_unsupported",
+      "ownership": "owned",
+      "kind": "unsupported",
+      "label": "unsupported",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/unsupported_secret_service",
+      "repository": "fixtures/evaluation/unsupported_secret_service/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "classifier_contract": "fixtures/evaluation/unsupported_secret_service/contract.json",
+      "mvp_classification": "unsupported"
+    },
+    {
+      "id": "ipython_unsupported",
+      "ownership": "owned",
+      "kind": "unsupported",
+      "label": "unsupported",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/unsupported_ipython",
+      "repository": "fixtures/evaluation/unsupported_ipython/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "classifier_contract": "fixtures/evaluation/unsupported_ipython/contract.json",
+      "mvp_classification": "unsupported"
+    },
+    {
+      "id": "sketch_unsupported",
+      "ownership": "owned",
+      "kind": "unsupported",
+      "label": "unsupported",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/unsupported_sketch",
+      "repository": "fixtures/evaluation/unsupported_sketch/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "classifier_contract": "fixtures/evaluation/unsupported_sketch/contract.json",
+      "mvp_classification": "unsupported"
+    },
+    {
+      "id": "missing_build_prerequisite",
+      "ownership": "owned",
+      "kind": "setup_failure",
+      "label": "environment_setup_failure",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/evaluation/setup_failure",
+      "repository": "fixtures/evaluation/setup_failure/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/evaluation/setup_failure/profile.json",
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "classifier_contract": "fixtures/evaluation/setup_failure/contract.json",
+      "mvp_classification": "unsupported_setup_profile"
+    },
+    {
+      "id": "slugify_quickstart_candidate",
+      "ownership": "public",
+      "kind": "healthy",
+      "label": "pending_reproduction",
+      "candidate_label": "no_failure_found",
+      "split": "reference",
+      "repository": "un33k/python-slugify",
+      "origin": "https://github.com/un33k/python-slugify",
+      "commit": "fee5aa338d3bd7a9e36c269e33b496a7848edc44",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": null,
+        "locator": "standalone quickstart"
+      },
+      "selection_status": "pending_inventory",
+      "environment_status": "unconfirmed",
+      "license_status": "unconfirmed",
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false
+    },
+    {
+      "id": "dotenv_stream_candidate",
+      "ownership": "public",
+      "kind": "healthy",
+      "label": "pending_reproduction",
+      "candidate_label": "no_failure_found",
+      "split": "reference",
+      "repository": "theskumar/python-dotenv",
+      "origin": "https://github.com/theskumar/python-dotenv",
+      "commit": "a00cb2eed0704cd6d2071b2004c37e95ccc86ee5",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": null,
+        "locator": "load_dotenv stream-loading standalone quickstart"
+      },
+      "selection_status": "pending_inventory",
+      "environment_status": "unconfirmed",
+      "license_status": "unconfirmed",
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false
+    },
+    {
+      "id": "dotenv_ipython_candidate",
+      "ownership": "public",
+      "kind": "unsupported",
+      "label": "pending_reproduction",
+      "candidate_label": "unsupported",
+      "split": "reference",
+      "repository": "theskumar/python-dotenv",
+      "origin": "https://github.com/theskumar/python-dotenv",
+      "commit": "a00cb2eed0704cd6d2071b2004c37e95ccc86ee5",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": null,
+        "locator": "IPython extension example"
+      },
+      "selection_status": "pending_inventory",
+      "environment_status": "unconfirmed",
+      "license_status": "unconfirmed",
+      "profile": null,
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false
+    }
+  ]
+}

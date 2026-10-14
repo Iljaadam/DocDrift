@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "name": "owned-setup-failure",
+  "python": "3.12",
+  "documentation": [
+    "README.md"
+  ],
+  "setup": {
+    "kind": "pep517_offline",
+    "dependencies": [],
+    "build_backend": "drift_build",
+    "missing_prerequisite": "REQUIRED_BUILD_INPUT.json"
+  },
+  "target": {
+    "path": "README.md",
+    "ordinal": 0
+  },
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {
+        "receiver": "TokenIdentity",
+        "method": "echo"
+      },
+      "operation_ast_sha256": "14d545c8bae1c1a4480c14f7e3c67d873cb68a12a61282e6751b60fb8f9c649c",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": []
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"
+          },
+          "expected_json": [
+            "red",
+            "blue",
+            "red"
+          ]
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\", \"é\", \"two words\"]"
+          },
+          "expected_json": [
+            "",
+            "é",
+            "two words"
+          ]
+        }
+      ]
+    }
+  ],
+  "checks": "checks.py"
+}

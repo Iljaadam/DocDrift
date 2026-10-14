@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "kind": "setup_failure",
+  "curator_label": "environment_setup_failure",
+  "label_basis": "declared build prerequisite absent from frozen snapshot",
+  "mvp_classification": "unsupported_setup_profile",
+  "missing_prerequisite": "REQUIRED_BUILD_INPUT.json",
+  "execution_authorized": false,
+  "reproduction_status": "not_run",
+  "documentation_repair_expected": false
+}

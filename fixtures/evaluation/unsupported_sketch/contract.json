@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "kind": "unsupported",
+  "expected_inventory_status": "unsupported",
+  "reason_contains": "ellipsis placeholder or dependent fragment",
+  "coverage": ["omitted application setup", "ellipsis argument placeholder"],
+  "execution_authorized": false,
+  "reproduction_status": "not_run"
+}
