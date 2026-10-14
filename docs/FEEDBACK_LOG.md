@@ -80,3 +80,16 @@ entries is local Docker, not Nebius Sandboxes.
   hints for renamed names. One-shot never needs the source.
 - Suggestion (for us): neutral fixture prose and at least one case whose fix requires reading
   the source, before the scored held-out run.
+
+### F5 — Neutral fixture prose; development rerun unchanged (2026-10-14)
+
+- Change: the four broken fixtures' README prose no longer states the fix (fences byte-identical,
+  manifests and index re-frozen). Source docstrings are unchanged (agent-visible only).
+- Actual: `dev-live-2`, 41 s. one_shot 2/2 verified (1,453 tokens), agent 2/2 verified
+  (9 calls, 12,701 tokens). Same one-line diffs.
+- Effect on DocDrift: the remaining hint is realistic: each broken example's healthy neighbor
+  in the same README already uses the current API (`.count(...)`, `descending=`). Development
+  cases still do not separate one_shot from agent. The held-out return-shape case (needs the
+  dict key from source or stdout) is the only case likely to.
+- Suggestion (for us): to show the agent's value, add a case with no current-API neighbor and
+  no traceback suggestion, so the fix requires reading the source.

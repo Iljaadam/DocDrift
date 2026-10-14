@@ -1,10 +1,11 @@
-# Drift demo: word counts
+# Word counts
 
-This owned, offline fixture deliberately demonstrates documentation that still
-calls the former `tally` method. The installed package exposes `count` instead.
-Inputs are supplied as a JSON array of strings in `DOCDRIFT_INPUT`.
+`drift_demo` counts exact word occurrences. Examples read their input as a
+JSON array of strings from the `DOCDRIFT_INPUT` environment variable.
 
-## Quickstart with the outdated method
+## Quickstart
+
+Count each distinct word and print the counts as JSON:
 
 ```python
 import json
@@ -17,7 +18,9 @@ result = WordCounter().tally(words)
 print(json.dumps(result, sort_keys=True))
 ```
 
-## Healthy summary example
+## Summary
+
+Report how many distinct words there are and the total number of words:
 
 ```python
 import json

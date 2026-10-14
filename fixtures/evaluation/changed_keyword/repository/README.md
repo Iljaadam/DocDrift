@@ -1,8 +1,11 @@
-# Owned changed-keyword example
+# Token ordering
 
-The ordering API now accepts `descending` where the previous API accepted
-`reverse`. The target example promises tokens in descending order, preserving
-duplicates and exact string values. Inputs are JSON arrays in `DOCDRIFT_INPUT`.
+`drift_demo` sorts tokens. Examples read a JSON array of strings from
+`DOCDRIFT_INPUT`.
+
+## Descending order
+
+Print the tokens in descending order, keeping duplicates and exact string values:
 
 ```python
 import json
@@ -15,8 +18,9 @@ result = TokenOrderer().sort(words, reverse=True)
 print(json.dumps(result, sort_keys=True))
 ```
 
-This healthy neighbor reports ascending token order and its first value,
-using `None` for an empty collection.
+## Ascending order with first token
+
+Print the tokens in ascending order and the first one, or `null` for an empty input:
 
 ```python
 import json

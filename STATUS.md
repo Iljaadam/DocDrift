@@ -35,7 +35,9 @@ Still blocked: Nebius Sandboxes access (Builder Program pending); all execution 
 - [x] Execution-only and one-shot baselines + `docdrift evaluate` harness
 - [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
 - [x] Live development-split run: one_shot 2/2, agent 2/2 verified (F4)
-- [ ] Fix fixture prose leak (READMEs state the fix; see F4), re-freeze, then scored held-out run
+- [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
+- [ ] Decide: add a source-only case (no current-API neighbor) so agent vs one_shot separates (F5)
+- [ ] Scored held-out run (once; ideally after Sandbox wiring)
 - [ ] HTML review report (only after a real model repair passes)
 - [x] CLI wheel with fixtures, offline install check
 
@@ -77,6 +79,9 @@ Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 - 2026-10-14 (later): Live dev evaluation: every strategy detected 2/2, one_shot and agent
   verified 2/2, 0 false reports, 4/4 abstentions; ~14k tokens. Found that fixture READMEs
   state the fix, so one_shot vs agent is not separated (F4). Next: user decision on fixture prose.
+- 2026-10-14 (later): Rewrote broken-fixture README prose to stop stating the fix; re-froze
+  manifests/index. Live dev rerun unchanged (one_shot and agent 2/2): healthy neighbors still
+  show the current API (F5). Held-out not run yet.
 
 ## Evidence detail (as of October 14)
 

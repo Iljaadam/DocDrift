@@ -1,8 +1,11 @@
-# Owned changed-return-shape example
+# Token statistics
 
-This example promises a scalar JSON integer: the total number of input tokens.
-The current API returns a statistics dictionary instead of that former scalar.
-Inputs are JSON arrays in `DOCDRIFT_INPUT`.
+`drift_demo` measures token collections. The example reads a JSON array of
+strings from `DOCDRIFT_INPUT`.
+
+## Total tokens
+
+Print the total number of input tokens as a JSON integer:
 
 ```python
 import json

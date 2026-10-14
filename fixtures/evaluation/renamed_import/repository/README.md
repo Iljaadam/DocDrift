@@ -1,8 +1,11 @@
-# Owned renamed-import example
+# Joining tokens
 
-The API renamed the imported class from `TextJoiner` to `TokenJoiner`.
-The documented behavior joins exact input strings with `|` between them.
-Inputs arrive as a JSON array in `DOCDRIFT_INPUT`.
+`drift_demo` joins exact input strings with `|` between them. Examples read a
+JSON array of strings from `DOCDRIFT_INPUT`.
+
+## Quickstart
+
+Print the joined text:
 
 ```python
 import json
@@ -15,8 +18,9 @@ result = TextJoiner().join(words)
 print(json.dumps(result, sort_keys=True))
 ```
 
-The neighboring example already imports the current API and reports joined
-text and its length.
+## Joined text and length
+
+Print the joined text together with its length:
 
 ```python
 import json

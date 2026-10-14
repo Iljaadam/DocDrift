@@ -30,7 +30,7 @@
       "reproduction_status": "not_run",
       "behavior_verified": false,
       "predicted_original_failure": "process_exit",
-      "fixture_manifest_sha256": "7cf9408690c81b43d605f091923844e55e2ec522a9f079ecf9b455c8e5d721c8"
+      "fixture_manifest_sha256": "480155b47a5c18cfc7f13648a0bacd5b0e7f24b286b36641f7dc2c50685aed9e"
     },
     {
       "id": "renamed_import_broken",
@@ -118,7 +118,7 @@
       "known_repair": null,
       "reproduction_status": "not_run",
       "behavior_verified": false,
-      "fixture_manifest_sha256": "7cf9408690c81b43d605f091923844e55e2ec522a9f079ecf9b455c8e5d721c8"
+      "fixture_manifest_sha256": "480155b47a5c18cfc7f13648a0bacd5b0e7f24b286b36641f7dc2c50685aed9e"
     },
     {
       "id": "renamed_import_healthy",
