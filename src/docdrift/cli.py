@@ -28,6 +28,27 @@ def demo_repository(source: Path, destination: Path) -> None:
         subprocess.run(['git', '-C', str(destination)] + args, env=env, check=True, capture_output=True)
 
 
+def model_client(args):
+    """Build a live client only on explicit request; otherwise a synthetic replay or nothing."""
+    from .repair import ScriptedModel, TokenFactoryClient
+    if args.live and args.replay:
+        raise ValueError('Choose --live or --replay, not both')
+    if args.live:
+        if not args.model:
+            raise ValueError('--live requires an explicit --model ID')
+        return TokenFactoryClient(args.model, os.environ.get('NEBIUS_API_KEY', ''))
+    if args.replay:
+        return ScriptedModel(json.loads(args.replay.read_text()))
+    return None
+
+
+def add_model_arguments(command) -> None:
+    command.add_argument('--model', help='Explicit Token Factory model ID (no default)')
+    command.add_argument('--live', action='store_true', help='Send real inference requests; uses NEBIUS_API_KEY and may consume credits')
+    command.add_argument('--replay', type=Path, help='Synthetic scripted responses (JSON list); not model evidence')
+    command.add_argument('--max-model-calls', type=int, default=8)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description='Inspect pinned Markdown examples and verify a supplied local repair.')
     parser.add_argument('--state-dir', type=Path, default=Path('.docdrift'))
@@ -55,6 +76,18 @@ def main() -> None:
     demo.add_argument('--fixture', type=Path, default=default_fixture_path())
     demo.add_argument('--image', default='python:3.12-slim')
     demo.add_argument('--inspect-only', action='store_true')
+    repair = commands.add_parser('repair', help='Propose a model repair for one owned fixture, then verify it in local Docker')
+    repair.add_argument('--fixture', type=Path, default=default_fixture_path())
+    repair.add_argument('--strategy', choices=['one_shot', 'agent'], default='agent')
+    repair.add_argument('--image', default='python:3.12-slim')
+    add_model_arguments(repair)
+    evaluate = commands.add_parser('evaluate', help='Score strategies over the frozen evaluation inventory with local Docker')
+    evaluate.add_argument('--index', type=Path, default=Path(__file__).resolve().parents[2] / 'fixtures' / 'evaluation' / 'index.json')
+    evaluate.add_argument('--strategies', default='execution_only', help='Comma-separated: execution_only,one_shot,agent')
+    evaluate.add_argument('--include-held-out', action='store_true', help='Only for the final scored run')
+    evaluate.add_argument('--image', default='python:3.12-slim')
+    evaluate.add_argument('--output', type=Path, default=None)
+    add_model_arguments(evaluate)
     resume = commands.add_parser('resume', help='Reconcile saved local operation IDs and continue frozen phases')
     resume.add_argument('run_id')
     export = commands.add_parser('export', help='Export a saved run and its checksum manifest')
@@ -91,6 +124,27 @@ def main() -> None:
                     result = inspect_repository(repository, 'HEAD', ['README.md'])
                 else:
                     result = start_run(repository, 'HEAD', args.fixture / 'profile.json', args.fixture / 'repair.py', args.state_dir, args.image)
+        elif args.command == 'repair':
+            from .evaluation import evaluate_fixture
+            from .repair import RepairBudget
+            client = model_client(args)
+            if client is None:
+                raise ValueError('repair needs --live (real inference) or --replay (synthetic)')
+            result = evaluate_fixture(args.fixture, args.strategy, client, args.state_dir, args.image, RepairBudget(max_model_calls=args.max_model_calls))
+        elif args.command == 'evaluate':
+            from .adapters import LocalDockerAdapter
+            from .evaluation import evaluate as run_evaluation, markdown_summary
+            from .repair import RepairBudget
+            from .store import StateStore
+            strategies = [name.strip() for name in args.strategies.split(',') if name.strip()]
+            store = StateStore(args.state_dir)
+            report = run_evaluation(args.index, strategies, args.state_dir, adapter=LocalDockerAdapter(store.root / 'docker-operations'), image=args.image,
+                                    client=model_client(args), budget=RepairBudget(max_model_calls=args.max_model_calls), include_held_out=args.include_held_out)
+            output = args.output or args.state_dir / 'evaluations' / 'latest.json'
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
+            output.with_suffix('.md').write_text(markdown_summary(report))
+            result = {'evidence': report['evidence'], 'summary': report['summary'], 'report_path': str(output.resolve())}
         elif args.command == 'resume':
             result = resume_run(args.run_id, args.state_dir)
         else:

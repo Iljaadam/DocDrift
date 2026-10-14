@@ -90,7 +90,8 @@ def inspect_github(repository: str, ref: str, documents: list[str], *, client=No
     return {'provenance': provenance, 'examples': examples, 'execution': 'not_run', 'behavior_verified': False}
 
 
-def start_run(repository: Path, ref: str, profile_path: Path, replacement_path: Path, state_root: Path, image: str, adapter=None) -> dict:
+def start_run(repository: Path, ref: str, profile_path: Path, replacement_path: Path, state_root: Path, image: str, adapter=None, *, repair_record: dict | None = None) -> dict:
+    """Verify a replacement. ``repair_record`` is a model outcome from ``docdrift.repair``; without it the replacement is a supplied manual patch."""
     repository = repository.resolve(strict=True)
     profile_path = profile_path.resolve(strict=True)
     if profile_path.is_relative_to(repository):
@@ -111,6 +112,13 @@ def start_run(repository: Path, ref: str, profile_path: Path, replacement_path: 
     profile_hashes = freeze_profile(profile_files, run_dir / 'profile')
     (run_dir / 'replacement.py').write_bytes(replacement)
     metadata = {'provenance': provenance, 'profile_hashes': profile_hashes, 'replacement_sha256': sha256(replacement), 'image': image, 'adapter': 'local_docker', 'repair_source': 'supplied_manual_patch', 'paid_calls_enabled': False}
+    if repair_record is not None:
+        if repair_record.get('replacement') != replacement.decode('utf-8'):
+            raise PolicyError('The repair record does not match the replacement being verified')
+        record = json.dumps(repair_record, indent=2, ensure_ascii=False).encode()
+        (run_dir / 'repair.json').write_bytes(record)
+        live = bool(repair_record.get('live_inference'))
+        metadata.update({'repair_source': f"model_{repair_record['strategy']}" if live else f"synthetic_{repair_record['strategy']}", 'repair_record_sha256': sha256(record), 'model': repair_record.get('model'), 'inference_usage': repair_record['usage'], 'paid_calls_enabled': live})
     store.create_run(run_id, metadata)
     store.event(run_id, 'frozen', {'run_directory': str(run_dir), 'profile_hashes': profile_hashes})
     return resume_run(run_id, state_root, adapter=adapter)
@@ -143,13 +151,15 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
         raise PolicyError('Frozen profile or checks changed')
     if sha256((root / 'replacement.py').read_bytes()) != metadata['replacement_sha256']:
         raise PolicyError('Saved replacement changed')
+    if 'repair_record_sha256' in metadata and sha256((root / 'repair.json').read_bytes()) != metadata['repair_record_sha256']:
+        raise PolicyError('Saved repair record changed')
     profile, _ = load_profile(root / 'profile' / 'profile.json')
     report_path = root / 'report.json'
     if 'finished' in saved['phases'] and report_path.is_file():
         return json.loads(report_path.read_text())
     adapter = adapter or LocalDockerAdapter(store.root / 'docker-operations')
     deadline = datetime.fromisoformat(saved['created_at']).timestamp() + MAX_RUN_SECONDS
-    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': 'local_docker', 'repair_source': 'supplied_manual_patch', 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': 0, 'paid_calls': 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs and exact operation AST across declared inputs are checked. This local owned-fixture run does not establish Nebius access or competition eligibility.'}
+    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': 'local_docker', 'repair_source': metadata['repair_source'], 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': metadata.get('inference_usage', {}).get('model_calls', 0), 'paid_calls': metadata.get('inference_usage', {}).get('model_calls', 0) if metadata.get('paid_calls_enabled') else 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs and exact operation AST across declared inputs are checked. This local owned-fixture run does not establish Nebius access or competition eligibility.'}
     write_json(report_path, report)
 
     def finish(status: str) -> dict:
@@ -316,7 +326,7 @@ def export_evidence(run_id: str, state_root: Path) -> Path:
             for stream_name in ['stdout', 'stderr']:
                 (logs / f"{operation['operation_id']}.{stream_name}.txt").write_text(operation['result'][stream_name])
     write_json(root / 'commands.json', {'operations': commands})
-    members = ['report.json', 'ledger.json', 'commands.json', 'replacement.py', 'original.py', 'repaired.py', 'repair.patch']
+    members = ['report.json', 'ledger.json', 'commands.json', 'replacement.py', 'repair.json', 'original.py', 'repaired.py', 'repair.patch']
     members += [path.relative_to(root).as_posix() for directory in ['profile', 'original', 'logs'] for path in sorted((root / directory).rglob('*')) if path.is_file()]
     members = [name for name in members if (root / name).is_file()]
     if sum((root / name).stat().st_size for name in members) > 20 * 1024 * 1024:

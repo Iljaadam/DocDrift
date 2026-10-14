@@ -61,6 +61,15 @@ If this workspace restricts uv's usual cache locations, set `UV_CACHE_DIR` and
 `UV_PYTHON_INSTALL_DIR` to writable task-specific directories under `/tmp`.
 Docker access may also require the workspace's execution approval mechanism.
 
+## Model repair and evaluation
+
+`docdrift repair` and `docdrift evaluate` run the Nemotron one-shot baseline,
+the bounded tool-using agent, and an execution-only baseline over the frozen
+inventory, verifying every proposal through the same engine. They run offline
+with synthetic `--replay` responses; `--live --model <id>` sends real Token
+Factory requests and is reserved until credits are confirmed. See
+[docs/MODEL_REPAIR.md](docs/MODEL_REPAIR.md).
+
 ## Work while provider access is pending
 
 Inspect a public GitHub snapshot without authentication or code execution:
