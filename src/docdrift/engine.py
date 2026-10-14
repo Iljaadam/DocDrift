@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .adapters import ExecutionRequest, LocalDockerAdapter
+from .challenge import validate_protected_changes
 from .markdown import extract_examples
 from .policy import PolicyError, apply_replacement
 from .profile import ProfileError, check_result, freeze_profile, load_profile
@@ -268,8 +269,7 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
         changed = apply_replacement(path, original_bytes, target['id'], target['source_hash'], (root / 'replacement.py').read_text())
         (patched / path).write_bytes(changed)
         hashes = file_hashes(patched)
-        if set(hashes) != set(metadata['provenance']['files']) or any(hashes[name] != digest for name, digest in metadata['provenance']['files'].items() if name != path):
-            raise PolicyError('Files outside the selected Markdown changed')
+        validate_protected_changes(metadata['provenance']['files'], hashes, target_path=path, approved_target_hash=sha256(changed))
         repaired = next(item for item in inventory(patched, profile['documentation']) if item['id'] == target['id'])
         (root / 'original.py').write_text(target['code'])
         (root / 'repaired.py').write_text(repaired['code'])

@@ -13,6 +13,14 @@ from pathlib import Path
 from .engine import export_evidence, inspect_github, inspect_repository, resume_run, start_run
 
 
+def default_fixture_path() -> Path:
+    package_root = Path(__file__).resolve().parent
+    bundled = package_root / 'data' / 'renamed_method'
+    if (bundled / 'manifest.json').is_file():
+        return bundled
+    return package_root.parents[1] / 'fixtures' / 'renamed_method'
+
+
 def demo_repository(source: Path, destination: Path) -> None:
     shutil.copytree(source, destination)
     env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull, GIT_AUTHOR_NAME='DocDrift fixture', GIT_AUTHOR_EMAIL='fixture@docdrift.invalid', GIT_COMMITTER_NAME='DocDrift fixture', GIT_COMMITTER_EMAIL='fixture@docdrift.invalid', GIT_AUTHOR_DATE='2026-10-12T00:00:00Z', GIT_COMMITTER_DATE='2026-10-12T00:00:00Z')
@@ -33,6 +41,9 @@ def main() -> None:
     github.add_argument('--ref', default='HEAD')
     github.add_argument('--doc', action='append', default=None)
     commands.add_parser('sandbox-contract-demo', help='Exercise synthetic Sandbox responses offline; no credentials or provider calls')
+    challenge = commands.add_parser('challenge', help='Check deliberately constructed bad patches with static policy; no execution')
+    challenge.add_argument('--fixture', type=Path, default=default_fixture_path())
+    challenge.add_argument('--output', type=Path, default=None)
     run = commands.add_parser('run', help='Run a curator-profiled manual repair in fresh local Docker containers')
     run.add_argument('repository', type=Path)
     run.add_argument('--ref', default='HEAD')
@@ -41,7 +52,7 @@ def main() -> None:
     run.add_argument('--image', default='python:3.12-slim')
     run.add_argument('--trusted-local', action='store_true', required=True, help='Acknowledge this is a curated, trusted local development input')
     demo = commands.add_parser('demo', help='Run the owned renamed-method fixture with its supplied repair')
-    demo.add_argument('--fixture', type=Path, default=Path(__file__).resolve().parents[2] / 'fixtures' / 'renamed_method')
+    demo.add_argument('--fixture', type=Path, default=default_fixture_path())
     demo.add_argument('--image', default='python:3.12-slim')
     demo.add_argument('--inspect-only', action='store_true')
     resume = commands.add_parser('resume', help='Reconcile saved local operation IDs and continue frozen phases')
@@ -58,6 +69,18 @@ def main() -> None:
             from .contract_demo import run_contract_demo
             result = run_contract_demo(args.state_dir)
             result = {key: result[key] for key in ['run_id', 'mode', 'status', 'live_requests', 'code_executions', 'paid_calls', 'behavior_verified', 'checks', 'report_path']}
+        elif args.command == 'challenge':
+            from .challenge import run_challenge
+            output = args.output or args.state_dir / 'challenges' / 'static-policy.json'
+            report = run_challenge(args.fixture, output)
+            result = {'kind': report['kind'], 'all_expectations_met': report['all_expectations_met'],
+                'rejected_proposals': sum(case['verdict'] == 'rejected' for case in report['cases']),
+                'static_controls_accepted': sum(case['verdict'] == 'accepted_static' for case in report['cases']),
+                'execution_performed': False, 'behavior_verified': False, 'milestone_3_complete': False,
+                'report_path': str(output.resolve())}
+            if not report['all_expectations_met']:
+                print(json.dumps(result, indent=2))
+                raise SystemExit(1)
         elif args.command == 'run':
             result = start_run(args.repository, args.ref, args.profile, args.replacement, args.state_dir, args.image)
         elif args.command == 'demo':
