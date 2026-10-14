@@ -1,6 +1,61 @@
 # DocDrift implementation status
 
-Updated October 14, 2026. Continue the preserved architecture; the clone was
+Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
+
+## Checklist
+
+Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
+
+**Access (milestone 0)**
+- [x] Owned renamed-method fixture and independent contract frozen
+- [ ] Builder approval / free credits granted, $0 personal-charge protection confirmed by user
+- [ ] Fallback: request the separate free $25 Token Factory credits (inference only; unblocks milestone 2 without Sandbox)
+- [ ] Live Nemotron tool-call response recorded
+- [ ] Sandbox permission; offline execution, image reuse, result parsing, cancellation, artifact download checked live
+
+**Manual vertical slice (milestone 1)**
+- [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
+- [x] Pinned public GitHub snapshots; offline Nebius REST/receipt contracts
+- [ ] Same slice on Nebius Sandbox: remote prep, original reproduction, pristine re-verification, operation reconciliation
+
+**Model repair (milestone 2)**
+- [ ] Nemotron tool loop produces a minimal docs-only patch that passes independent checks
+- [ ] Safe stop on malformed proposals and budget limits
+
+**Verification challenge (milestone 3)**
+- [x] 16 constructed bad patches rejected by static gates
+- [ ] Same challenge run through the live verifier
+
+**Evaluation and review (milestone 4)**
+- [x] 14-case inventory frozen; two held-out broken cases reserved
+- [ ] Execution-only and one-shot baselines (harness can be built offline now)
+- [ ] Run evaluation; honest counts and costs
+- [ ] HTML review report (only after a real model repair passes)
+- [x] CLI wheel with fixtures, offline install check
+
+**Submission (milestone 5)**
+- [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
+- [ ] Video under 3 minutes (script in `ARCHITECTURE_PLAN.md` → Competition and demonstration)
+- [ ] Nebius/NVIDIA feedback log (start at first live call)
+- [ ] Devpost write-up and submission
+
+**Decision dates**
+- Oct 18: still no Builder approval → pursue the $25 Token Factory fallback for inference.
+- Oct 22: still no Sandbox access → user decides: Docker-labelled Coding submission or track change.
+
+Offline work allowed while blocked: baseline harnesses, feedback-log
+template, video/write-up drafts. Avoid more local hardening.
+
+## Session log
+
+- 2026-10-14: Milestone 1 local slice, snapshots, offline Nebius contracts,
+  fixtures, challenge, wheel packaging committed; 423 tests pass. Added
+  `AGENTS.md`/`CLAUDE.md` and this checklist. Next: offline baseline harness;
+  wait for Builder approval.
+
+## Evidence detail (as of October 14)
+
+Continue the preserved architecture; the clone was
 initially empty, with no commits and no applicable `AGENTS.md`.
 
 The user confirmed a **$0 personal spending limit** on October 14: use only
@@ -11,7 +66,7 @@ confirmed. Preserve NewsBias's resources and any shared credit pool.
 The user reports that the Builder Program application is under review. No grant
 amount, credited balance, expiration, or Sandbox permission has been confirmed.
 
-## First unfinished milestone: 0, access and contract
+### First unfinished milestone: 0, access and contract
 
 The owned renamed-method fixture and independent contract are now frozen in
 `fixtures/renamed_method/`. The target package, original failure, healthy neighbor,
@@ -26,7 +81,7 @@ is confirmed credit coverage and protection against personal charges, followed b
 Nemotron tool response and Sandbox contract/offline/artifact/recovery checks.
 GitHub's existing connection was left intact; no login or plugin setup was needed.
 
-## Milestone 1: local plumbing complete; remote acceptance outstanding
+### Milestone 1: local plumbing complete; remote acceptance outstanding
 
 Implemented and exercised:
 
@@ -114,7 +169,7 @@ approved dependency acquisition, Nebius original reproduction,
 pristine remote verification, and remote operation reconciliation are outstanding.
 The local source-tree fixture needs no installation or dependency downloads.
 
-## Next authorized implementation work
+### Next authorized implementation work
 
 Keep work local while access and budget remain unresolved. Public GitHub reads
 and the offline REST/receipt contracts are now implemented. Once the grant and
