@@ -1,4 +1,4 @@
-"""Foreground CLI. Provider execution remains disabled; local inspection runs no repository code."""
+"""Foreground CLI. Provider execution remains disabled; public inspection is read-only."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .engine import export_evidence, inspect_repository, resume_run, start_run
+from .engine import export_evidence, inspect_github, inspect_repository, resume_run, start_run
 
 
 def demo_repository(source: Path, destination: Path) -> None:
@@ -28,6 +28,10 @@ def main() -> None:
     inspect.add_argument('repository', type=Path)
     inspect.add_argument('--ref', default='HEAD')
     inspect.add_argument('--doc', action='append', default=None)
+    github = commands.add_parser('inspect-github', help='Inventory a pinned public GitHub snapshot without execution')
+    github.add_argument('repository', help='owner/name or a canonical HTTPS GitHub repository URL')
+    github.add_argument('--ref', default='HEAD')
+    github.add_argument('--doc', action='append', default=None)
     run = commands.add_parser('run', help='Run a curator-profiled manual repair in fresh local Docker containers')
     run.add_argument('repository', type=Path)
     run.add_argument('--ref', default='HEAD')
@@ -47,6 +51,8 @@ def main() -> None:
     try:
         if args.command == 'inspect':
             result = inspect_repository(args.repository, args.ref, args.doc or ['README.md'])
+        elif args.command == 'inspect-github':
+            result = inspect_github(args.repository, args.ref, args.doc or ['README.md'])
         elif args.command == 'run':
             result = start_run(args.repository, args.ref, args.profile, args.replacement, args.state_dir, args.image)
         elif args.command == 'demo':

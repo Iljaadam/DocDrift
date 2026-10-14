@@ -7,7 +7,7 @@ name = "docdrift"
 version = "0.1.0"
 description = "Bounded documentation repairs with independent execution evidence"
 requires-python = ">=3.12"
-dependencies = ["markdown-it-py>=3.0,<5"]
+dependencies = ["markdown-it-py>=3.0,<5", "httpx>=0.28,<1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]

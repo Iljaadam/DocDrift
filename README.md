@@ -53,6 +53,23 @@ If this workspace restricts uv's usual cache locations, set `UV_CACHE_DIR` and
 `UV_PYTHON_INSTALL_DIR` to writable task-specific directories under `/tmp`.
 Docker access may also require the workspace's execution approval mechanism.
 
+## Work while provider access is pending
+
+Inspect a public GitHub snapshot without authentication or code execution:
+
+```sh
+uv run --no-sync docdrift inspect-github un33k/python-slugify \
+  --ref fee5aa338d3bd7a9e36c269e33b496a7848edc44 --doc README.md
+```
+
+The resolver freezes a full commit SHA once, validates the recursive tree and
+every downloaded Git blob, then inventories the selected Markdown. It rejects
+unsafe archives, submodules, links, LFS requirements, incomplete trees, and
+oversized inputs. Inspection reports `execution: not_run` and
+`behavior_verified: false`. The chosen upstream commit is an inspected candidate;
+this command establishes no documentation failure or verified behavior.
+See [public snapshot boundaries](docs/GITHUB_SNAPSHOTS.md).
+
 ## Curated local repository
 
 Only committed snapshot files are inspected; working-tree changes are excluded.
@@ -93,6 +110,6 @@ timeouts, mismatched images, and truncated output prevent full verification.
 
 Local containers use fresh snapshots, an immutable image, disabled networking,
 read-only mounts, a nonroot user, resource limits, and bounded logs. The adapter
-is for trusted development inputs. Arbitrary public execution, remote repository
-downloads, remote dependency installation, actual model repairs, and a review
-UI remain outside this slice.
+is for trusted development inputs. Public repository downloads support inspection
+only. Arbitrary public execution, remote dependency installation, actual model
+repairs, and a review UI remain outside this slice.

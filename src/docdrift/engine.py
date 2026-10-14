@@ -73,6 +73,22 @@ def inspect_repository(repository: Path, ref: str, documents: list[str]) -> dict
     return {'provenance': provenance, 'examples': examples, 'execution': 'not_run', 'behavior_verified': False}
 
 
+def inspect_github(repository: str, ref: str, documents: list[str], *, client=None) -> dict:
+    """Inspect a pinned public snapshot; never execute downloaded code."""
+    from .github import resolve_public_github
+    from .snapshot import safe_path
+    if not 1 <= len(documents) <= 5 or len(set(documents)) != len(documents):
+        raise ProfileError('Select one to five unique Markdown files')
+    for document in documents:
+        if not safe_path(document).endswith('.md'):
+            raise ProfileError('Select Markdown paths only')
+    with tempfile.TemporaryDirectory(prefix='docdrift-public-inspect-') as temporary:
+        snapshot = Path(temporary) / 'snapshot'
+        provenance = resolve_public_github(repository, ref, snapshot, client=client)
+        examples = inventory(snapshot, documents)
+    return {'provenance': provenance, 'examples': examples, 'execution': 'not_run', 'behavior_verified': False}
+
+
 def start_run(repository: Path, ref: str, profile_path: Path, replacement_path: Path, state_root: Path, image: str, adapter=None) -> dict:
     repository = repository.resolve(strict=True)
     profile_path = profile_path.resolve(strict=True)
