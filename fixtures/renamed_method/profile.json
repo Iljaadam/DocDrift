@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "name": "owned-renamed-method",
+  "python": "3.12",
+  "documentation": ["README.md"],
+  "setup": {
+    "kind": "source_tree",
+    "dependencies": []
+  },
+  "target": {"path": "README.md", "ordinal": 0},
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {"receiver": "WordCounter", "method": "count"},
+      "operation_ast_sha256": "f4d5f978c5ed53dd53b263e0644296f0a1ba95457a82cce50e96a88a8577f2ad",
+      "cases": [
+        {"id": "empty", "env": {"DOCDRIFT_INPUT": "[]"}, "expected_json": {}},
+        {"id": "repeated", "env": {"DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"}, "expected_json": {"red": 2, "blue": 1}},
+        {"id": "exact-strings", "env": {"DOCDRIFT_INPUT": "[\"\", \"é\", \"é\", \"E\", \"two words\"]"}, "expected_json": {"": 1, "é": 2, "E": 1, "two words": 1}}
+      ]
+    },
+    {
+      "path": "README.md",
+      "ordinal": 1,
+      "role": "healthy",
+      "required_call": {"receiver": "WordCounter", "method": "count"},
+      "operation_ast_sha256": "ed9da72cfc109a738c094d9eda61328a56b4d002a1d83ffa777d74317f39b09d",
+      "cases": [
+        {"id": "empty", "env": {"DOCDRIFT_INPUT": "[]"}, "expected_json": {"distinct": 0, "total": 0}},
+        {"id": "repeated", "env": {"DOCDRIFT_INPUT": "[\"red\", \"blue\", \"red\"]"}, "expected_json": {"distinct": 2, "total": 3}},
+        {"id": "exact-strings", "env": {"DOCDRIFT_INPUT": "[\"\", \"é\", \"é\", \"E\", \"two words\"]"}, "expected_json": {"distinct": 4, "total": 5}}
+      ]
+    }
+  ],
+  "checks": "checks.py",
+  "known_repair": "repair.py"
+}
