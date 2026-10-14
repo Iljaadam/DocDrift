@@ -9,7 +9,7 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
 - [ ] Builder approval / free credits granted, $0 personal-charge protection confirmed by user
-- [ ] Fallback: request the separate free $25 Token Factory credits (inference only; unblocks milestone 2 without Sandbox)
+- [x] ~~Fallback: separate $25 Token Factory credits~~ not viable (Oct 14): needs a form plus a wait, and the promo code only applies after $25 of own spend, which breaks the $0 cap. Builder is the only access path.
 - [ ] Live Nemotron tool-call response recorded
 - [ ] Sandbox permission; offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
@@ -44,8 +44,10 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 - [ ] Devpost write-up (draft: `docs/SUBMISSION_DRAFT.md`, numbers TBD) and submission
 
 **Decision dates**
-- Oct 18: still no Builder approval → pursue the $25 Token Factory fallback for inference.
-- Oct 22: still no Sandbox access → user decides: Docker-labelled Coding submission or track change.
+- Oct 22: still no Builder approval → user decides: honest Docker-only submission
+  (Coding eligibility doubtful, no Nemotron), or stop. No paid fallback exists under the $0 cap.
+- Any approval after ~Oct 26 leaves too little time for the full plan: cut to one live repair,
+  the challenge, evidence export, and the video.
 
 Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 
@@ -63,6 +65,9 @@ Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 - 2026-10-14 (later): Replaced the exact known-repair AST requirement with a
   data-flow check so equivalent model rewrites verify; challenge still rejects
   16/16; real Docker demo still `behavior_verified`. 452 tests pass.
+- 2026-10-14 (later): $25 Token Factory fallback ruled out (needs $25 own spend first).
+  Builder approval is the single gate. Next offline work: wire Sandbox adapter into
+  repair/evaluate; text-protocol fallback if `tools` is unsupported.
 
 ## Evidence detail (as of October 14)
 
