@@ -74,6 +74,9 @@ Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
   tool calling, and ran the first live agent repair: renamed_method `behavior_verified`
   in 5 calls / ~7k tokens. Text fallback no longer needed. Next: live development-split
   evaluation (one_shot vs agent), then Sandbox wiring.
+- 2026-10-14 (later): Live dev evaluation: every strategy detected 2/2, one_shot and agent
+  verified 2/2, 0 false reports, 4/4 abstentions; ~14k tokens. Found that fixture READMEs
+  state the fix, so one_shot vs agent is not separated (F4). Next: user decision on fixture prose.
 
 ## Evidence detail (as of October 14)
 
@@ -208,6 +211,3 @@ public release, hosting, judge-access route, or submission is claimed. The curre
 static defenses overlap milestone 3 but do not satisfy the complete challenge
 or substitute for an actual model repair. NewsBias remains the primary project
 and was not modified.
-- 2026-10-14 (later): Live dev evaluation: every strategy detected 2/2, one_shot and agent
-  verified 2/2, 0 false reports, 4/4 abstentions; ~14k tokens. Found that fixture READMEs
-  state the fix, so one_shot vs agent is not separated (F4). Next: user decision on fixture prose.
