@@ -34,7 +34,8 @@ Still blocked: Nebius Sandboxes access (Builder Program pending); all execution 
 - [x] 14-case inventory frozen; two held-out broken cases reserved
 - [x] Execution-only and one-shot baselines + `docdrift evaluate` harness
 - [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
-- [ ] Run scored evaluation with live model; honest counts and costs
+- [x] Live development-split run: one_shot 2/2, agent 2/2 verified (F4)
+- [ ] Fix fixture prose leak (READMEs state the fix; see F4), re-freeze, then scored held-out run
 - [ ] HTML review report (only after a real model repair passes)
 - [x] CLI wheel with fixtures, offline install check
 
@@ -207,3 +208,6 @@ public release, hosting, judge-access route, or submission is claimed. The curre
 static defenses overlap milestone 3 but do not satisfy the complete challenge
 or substitute for an actual model repair. NewsBias remains the primary project
 and was not modified.
+- 2026-10-14 (later): Live dev evaluation: every strategy detected 2/2, one_shot and agent
+  verified 2/2, 0 false reports, 4/4 abstentions; ~14k tokens. Found that fixture READMEs
+  state the fix, so one_shot vs agent is not separated (F4). Next: user decision on fixture prose.

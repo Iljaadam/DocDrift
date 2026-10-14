@@ -65,3 +65,18 @@ entries is local Docker, not Nebius Sandboxes.
 - Effect on DocDrift: milestone 2 shown on one development case.
 - Suggestion (for us): accept a final unfenced answer that parses as Python as a candidate,
   or say so more explicitly in the prompt.
+
+### F4 — Live development-split evaluation: all strategies verify (2026-10-14)
+
+- Product / API / model: `docdrift evaluate --strategies execution_only,one_shot,agent --live --model nvidia/nemotron-3-super-120b-a12b` (development split; held-out excluded)
+- Actual: 43 s, 54 local Docker operations. Both development broken cases (renamed_method,
+  changed_keyword) `behavior_verified` under one_shot (2 calls, 1,603 tokens) and agent
+  (9 calls, 12,534 tokens, 2 sandbox probes). Diffs were the minimal one-line fixes and matched
+  the known-repair AST. 0/2 false drift reports, 4/4 correct abstentions for every strategy.
+  Report: `.docdrift/evaluations/dev-live-1.json` (local, gitignored).
+- Effect on DocDrift: model plumbing works end to end. But the evaluation does not separate
+  one_shot from agent, because every owned fixture README states the fix in prose (e.g. "The
+  installed package exposes `count` instead"), and Python 3.12 tracebacks add "Did you mean"
+  hints for renamed names. One-shot never needs the source.
+- Suggestion (for us): neutral fixture prose and at least one case whose fix requires reading
+  the source, before the scored held-out run.
