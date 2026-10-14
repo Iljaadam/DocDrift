@@ -75,7 +75,7 @@ def load_profile(path: Path) -> tuple[dict, dict[str, bytes]]:
             raise ProfileError('Require a named receiver class and method for operation coverage')
         digest = example.get('operation_ast_sha256', '')
         if len(digest) != 64 or any(char not in '0123456789abcdef' for char in digest):
-            raise ProfileError('Require a frozen AST digest covering the complete operation and data flow')
+            raise ProfileError('Require the frozen AST digest of the known example code (recorded for reference)')
     target = data.get('target', {})
     if type(target.get('ordinal')) is not int:
         raise ProfileError('Target ordinal must be an integer')
@@ -120,7 +120,70 @@ def operation_present(code: str, call: dict[str, str]) -> bool:
     return False
 
 
+def operation_reaches_output(code: str, call: dict[str, str]) -> bool:
+    """Conservative data flow: the required call's return value must reach a ``print``.
+
+    Top-level assignments are strong updates, so reassigning a name from an
+    expression that does not carry the result removes it. Assignments nested
+    in compound statements can only add flow. Prints inside function or class
+    definitions do not count. In-place mutation of the result is not tracked;
+    the frozen output checks across varied inputs remain the behavior oracle.
+    """
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return False
+    receiver, method = call['receiver'], call['method']
+    bound = {node.targets[0].id for node in ast.walk(tree) if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == receiver}
+    carried: set[str] = set()
+
+    def required(node: ast.AST) -> bool:
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute) or node.func.attr != method:
+            return False
+        value = node.func.value
+        return isinstance(value, ast.Name) and value.id in bound or isinstance(value, ast.Call) and isinstance(value.func, ast.Name) and value.func.id == receiver
+
+    def carries(node: ast.AST) -> bool:
+        return any(required(item) or isinstance(item, ast.Name) and isinstance(item.ctx, ast.Load) and item.id in carried for item in ast.walk(node))
+
+    def printed(statement: ast.stmt) -> bool:
+        for node in ast.walk(statement):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'print':
+                if any(carries(argument) for argument in node.args + [keyword.value for keyword in node.keywords]):
+                    return True
+        return False
+
+    def visit(statements: list[ast.stmt], strong: bool) -> bool:
+        for statement in statements:
+            if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            if isinstance(statement, (ast.Assign, ast.AnnAssign, ast.AugAssign)) and statement.value is not None:
+                targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+                names = {node.id for target in targets for node in ast.walk(target) if isinstance(node, ast.Name)}
+                if carries(statement.value) or isinstance(statement, ast.AugAssign) and carries(statement.target):
+                    carried.update(names)
+                elif strong:
+                    carried.difference_update(names)
+            if isinstance(statement, ast.Expr) and printed(statement):
+                return True
+            for field in ('body', 'orelse', 'finalbody'):
+                nested = getattr(statement, field, None)
+                if isinstance(nested, list) and nested and isinstance(nested[0], ast.stmt) and visit(nested, False):
+                    return True
+            for handler in getattr(statement, 'handlers', []):
+                if visit(handler.body, False):
+                    return True
+        return False
+
+    return visit(tree.body, True)
+
+
 def check_result(result: dict, case: dict, code: str, call: dict, operation_ast_sha256: str) -> dict:
+    """Behavior = exact observed JSON + required API call + its result reaching the output.
+
+    ``operation_ast_sha256`` is the curator's known-repair AST. A match is
+    recorded for information only, so equivalent rewrites can still verify.
+    """
     execution = result.get('state') == 'completed' and type(result.get('exit_code')) is int and result['exit_code'] == 0 and not result.get('timed_out')
     errors = []
     if not execution:
@@ -137,10 +200,10 @@ def check_result(result: dict, case: dict, code: str, call: dict, operation_ast_
     observable_errors = list(errors)
     if not operation_present(code, call):
         errors.append('Required API operation is absent from the example AST')
+    elif not operation_reaches_output(code, call):
+        errors.append('Required API result does not reach the printed output (data flow)')
     try:
         actual_ast = hashlib.sha256(ast.dump(ast.parse(code), include_attributes=False).encode()).hexdigest()
     except SyntaxError:
         actual_ast = ''
-    if actual_ast != operation_ast_sha256:
-        errors.append('Operation or data flow differs from the frozen AST contract')
-    return {'execution_passed': execution, 'observable_passed': execution and not observable_errors, 'observable_errors': observable_errors, 'behavior_passed': execution and not errors, 'coverage': ['exact_json_output', 'required_api_call_ast', 'exact_operation_ast'], 'errors': errors}
+    return {'execution_passed': execution, 'observable_passed': execution and not observable_errors, 'observable_errors': observable_errors, 'behavior_passed': execution and not errors, 'coverage': ['exact_json_output', 'required_api_call_ast', 'api_result_reaches_output'], 'known_repair_ast_match': actual_ast == operation_ast_sha256, 'errors': errors}

@@ -77,10 +77,13 @@ reports, 4/4 correct abstentions. Curator plumbing check, not a scored result.
 A synthetic agent replay of the renamed-method known repair ran through real
 Docker: 1 baseline + 1 agent snippet + 12 engine operations, `behavior_verified`.
 
-## Known risk: exact AST contract
+## Verification contract for model repairs
 
-`profile.check_result` requires the repaired fence's AST hash to equal the
-curator's known repair. A correct model fix that differs in any name, order,
-or expression (e.g. an inlined variable) fails `behavior_passed` and lands as
-`execution_passed`. Decide before the scored run whether to keep this strict
-check or relax it to observable outputs + required call + static policy.
+Relaxed on October 14 from an exact known-repair AST match. A repair is
+`behavior_verified` when, for every frozen input, the output JSON matches
+exactly, the required API call is present, and its return value reaches the
+`print` (`profile.operation_reaches_output`). Top-level reassignment from a
+value that does not carry the result removes the flow, so the dummy-call trick
+still fails. Known gap: in-place mutation of the returned object is not
+tracked; the varied-input output checks remain the behavior oracle.
+`known_repair_ast_match` is still recorded per result for information.

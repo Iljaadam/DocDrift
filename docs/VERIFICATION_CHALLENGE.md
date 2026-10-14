@@ -25,9 +25,12 @@ The constructed cases cover:
   using an explicitly synthetic byte sentinel.
 
 The dummy-call case illustrates the distinction between coarse operation
-presence and the complete frozen AST. The ordinary patch policy accepts its
-retained calls, and the named `WordCounter.count` operation remains present.
-The full AST contract rejects the reassigned result before any execution occurs.
+presence and data flow. The ordinary patch policy accepts its retained calls,
+and the named `WordCounter.count` operation remains present. The
+`operation_data_flow` gate rejects it because the printed result is reassigned
+from a value that no longer carries the call's result. (Before October 14 this
+gate required an exact match with the known repair's AST; that rejected
+equivalent model rewrites and was relaxed.)
 
 The reusable `validate_protected_changes` function compares full relative paths,
 the exact file inventory, all protected hashes, and the selected Markdown hash.

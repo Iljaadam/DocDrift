@@ -149,10 +149,12 @@ refused.
 ## Verification boundary
 
 Execution status and behavior status are distinct. Exit zero alone cannot verify
-behavior. The owned fixture checks exact JSON output across varied inputs and a
-frozen AST covering the API operation and data flow. Those conservative checks
-cover this declared fixture; they do not establish arbitrary semantic equivalence.
-An AST policy difference alone does not constitute an original behavior failure.
+behavior. Behavior verification requires exact JSON output across varied
+inputs, the required API call, and that call's result reaching the printed
+output (a conservative data-flow check). Equivalent rewrites of the known
+repair verify; whether the code matches the curator's known-repair AST is
+recorded for information only. These checks cover the declared fixture; they
+do not establish arbitrary semantic equivalence.
 
 Only the selected Markdown code span can change. Source, tests, manifests,
 acceptance profiles, and healthy snippets retain their hashes. Deletion, relabeling,

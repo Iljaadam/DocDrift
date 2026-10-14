@@ -23,7 +23,7 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 - [x] Safe stop on malformed proposals and budget limits (tested with synthetic responses)
 - [ ] First live call: confirm Nemotron model ID and `tools` support; log in `docs/FEEDBACK_LOG.md`
 - [ ] Live Nemotron repair passes independent checks
-- [ ] Decide: keep exact-AST check or relax it (see `docs/MODEL_REPAIR.md` → Known risk)
+- [x] Exact-AST check relaxed to outputs + required call + data flow (`docs/MODEL_REPAIR.md`)
 
 **Verification challenge (milestone 3)**
 - [x] 16 constructed bad patches rejected by static gates
@@ -47,8 +47,7 @@ Main blocker: Nebius Builder Program approval (applied; pending as of Oct 14).
 - Oct 18: still no Builder approval → pursue the $25 Token Factory fallback for inference.
 - Oct 22: still no Sandbox access → user decides: Docker-labelled Coding submission or track change.
 
-Offline prep is done. While blocked: only fix bugs or decide the AST-check
-question; avoid more local hardening.
+Offline prep is done. While blocked: only fix bugs; avoid more local hardening.
 
 ## Session log
 
@@ -61,6 +60,9 @@ question; avoid more local hardening.
   draft. 444 tests pass. Local Docker: execution-only baseline 3/4 drift
   detected, 0/3 false reports, 4/4 abstentions; synthetic agent replay verified
   end-to-end. No live inference. Next: first live call once credits confirmed.
+- 2026-10-14 (later): Replaced the exact known-repair AST requirement with a
+  data-flow check so equivalent model rewrites verify; challenge still rejects
+  16/16; real Docker demo still `behavior_verified`. 452 tests pass.
 
 ## Evidence detail (as of October 14)
 

@@ -44,9 +44,9 @@ def test_dummy_api_call_cannot_hide_replaced_result_flow():
     report = run_challenge(FIXTURE)
     cases = {case["id"]: case for case in report["cases"]}
     dummy = cases["dummy_call_then_hardcode"]
-    assert dummy["gate"] == "frozen_operation_ast"
+    assert dummy["gate"] == "operation_data_flow"
     # The broad static policy accepts this shape and the named API call exists.
-    # The full frozen AST rejects its discarded-result substitution.
+    # The data-flow gate rejects it: the printed result no longer carries the call.
     assert dummy["evidence"]["approved_markdown_sha256"] is not None
     assert dummy["evidence"]["required_operation_present"]
     assert dummy["evidence"]["operation_ast_sha256"] != report["target"]["operation_ast_sha256"]

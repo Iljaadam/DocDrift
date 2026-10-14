@@ -11,7 +11,7 @@ from pathlib import Path
 
 from .markdown import Example, extract_examples
 from .policy import PolicyError, apply_replacement
-from .profile import ProfileError, load_profile, operation_present, strict_json
+from .profile import ProfileError, load_profile, operation_present, operation_reaches_output, strict_json
 from .snapshot import SnapshotError, safe_path, sha256
 
 
@@ -189,15 +189,15 @@ def run_challenge(fixture: Path, output: Path | None = None) -> dict:
             proposed.update(proposal.get("changes", {}))
             gate = "protected_inputs"
             validate_protected_changes(frozen_hashes, {path: sha256(data) for path, data in proposed.items()}, target_path=target_path, approved_target_hash=sha256(approved))
-            gate = "frozen_operation_ast"
+            gate = "operation_data_flow"
             repaired = next(e for e in extract_examples(target["path"], proposed[target_path]) if e.id == selected.id)
             required_operation = operation_present(repaired.code, target_spec["required_call"])
             actual_ast = _operation_hash(repaired.code)
             if not required_operation:
                 raise PolicyError("Required API operation is absent from the example AST")
-            if actual_ast != target_spec["operation_ast_sha256"]:
-                raise PolicyError("Operation or data flow differs from the frozen AST contract")
-            verdict, reason, gate = "accepted_static", "Patch boundary and frozen operation AST match", "static_contract"
+            if not operation_reaches_output(repaired.code, target_spec["required_call"]):
+                raise PolicyError("Required API result does not reach the printed output (data flow)")
+            verdict, reason, gate = "accepted_static", "Patch boundary, required operation, and result data flow pass", "static_contract"
         except PolicyError as exc:
             reason = str(exc)
             if isinstance(exc, ProtectedChangesError):

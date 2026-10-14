@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from docdrift.profile import ProfileError, check_result, freeze_profile, load_profile, operation_present
+from docdrift.profile import operation_reaches_output, ProfileError, check_result, freeze_profile, load_profile, operation_present
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "renamed_method"
@@ -186,3 +186,42 @@ def test_formatting_changes_preserve_ast_hash(contract):
     actual = hashlib.sha256(ast.dump(ast.parse(formatted), include_attributes=False).encode()).hexdigest()
     assert actual == digest
     assert check_result(_observed(), case, formatted, call, digest)["behavior_passed"]
+
+
+EQUIVALENT_REWRITES = {
+    "bound_receiver": ("result = WordCounter().count(words)", "counter = WordCounter()\nresult = counter.count(words)"),
+    "inlined": ("result = WordCounter().count(words)\nprint(json.dumps(result, sort_keys=True))", "print(json.dumps(WordCounter().count(words), sort_keys=True))"),
+    "renamed_variable": ("result = WordCounter().count(words)\nprint(json.dumps(result, sort_keys=True))", "counts = WordCounter().count(words)\nprint(json.dumps(counts, sort_keys=True))"),
+    "derived_value": ("result = WordCounter().count(words)", "counts = WordCounter().count(words)\nresult = dict(counts)"),
+}
+
+
+@pytest.mark.parametrize("name", sorted(EQUIVALENT_REWRITES))
+def test_equivalent_rewrites_verify_without_matching_the_known_repair_ast(contract, name):
+    code, case, call, digest = contract
+    old, new = EQUIVALENT_REWRITES[name]
+    assert old in code
+    checked = check_result(_observed(), case, code.replace(old, new), call, digest)
+    assert checked["behavior_passed"], checked["errors"]
+    assert checked["known_repair_ast_match"] is False
+
+
+@pytest.mark.parametrize("replacement", [
+    "WordCounter().count(words)\nresult = dict(collections.Counter(words))",
+    "result = WordCounter().count(words)\nresult = {}",
+    "def unused():\n    return WordCounter().count(words)\nresult = {}",
+])
+def test_result_that_bypasses_the_required_call_never_verifies(contract, replacement):
+    code, case, call, digest = contract
+    bypass = code.replace("result = WordCounter().count(words)", replacement)
+    checked = check_result(_observed(), case, bypass, call, digest)
+    assert not checked["behavior_passed"]
+    assert any("data flow" in error for error in checked["errors"])
+
+
+def test_branch_assignments_only_add_flow():
+    call = {"receiver": "WordCounter", "method": "count"}
+    code = "result = WordCounter().count(w)\nif w:\n    result = {}\nprint(result)\n"
+    assert operation_reaches_output(code, call)
+    assert not operation_reaches_output("def show():\n    print(WordCounter().count(w))\n", call)
+    assert not operation_reaches_output("print(WordCounter().count(\n", call)
