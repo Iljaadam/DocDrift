@@ -135,6 +135,8 @@ Who decided what, and when. Don't reverse one without the user.
   execution receipts before requests; resume accepted IDs, never retry uncertainty.
   Integrity verification checks unsigned bytes and makes no authenticity or
   execution-attestation claim.
+- D16 (user, Oct 15, "push it"): Push the accumulated local work to origin/main.
+  This is approval for the current push, not a standing automatic-push rule.
 
 ## Session log
 
@@ -205,6 +207,10 @@ Who decided what, and when. Don't reverse one without the user.
   demo still behavior_verified (12 operations). Both frozen inventories unchanged.
   No live Sandbox calls or inference used. Next: provider access approval, then
   approved live capability checks/activation; D8 and free live judging remain open.
+- 2026-10-15 (push handoff): User authorized pushing the five accumulated local
+  commits plus this handoff update to origin/main. Implementation validation is
+  unchanged: 644 tests, installed-wheel checks, and the real Docker demo passed.
+  Next: await Sandbox access; no live provider work authorized by this push.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
