@@ -19,6 +19,7 @@ from .challenge import validate_protected_changes
 from .markdown import extract_examples
 from .policy import PolicyError, apply_replacement
 from .profile import ProfileError, check_result, freeze_profile, load_profile
+from .review import render_review
 from .snapshot import file_hashes, resolve_local, sha256
 from .store import StateStore
 
@@ -187,6 +188,8 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
             for item in report['examples']:
                 item['verified'] = False
             write_json(report_path, report)
+            for name in ['review.html', 'evidence.zip']:
+                (root / name).unlink(missing_ok=True)
             store.event(run_id, 'evidence_incomplete', {'message': str(exc)})
         if report['status'] in {'completed', 'rejected'}:
             store.event(run_id, 'finished', {'status': report['status'], 'verdict': report['repair_verdict']})
@@ -316,24 +319,45 @@ def export_evidence(run_id: str, state_root: Path) -> Path:
     store = StateStore(state_root)
     run = store.run(run_id)
     root = store.root / 'runs' / run_id
-    write_json(root / 'ledger.json', run)
-    commands = []
-    logs = root / 'logs'
-    logs.mkdir(exist_ok=True)
-    for operation in run['operations']:
-        commands.append({'operation_id': operation['operation_id'], 'phase': operation['phase'], 'executable': 'python', 'arguments': ['-B', '/work/example.py'], 'network': 'none', 'timeout_seconds': 30})
-        if operation['result']:
-            for stream_name in ['stdout', 'stderr']:
-                (logs / f"{operation['operation_id']}.{stream_name}.txt").write_text(operation['result'][stream_name])
-    write_json(root / 'commands.json', {'operations': commands})
-    members = ['report.json', 'ledger.json', 'commands.json', 'replacement.py', 'repair.json', 'original.py', 'repaired.py', 'repair.patch']
-    members += [path.relative_to(root).as_posix() for directory in ['profile', 'original', 'logs'] for path in sorted((root / directory).rglob('*')) if path.is_file()]
-    members = [name for name in members if (root / name).is_file()]
-    if sum((root / name).stat().st_size for name in members) > 20 * 1024 * 1024:
-        raise ValueError('Evidence exceeds 20 MiB; archive export is incomplete')
-    write_json(root / 'manifest.json', {'algorithm': 'sha256', 'files': {name: sha256((root / name).read_bytes()) for name in members}})
+    review = root / 'review.html'
+    temporary_review = root / 'review.html.tmp'
     archive = root / 'evidence.zip'
-    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as stream:
-        for name in members + ['manifest.json']:
-            stream.write(root / name, name)
+    temporary_archive = root / 'evidence.zip.tmp'
+    manifest = root / 'manifest.json'
+    temporary_manifest = root / 'manifest.json.tmp'
+    exported = False
+    try:
+        write_json(root / 'ledger.json', run)
+        commands = []
+        logs = root / 'logs'
+        logs.mkdir(exist_ok=True)
+        for operation in run['operations']:
+            commands.append({'operation_id': operation['operation_id'], 'phase': operation['phase'], 'executable': 'python', 'arguments': ['-B', '/work/example.py'], 'network': 'none', 'timeout_seconds': 30})
+            if operation['result']:
+                for stream_name in ['stdout', 'stderr']:
+                    (logs / f"{operation['operation_id']}.{stream_name}.txt").write_text(operation['result'][stream_name])
+        write_json(root / 'commands.json', {'operations': commands})
+        report = json.loads((root / 'report.json').read_text())
+        temporary_review.write_text(render_review(report, root, archive_available=True), encoding='utf-8')
+        members = ['report.json', 'review.html', 'ledger.json', 'commands.json', 'replacement.py', 'repair.json', 'original.py', 'repaired.py', 'repair.patch']
+        members += [path.relative_to(root).as_posix() for directory in ['profile', 'original', 'logs'] for path in sorted((root / directory).rglob('*')) if path.is_file()]
+        sources = {name: temporary_review if name == 'review.html' else root / name for name in members}
+        sources = {name: path for name, path in sources.items() if path.is_file()}
+        if sum(path.stat().st_size for path in sources.values()) > 20 * 1024 * 1024:
+            raise ValueError('Evidence exceeds 20 MiB; archive export is incomplete')
+        temporary_manifest.write_text(json.dumps({'algorithm': 'sha256', 'files': {name: sha256(path.read_bytes()) for name, path in sources.items()}}, indent=2) + '\n', encoding='utf-8')
+        with zipfile.ZipFile(temporary_archive, 'w', zipfile.ZIP_DEFLATED) as stream:
+            for name, path in sources.items():
+                stream.write(path, name)
+            stream.write(temporary_manifest, 'manifest.json')
+        temporary_archive.replace(archive)
+        temporary_review.replace(review)
+        temporary_manifest.replace(manifest)
+        exported = True
+    finally:
+        for path in [temporary_review, temporary_archive, temporary_manifest]:
+            path.unlink(missing_ok=True)
+        if not exported:
+            for path in [review, archive, manifest]:
+                path.unlink(missing_ok=True)
     return archive

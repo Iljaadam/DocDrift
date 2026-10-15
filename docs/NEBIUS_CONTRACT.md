@@ -117,4 +117,5 @@ image, prove Python/network capability, manage image deletion or retention, or
 reconcile ambiguous submissions through an operation-history search. Those
 workflows remain gated by confirmed access and protection against personal
 charges. The independently checked local Docker evidence remains local evidence;
-the plan's remote milestone and actual Nemotron repair are unfinished.
+the plan's remote milestone is unfinished. Actual Nemotron repairs have passed
+local Docker verification (`docs/FEEDBACK_LOG.md` F3–F5).

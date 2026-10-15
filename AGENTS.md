@@ -32,8 +32,9 @@ demo-able submission.
 
 - **$0 personal spend.** Only granted free credits.
   - Inference: approved by the user on 2026-10-14 for the $1 Token Factory
-    trial key (`--live` on `repair`/`evaluate`). Keep runs small and log
-    token use; the balance is tiny.
+    trial key (`--live` on `repair`/`evaluate`). On 2026-10-15 the user reported
+    promotional credits already on the account, approximately $30 (exact balance
+    and expiry unverified). Keep runs small and log token use.
   - Sandboxes: no live call yet, not even read-only, until the user approves.
     Live Sandbox mutations have no enable switch on purpose.
 - Never claim more than happened: label owned fixtures as fixtures, the
@@ -54,6 +55,7 @@ uv run --no-sync docdrift challenge                        # bad-patch rejection
 .venv/bin/python scripts/check_distribution.py --build --dist-dir /tmp/docdrift-dist --cache-dir /tmp/docdrift-uv-cache
 uv run --no-sync docdrift evaluate --strategies execution_only    # baseline, local Docker
 uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic rehearsal
+uv run --no-sync docdrift review <run-id>                    # saved evidence, no execution
 ```
 
 Run state lives in `.docdrift/` (gitignored).
@@ -62,7 +64,8 @@ Commits: no git identity is configured on this machine. Reuse the repo's author:
 `git -c user.name=Iljaadam -c user.email=64214807+Iljaadam@users.noreply.github.com commit ...`
 
 Token Factory key: `~/.config/docdrift/nebius.env` (mode 600, outside the
-repo; $1 trial). Load with `set -a; . ~/.config/docdrift/nebius.env; set +a`.
+repo; same key, user reports about $30 credits on 2026-10-15). Load with
+`set -a; . ~/.config/docdrift/nebius.env; set +a`.
 Never print it, commit it, or copy it into the repo.
 
 ## Handoff protocol (end of every session)

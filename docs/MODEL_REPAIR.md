@@ -1,8 +1,9 @@
 # Model repair and evaluation harness
 
-Built offline on October 14, 2026, ahead of Token Factory access. No live
-inference has run. Everything below was exercised with synthetic scripted
-responses and contract doubles, plus local Docker for execution.
+Built offline on October 14, 2026, then exercised with live Nemotron inference
+on Token Factory the same day (`docs/FEEDBACK_LOG.md` F1–F5). Synthetic scripted
+responses and contract doubles remain separately labelled. All runtime
+verification so far uses local Docker; live Sandbox access is unverified.
 
 ## Strategies (`src/docdrift/repair.py`)
 
@@ -20,6 +21,10 @@ repairs). The accepted replacement then goes through the unchanged engine:
 original failure reproduction, healthy baseline, pristine final verification,
 healthy regressions, evidence export. `repair.json` (outcome, candidates,
 transcript, usage) is hashed into run metadata and added to the evidence ZIP.
+The export also includes `review.html`, a self-contained page with provenance,
+failure logs, diff, execution/behavior checks, regressions, and model usage.
+Generate it for an existing run with `docdrift review <run-id>`; this reads saved
+evidence without inference or execution and does not rescore the run.
 
 Stop conditions, all recorded as `status`: `proposed`, `all_candidates_rejected`,
 `budget_exhausted` (model calls or total tokens), `malformed_responses`,

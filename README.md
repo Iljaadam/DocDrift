@@ -3,19 +3,19 @@
 DocDrift repairs one broken Python documentation example and produces evidence
 of the original failure, the repaired behavior, and healthy-example preservation.
 
-This initial implementation provides a **manual, trusted local vertical slice**.
+The CLI supports **model repairs and a manual, trusted local vertical slice**.
 It resolves a local Git revision to a full commit, inventories Markdown fences,
 freezes an external curator profile, applies a supplied replacement to one code
 span, and verifies in fresh offline Docker containers. It exports JSON, a unified
 diff, logs, source snapshots, frozen checks, operation identities, and a checksum
-ZIP. The included renamed-method example is an owned fixture.
+ZIP, plus a self-contained HTML review. The included renamed-method example is an owned fixture.
 
 The architecture is preserved in [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
 [STATUS.md](STATUS.md) records completed work and the remaining access gate.
 The Nebius REST contract and durable submission journal can now be exercised
-offline with synthetic responses. Live Sandbox execution and the Nemotron repair
-loop remain unconnected to the engine. The CLI offers no provider credentials,
-live execution switch, or spending options. NewsBias infrastructure is separate.
+offline with synthetic responses. Live Nemotron inference is connected to repair
+and evaluation; execution uses local Docker. Live Sandbox execution remains
+unconnected and its permission has not been checked. NewsBias infrastructure is separate.
 
 ## Run from a checkout
 
@@ -43,13 +43,22 @@ This describes local fixture checks and does not establish Nebius runtime use.
 
 The checkout defaults to `.docdrift/`, which is excluded from Git. Each run stores
 its report, patch, original/repaired snippets, profile, source snapshots, ledger,
-and `evidence.zip` under `.docdrift/runs/<run-id>/`.
+`review.html`, and `evidence.zip` under `.docdrift/runs/<run-id>/`.
 
 ```sh
 uv run --no-sync docdrift resume <run-id>
 uv run --no-sync docdrift export <run-id>
+uv run --no-sync docdrift review <run-id>
 uv run --no-sync pytest
 ```
+
+Open the printed `review_path` in a browser. The page shows the original failure,
+diff, separate execution and behavior checks, healthy regressions, provenance,
+bounded operation logs, and recorded model usage. It labels manual patches,
+synthetic replays, and live model proposals separately. Its download link uses
+the adjacent `evidence.zip`; the ZIP also includes the HTML in its SHA-256
+manifest. `review` regenerates saved evidence without executing code or making
+model/provider requests. A saved review is evidence browsing, not a live repair service.
 
 The CLI wheel includes its frozen owned fixture and license, so inspection,
 synthetic contracts, and the static challenge also work outside a checkout.
@@ -67,7 +76,8 @@ Docker access may also require the workspace's execution approval mechanism.
 the bounded tool-using agent, and an execution-only baseline over the frozen
 inventory, verifying every proposal through the same engine. They run offline
 with synthetic `--replay` responses; `--live --model <id>` sends real Token
-Factory requests (approved for the $1 trial key on 2026-10-14). See
+Factory requests (approved on 2026-10-14; the user reports approximately $30
+promotional credits on 2026-10-15, exact balance and expiry unverified). See
 [docs/MODEL_REPAIR.md](docs/MODEL_REPAIR.md).
 
 ## Work while provider access is pending
@@ -102,9 +112,9 @@ The resulting labeled report is saved under `.docdrift/contracts/<run-id>/`.
 See [the REST contract and live-access gaps](docs/NEBIUS_CONTRACT.md).
 
 Live mutation methods reject before contacting a transport. The only mutation
-path requires an explicitly selected `httpx.MockTransport`. Account-specific
-credit coverage and protection against personal charges remain unconfirmed;
-the user's personal spending limit is $0.
+path requires an explicitly selected `httpx.MockTransport`. Token Factory
+credits are user-reported; Sandbox coverage and expiration remain unconfirmed.
+The user's personal spending limit is $0.
 
 Check deliberately constructed bad patches without executing them:
 
@@ -166,5 +176,5 @@ timeouts, mismatched images, and truncated output prevent full verification.
 Local containers use fresh snapshots, an immutable image, disabled networking,
 read-only mounts, a nonroot user, resource limits, and bounded logs. The adapter
 is for trusted development inputs. Public repository downloads support inspection
-only. Arbitrary public execution, remote dependency installation, actual model
-repairs, and a review UI remain outside this slice.
+only. Arbitrary public execution and remote dependency installation remain
+outside this slice.

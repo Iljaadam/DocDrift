@@ -92,6 +92,8 @@ def main() -> None:
     resume.add_argument('run_id')
     export = commands.add_parser('export', help='Export a saved run and its checksum manifest')
     export.add_argument('run_id')
+    review = commands.add_parser('review', help='Generate an HTML review and evidence ZIP from a saved run without executing code')
+    review.add_argument('run_id')
     args = parser.parse_args()
     try:
         if args.command == 'inspect':
@@ -147,11 +149,15 @@ def main() -> None:
             result = {'evidence': report['evidence'], 'summary': report['summary'], 'report_path': str(output.resolve())}
         elif args.command == 'resume':
             result = resume_run(args.run_id, args.state_dir)
+        elif args.command == 'review':
+            archive = export_evidence(args.run_id, args.state_dir)
+            result = {'review_path': str(archive.parent / 'review.html'), 'archive': str(archive)}
         else:
             result = {'archive': str(export_evidence(args.run_id, args.state_dir))}
         if args.command in {'run', 'resume'} or args.command == 'demo' and not args.inspect_only:
             result['evidence_archive'] = str(args.state_dir.resolve() / 'runs' / result['run_id'] / 'evidence.zip') if result.get('evidence_exported', True) else None
-            print(json.dumps({key: result.get(key) for key in ['run_id', 'status', 'diagnosis', 'repair_verdict', 'finding', 'usage', 'evidence_archive']}, indent=2))
+            result['review_path'] = str(args.state_dir.resolve() / 'runs' / result['run_id'] / 'review.html') if result.get('evidence_exported', True) else None
+            print(json.dumps({key: result.get(key) for key in ['run_id', 'status', 'diagnosis', 'repair_verdict', 'finding', 'usage', 'review_path', 'evidence_archive']}, indent=2))
             if result['status'] in {'incomplete', 'rejected'} or result['repair_verdict'] == 'rejected':
                 raise SystemExit(1)
         else:

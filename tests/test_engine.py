@@ -154,8 +154,84 @@ def test_export_manifest_matches_every_member(tmp_path):
     archive = export_evidence(report['run_id'], state)
     with zipfile.ZipFile(archive) as stream:
         manifest = json.loads(stream.read('manifest.json'))
+        assert 'review.html' in manifest['files']
+        assert stream.read('review.html') == (archive.parent / 'review.html').read_bytes()
         assert set(stream.namelist()) == set(manifest['files']) | {'manifest.json'}
         assert all(hashlib.sha256(stream.read(name)).hexdigest() == digest for name, digest in manifest['files'].items())
+
+
+def test_review_command_regenerates_saved_evidence_without_execution(tmp_path, monkeypatch, capsys):
+    from docdrift.cli import main
+    adapter = ContractAdapter()
+    report, state = run_fixture(tmp_path, adapter)
+    root = state / 'runs' / report['run_id']
+    original_report = (root / 'report.json').read_bytes()
+    operations = StateStore(state).operations(report['run_id'])
+    (root / 'review.html').unlink()
+    (root / 'evidence.zip').unlink()
+    def forbidden(*args, **kwargs):
+        pytest.fail('Review must not start or resume execution')
+    monkeypatch.setattr('docdrift.cli.start_run', forbidden)
+    monkeypatch.setattr('docdrift.cli.resume_run', forbidden)
+    monkeypatch.setattr('sys.argv', ['docdrift', '--state-dir', str(state), 'review', report['run_id']])
+    main()
+    output = json.loads(capsys.readouterr().out)
+    assert Path(output['review_path']) == root / 'review.html'
+    assert Path(output['archive']).is_file()
+    assert (root / 'report.json').read_bytes() == original_report
+    assert StateStore(state).operations(report['run_id']) == operations
+    assert len(adapter.requests) == 12
+
+
+@pytest.mark.parametrize('failure', ['size_limit', 'zip_write', 'invalid_report'])
+def test_direct_export_failure_does_not_publish_a_stale_review_or_archive(tmp_path, monkeypatch, failure):
+    import zipfile
+    report, state = run_fixture(tmp_path, ContractAdapter())
+    root = state / 'runs' / report['run_id']
+    saved_report = (root / 'report.json').read_bytes()
+    oversized = root / 'logs' / 'oversized.txt'
+    with monkeypatch.context() as changes:
+        if failure == 'size_limit':
+            oversized.write_bytes(b'x' * (20 * 1024 * 1024))
+            error = ValueError
+        elif failure == 'invalid_report':
+            (root / 'report.json').write_text('{invalid JSON')
+            error = ValueError
+        else:
+            original_write = zipfile.ZipFile.write
+            def failed_write(archive, filename, arcname=None, **kwargs):
+                if arcname == 'review.html':
+                    raise OSError('Simulated archive write failure')
+                return original_write(archive, filename, arcname, **kwargs)
+            changes.setattr(zipfile.ZipFile, 'write', failed_write)
+            error = OSError
+        input_report = (root / 'report.json').read_bytes()
+        with pytest.raises(error):
+            export_evidence(report['run_id'], state)
+    for name in ['review.html', 'evidence.zip', 'manifest.json', 'review.html.tmp', 'evidence.zip.tmp', 'manifest.json.tmp']:
+        assert not (root / name).exists()
+    assert (root / 'report.json').read_bytes() == input_report
+    (root / 'report.json').write_bytes(saved_report)
+    oversized.unlink(missing_ok=True)
+    assert export_evidence(report['run_id'], state).is_file()
+
+
+def test_reexport_can_offer_download_without_upgrading_incomplete_verdict(tmp_path, monkeypatch):
+    with monkeypatch.context() as changes:
+        def failed_export(*args):
+            raise ValueError('Simulated initial export failure')
+        changes.setattr('docdrift.engine.export_evidence', failed_export)
+        report, state = run_fixture(tmp_path, ContractAdapter())
+    root = state / 'runs' / report['run_id']
+    saved_report = (root / 'report.json').read_bytes()
+    assert report['status'] == 'incomplete' and not report['evidence_exported']
+    archive = export_evidence(report['run_id'], state)
+    html = (root / 'review.html').read_text()
+    assert archive.is_file()
+    assert 'href="evidence.zip"' in html
+    assert '<h1>Verification incomplete</h1>' in html
+    assert '<h1>Behavior verified</h1>' not in html
+    assert (root / 'report.json').read_bytes() == saved_report
 
 
 def test_ast_policy_difference_alone_is_not_a_documentation_failure(tmp_path):
@@ -199,7 +275,10 @@ def test_unprofiled_and_unsupported_examples_never_enter_verified_count(tmp_path
 
 
 def test_export_failure_produces_incomplete_recoverable_run(tmp_path, monkeypatch):
-    def failed_export(*args):
+    def failed_export(run_id, state):
+        root = state / 'runs' / run_id
+        (root / 'review.html').write_text('stale success')
+        (root / 'evidence.zip').write_bytes(b'partial archive')
         raise ValueError('Evidence exceeds 20 MiB')
     monkeypatch.setattr('docdrift.engine.export_evidence', failed_export)
     report, state = run_fixture(tmp_path, ContractAdapter())
@@ -208,6 +287,8 @@ def test_export_failure_produces_incomplete_recoverable_run(tmp_path, monkeypatc
     assert not report['evidence_exported']
     assert not any(item['verified'] for item in report['examples'])
     assert 'finished' not in StateStore(state).run(report['run_id'])['phases']
+    assert not (state / 'runs' / report['run_id'] / 'review.html').exists()
+    assert not (state / 'runs' / report['run_id'] / 'evidence.zip').exists()
 
 
 def test_inputs_changed_during_execution_cannot_finish_verified(tmp_path):

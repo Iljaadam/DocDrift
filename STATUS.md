@@ -4,7 +4,9 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 
 ## Checklist
 
-Token Factory: $1 trial key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
+Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
+User reports granted credits already on the account, approximately $30 (Oct 15,
+D10); exact balance, expiry, and Sandbox coverage have not been checked.
 Sandboxes: permission never checked. The Sandbox API is on the same Token Factory host and
 takes a bearer key plus a `Project` header, so a read-only `GET whoami` with this key and the
 user's project ID would show it (needs user OK and the ID). All execution so far is local Docker.
@@ -13,9 +15,9 @@ user's project ID would show it (needs user OK and the ID). All execution so far
 - [x] Owned renamed-method fixture and independent contract frozen
 - [ ] Builder Program approval (pending since before Oct 14)
 - [x] Token Factory $1 trial key received; live inference approved by user (D5)
-- [ ] $25 Token Factory credits via the hackathon form: status unknown. (Correction: the
-  "promo code only after $25 own spend" restriction applies to Nebius cloud compute, not
-  Token Factory, per user on Oct 14. An earlier entry here wrongly called this route dead.)
+- [x] Token Factory promotional credits received, per user Oct 15: approximately $30
+  (initially described as $25). Exact balance, expiry, and grant/form route unverified.
+  The own-spend restriction discussed on Oct 14 applies to cloud compute, not Token Factory.
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
 - [ ] Sandbox permission (read-only `whoami`, needs user OK); offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
@@ -44,8 +46,8 @@ user's project ID would show it (needs user OK and the ID). All execution so far
 - [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
 - [ ] Decide D9: add a source-only case (no current-API neighbor) so agent vs one_shot separates (F5)
 - [ ] Scored held-out run, once (D8)
-- [ ] HTML review report from real runs (unblocked: the plan's gate, a real model repair
-  passing independent checks, was met by F3)
+- [x] Self-contained HTML review in evidence ZIPs; `docdrift review <run-id>` renders
+  saved live Nemotron repairs without inference/execution or rescoring (Oct 15)
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
@@ -58,11 +60,14 @@ user's project ID would show it (needs user OK and the ID). All execution so far
 - Oct 22: still no Sandbox access → user decides: submit with real Nemotron on Token Factory
   and local Docker execution, clearly labelled (Coding eligibility uncertain), or stop.
 - Sandbox access after ~Oct 26: swap only the final verification onto Sandboxes; keep the rest.
-- Watch the $1 trial balance: evaluation runs cost tokens (first repair ~7k tokens).
+- Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
+  not an independently verified budget (first repair ~7k tokens).
 
-**Next**, in order: (1) with user OK and project ID, read-only Sandbox `whoami`; (2) if permitted, wire the
-Sandbox adapter into `repair`/`evaluate`, otherwise build the HTML review report first;
-(3) settle D9 and add the case; (4) scored held-out run (D8).
+**Next**, in order: (1) with user OK and project ID, read-only Sandbox `whoami`
+(asked Oct 15, awaiting reply); (2) if access and coverage permit, wire the Sandbox
+adapter into `repair`/`evaluate` (live execution still needs separate approval);
+(3) settle D9 before adding a source-only case; (4) scored held-out run (D8).
+HTML review work is complete; D8/D9 remain proposed.
 
 ## Decisions
 
@@ -89,6 +94,14 @@ Who decided what, and when. Don't reverse one without the user.
   If there is no Sandbox by Oct 22, run it on local Docker and label it so.
 - D9 (proposed by agent, awaiting user): add a fixture whose fix needs the source (no
   current-API neighbour, no traceback hint), so the agent can beat one-shot.
+- D10 (user, Oct 15): Token Factory credits are already on the account; user estimates
+  approximately $30 after initially saying $25. Record this as user-reported receipt,
+  not an exact verified balance or evidence of Sandbox coverage. The $0 personal-spend
+  limit and separate Sandbox approval requirement continue to apply.
+- D11 (agent, Oct 15): Continue the unblocked HTML review work using saved run evidence.
+  `docdrift review <run-id>` regenerates HTML and its checksum ZIP without inference,
+  execution, or rescoring. Leave D8/D9 proposed; no standing push authorization inferred
+  from the user's approval to push the two previous commits.
 
 ## Session log
 
@@ -123,6 +136,14 @@ Who decided what, and when. Don't reverse one without the user.
   the "$25 route dead" entry (user had corrected it); "no card" stated as a user fact;
   Sandbox recorded as blocked on Builder although never checked. Added Decisions D1-D9 and
   the commit-identity note in `AGENTS.md`. 468 tests pass.
+- 2026-10-15: Took over at pushed commit 5403817; recorded user-reported approximately $30
+  Token Factory credits (D10). Added portable HTML reviews to evidence ZIPs and
+  `docdrift review <run-id>`; rendered a saved live Nemotron repair without rescoring.
+  Hardened failed exports and incomplete-run downloads; corrected stale no-live-repair
+  prose. 488 tests pass, 16/16 constructed bad patches rejected, offline wheel install
+  passes, real Docker demo `behavior_verified` (12 operations). No new inference or
+  live Sandbox calls. Next: Sandbox `whoami` once user approval/project ID arrive;
+  D8/D9 still proposed. Commit locally; no standing push permission inferred.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
