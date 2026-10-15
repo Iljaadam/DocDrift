@@ -53,6 +53,13 @@ same verifier.
 | One-shot Nemotron | TBD | TBD | TBD | TBD | TBD |
 | DocDrift agent | TBD | TBD | TBD | TBD | TBD |
 
+Separate exploratory development result (Oct 15): after freezing an additional
+owned source-inspection fixture, agent verified 1/1 and one-shot 0/1 (static
+rejection), with 0/1 false drift reports for both on its unrelated healthy example.
+Six live model calls used 8,781 tokens; execution was local Docker. This case was
+added after the original development results, is outside the fourteen-case
+inventory, and does not establish a general advantage. Details: feedback log F6.
+
 Deliberately constructed bad patches (labelled as such, not model output):
 16/16 rejected by static gates.
 

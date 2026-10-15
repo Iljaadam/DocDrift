@@ -26,7 +26,9 @@ well as successes. One entry per finding. Never paste API keys.
 
 ## Entries
 
-Account: Token Factory $1 trial key. The user approved live calls on Oct 14 after
+Account: same Token Factory key originally issued for the $1 trial; user reports
+approximately $30 promotional credits on Oct 15 (balance/expiry unverified).
+The user approved live calls on Oct 14 after
 being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execution in these
 entries is local Docker, not Nebius Sandboxes.
 
@@ -95,3 +97,36 @@ entries is local Docker, not Nebius Sandboxes.
   dict key from source or stdout) is the only case likely to.
 - Suggestion (for us): to show the agent's value, add a case with no current-API neighbor and
   no traceback suggestion, so the fix requires reading the source.
+
+### F6 — Source-inspection development case separates strategies once (2026-10-15)
+
+- Product / API / model: Token Factory chat completions,
+  `nvidia/nemotron-3-super-120b-a12b`; all execution is local Docker.
+- Inputs: supplemental inventory `fixtures/development/index.json`, frozen in
+  commit `7faa9e8` before inference. Index SHA-256:
+  `24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c`.
+  One newly authored owned broken case plus one unrelated healthy example.
+  The original fourteen-case inventory and both held-out cases are unchanged.
+- Request: one comparison, `execution_only,one_shot,agent`, six-call agent cap,
+  one one-shot call; no retries or fixture changes after observing the result.
+- Actual: original `AttributeError` has no replacement-method suggestion.
+  One-shot kept the missing method as `OccurrenceIndex.build(words)` and removed
+  the constructor call; static policy rejected it (`meaningful operations cannot
+  be removed`). It was not executed or counted as a repair. Agent read the package
+  source and README, ran one probe, then submitted
+  `OccurrenceIndex().positions(words, include_empty=True)`. Its repair passed all
+  three frozen inputs and three healthy regression inputs; protected hashes match.
+  Agent **1/1** behavior verified; one-shot **0/1**. Both detected the broken
+  example; all strategies produced **0/1** false drift reports on the healthy case.
+- Usage: one-shot 1 call, 520 prompt + 420 completion tokens; agent 5 calls,
+  7,100 prompt + 741 completion tokens. Total **6 calls / 8,781 tokens**.
+  **15 local snippet operations** (2 shared baselines, 1 agent probe, 12 verifier
+  operations); Docker version preflights excluded. No billed dollar amount recorded.
+- Evidence: `.docdrift/evaluations/source-only-live-1.{json,md,html}` and verified
+  run `4fd82cb8be7a449e8815d5366665f4ac`. Both proposal transcripts are retained
+  under `.docdrift/proposals/`, with IDs and SHA-256 hashes in the evaluation JSON.
+- Effect on DocDrift: one exploratory example of source tools helping after the
+  original development results. This case was added after those results and is
+  reported separately; it is not a held-out result or a general superiority claim.
+- Suggestion: retain the failed baseline alongside the success, and keep the
+  frozen checks and budgets unchanged for subsequent evaluation.

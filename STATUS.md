@@ -49,6 +49,8 @@ call. All execution so far is local Docker.
 - [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
 - [x] D9 approved Oct 15: frozen supplemental source-inspection development fixture
   and unrelated healthy neighbor (`fixtures/development/`); original 14 cases unchanged
+- [x] Single live supplemental comparison: agent 1/1 verified, one_shot 0/1 static
+  rejection; 8,781 tokens, local Docker only (F6). No general advantage claimed.
 - [ ] Scored held-out run, once (D8)
 - [x] Self-contained HTML review in evidence ZIPs; `docdrift review <run-id>` renders
   saved live Nemotron repairs without inference/execution or rescoring (Oct 15)
@@ -73,8 +75,9 @@ call. All execution so far is local Docker.
 **Next**, in order: (1) await the Sandbox access application response and user OK
 for read-only `whoami` (project ID recorded above); (2) if access and coverage permit, wire the Sandbox
 adapter into `repair`/`evaluate` (live execution still needs separate approval);
-(3) one bounded supplemental-development comparison after its fixture freeze;
-(4) scored held-out run (D8). D9 is approved; D8 remains proposed.
+(3) decide timing/backend for the scored held-out run (D8); (4) complete the free
+live-agent judge-access route and submission evidence. D9 and its single
+supplemental comparison are complete; D8 remains proposed.
 
 ## Decisions
 
@@ -172,6 +175,13 @@ Who decided what, and when. Don't reverse one without the user.
   manual local judge quickstart. 526 tests and offline wheel install pass.
   Next: one bounded live supplemental comparison;
   Sandbox access and D8 remain pending.
+- 2026-10-15 (supplemental comparison): One live run after freeze commit 7faa9e8:
+  agent 1/1 behavior verified after reading source; one_shot 0/1 (static rejection).
+  No false drift reports on the healthy case; 6 model calls / 8,781 tokens / 15 local Docker
+  snippet operations. Recorded F6 and separate comparison HTML; all original 41
+  evaluation artifacts unchanged, no held-out model or Sandbox calls. 526 tests
+  and wheel check passed before inference; code unchanged since. Next: provider
+  Sandbox approval, D8 decision, and free live-agent judge access.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

@@ -98,6 +98,15 @@ reports, 4/4 correct abstentions. Curator plumbing check, not a scored result.
 A synthetic agent replay of the renamed-method known repair ran through real
 Docker: 1 baseline + 1 agent snippet + 12 engine operations, `behavior_verified`.
 
+On October 15, one live comparison on the separately frozen supplemental
+source-inspection case yielded agent 1/1 verified, one-shot 0/1 (static rejection),
+and 0/1 false drift reports per strategy on the unrelated healthy example. The
+agent read source and supplied both the current method and its empty-token option.
+Six calls used 8,781 tokens; all execution was local Docker. This newly authored
+development case was added after the earlier 2/2 results and is reported separately.
+It is not a held-out result or evidence of general superiority; see F6 in
+`docs/FEEDBACK_LOG.md` for exact failures, budgets, hashes, and evidence paths.
+
 ## Verification contract for model repairs
 
 Relaxed on October 14 from an exact known-repair AST match (decision D3 in
