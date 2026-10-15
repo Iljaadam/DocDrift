@@ -63,6 +63,8 @@ call. All execution so far is local Docker.
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
+- [ ] Package a sanitized, committed demo from saved real Nemotron/Docker evidence
+  (next independent task; resume details below)
 - [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
 - [ ] Video under 3 minutes (script in `ARCHITECTURE_PLAN.md` → Competition and demonstration)
 - [ ] Nebius/NVIDIA feedback log (template ready: `docs/FEEDBACK_LOG.md`)
@@ -75,13 +77,81 @@ call. All execution so far is local Docker.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next**, in order: (1) await the Sandbox access application response and user OK
-for read-only `whoami` (project ID recorded above); (2) if access and coverage permit,
-validate actual Sandbox capabilities and design approved live execution activation
-(the connected bridge currently permits HTTP mocks only);
-(3) decide timing/backend for the scored held-out run (D8); (4) complete the free
-live-agent judge-access route and submission evidence. D9 and its single
-supplemental comparison are complete; D8 remains proposed.
+**Next while Sandbox access is pending:** package the existing real demo evidence,
+then finish the submission draft and under-three-minute video script. The resume
+handoff below identifies the saved inputs; no additional model run is needed.
+In parallel, await the provider response and user OK for read-only `whoami`.
+After access/coverage are confirmed, validate live capabilities and design approved
+activation (the bridge currently permits HTTP mocks only). D8 and the free
+live-agent judge-access route remain unresolved. D9 and its single supplemental
+comparison are complete.
+
+## Resume handoff — October 15, 2026
+
+The user is waiting for agent usage limits to reset and requested this handoff.
+This turn prepares notes only. **Resume with the real demo bundle, not another
+core implementation pass or fresh evaluation.** Local demo preparation follows
+the user's intent to continue; deployment, a new live service, and standing
+automatic pushes have not been authorized.
+
+**Current state:** all implementation is pushed through `5b83540` on origin/main
+(feature commit `1a1bf4b`). 644 tests pass; installed-wheel smoke includes the
+synthetic repair and integrity checker with sockets and non-Git subprocesses
+blocked. A real local Docker demo still passed 12 operations. The handoff update
+itself will be a subsequent local documentation commit unless separately pushed.
+Keep both frozen inventories unchanged: `fixtures/evaluation/` has the original
+14 cases; `fixtures/development/` is the separate two-case addition. No held-out
+case has been supplied to a live model, and no live Sandbox call has occurred.
+
+**First deliverable:** a small committed sample that a fresh clone can browse
+without `.docdrift/`, credentials, inference, or a web server. Include the real
+source-only comparison, its successful agent repair and evidence ZIP, and its
+failed one-shot proposal. Make local links work and clearly label owned fixtures,
+live Nemotron generation, and local Docker execution. Preserve original saved
+evidence. Inspect copied artifacts for secrets and identifying paths; disclose
+any redaction, regenerate affected manifests/links, and run `verify-evidence`
+on each published evidence ZIP. Never replace failed baseline evidence with a
+success or present synthetic Sandbox output as real execution.
+
+**Existing inputs on this machine (gitignored; do not regenerate them):**
+
+- `.docdrift/evaluations/source-only-live-1.json`, `.md`, and `.html`: F6,
+  one exploratory comparison on the additional owned development case.
+- `.docdrift/runs/4fd82cb8be7a449e8815d5366665f4ac/`: real agent repair;
+  `review.html`, `report.json`, `repair.json`, `repair.patch`, and `evidence.zip`.
+  Original ZIP SHA-256:
+  `3edb8afb8716de4be73d1472b2a65c04ef990ce745f70c10869fabaac802e346`;
+  all 39 manifested members and loose files checked at this handoff.
+- `.docdrift/proposals/34303fa5d21f4213bccec9827b0e28cf.json`: failed one-shot
+  (`OccurrenceIndex.build(words)`, static rejection: constructor removed).
+- `.docdrift/proposals/d718ad233d6a4bf2b393b2e45d591522.json`: successful agent
+  source reads/probe and `positions(words, include_empty=True)` submission.
+- `.docdrift/evaluations/dev-live-2.json`: earlier original development results;
+  both model strategies 2/2, reported separately from F6. The old report predates
+  inventory fingerprints; do not silently add today's inventory identity.
+
+F6: agent 1/1 verified, one-shot 0/1 static rejection, no false drift reports on
+one unrelated healthy example; 6 calls / 8,781 tokens / 15 local snippet
+operations. This case was added after the earlier development results and is
+not held out; no general superiority claim. Exact provenance and usage are in
+`docs/FEEDBACK_LOG.md` F6. Its frozen index SHA-256 is
+`24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c`.
+
+**After the bundle:** link it from README and the judge quickstart, update
+`docs/SUBMISSION_DRAFT.md` using actual development results (its conditional
+Sandbox wording and old test count still need reconciliation), and turn
+`ARCHITECTURE_PLAN.md` → Competition and demonstration into the final short
+video script. Keep scored held-out results TBD until D8 is decided. A free
+functional live-agent route through Dec 15 is still a delivery dependency;
+the existing credential-free quickstart demonstrates a manual local repair.
+
+If the next agent is on a different machine, the saved `.docdrift/` inputs will
+not come from Git. Locate or request transfer of the existing artifacts before
+making a real-run demo; do not invent them or silently spend credits rerunning.
+For checks use `UV_CACHE_DIR=/tmp/docdrift-uv-cache` if uv's normal cache is
+restricted. Docker and Git metadata writes may need workspace escalation;
+use the repo's documented commit identity. No more feature work is required to
+start packaging the demo.
 
 ## Decisions
 
@@ -137,6 +207,9 @@ Who decided what, and when. Don't reverse one without the user.
   execution-attestation claim.
 - D16 (user, Oct 15, "push it"): Push the accumulated local work to origin/main.
   This is approval for the current push, not a standing automatic-push rule.
+- D17 (user, Oct 15): Requested a persistent handoff while waiting for agent usage
+  limits, so the next agent can continue demo preparation from existing evidence.
+  This turn does not start the demo build or grant live Sandbox/hosting access.
 
 ## Session log
 
@@ -211,6 +284,11 @@ Who decided what, and when. Don't reverse one without the user.
   commits plus this handoff update to origin/main. Implementation validation is
   unchanged: 644 tests, installed-wheel checks, and the real Docker demo passed.
   Next: await Sandbox access; no live provider work authorized by this push.
+- 2026-10-15 (usage-limit handoff): Added an explicit resume plan, exact real-run
+  artifact/proposal paths, current validation and access constraints, and demo
+  acceptance criteria. Next agent should package saved F6 evidence, then prepare
+  submission/video material. 644 tests rechecked and pass. No code changes,
+  provider calls, or new model evaluation.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
