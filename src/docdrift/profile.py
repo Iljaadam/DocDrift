@@ -255,7 +255,11 @@ def check_result(result: dict, case: dict, code: str, call: dict, operation_ast_
     ``operation_ast_sha256`` is the curator's known-repair AST. A match is
     recorded for information only, so equivalent rewrites can still verify.
     """
-    execution = result.get('state') == 'completed' and type(result.get('exit_code')) is int and result['exit_code'] == 0 and not result.get('timed_out')
+    execution = (result.get('state') == 'completed' and type(result.get('exit_code')) is int and result['exit_code'] == 0
+                 and not result.get('timed_out') and not result.get('observation_timed_out')
+                 and result.get('evidence_complete', True) is True
+                 and (result.get('signal') is None or type(result.get('signal')) is int and result['signal'] == 0)
+                 and result.get('service_state') in {None, 'SUCCESS'})
     errors = []
     if not execution:
         errors.append('Execution did not complete with exit zero')

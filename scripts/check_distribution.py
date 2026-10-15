@@ -273,8 +273,25 @@ def smoke_wheel(wheel: Path, source_root: Path, cache_dir: Path, uv_binary: str)
                 or any(challenge.get(key) is not False for key in ("execution_performed", "behavior_verified", "milestone_3_complete"))
                 or challenge.get("static_controls_accepted") != 1 or challenge.get("rejected_proposals", 0) < 1):
             raise DistributionError("Installed static challenge failed or claimed execution")
+        known_repair = json.loads(run([str(interpreter), "-I", "-c",
+            "import json;from docdrift.cli import default_fixture_path;print(json.dumps((default_fixture_path()/'repair.py').read_text()))"], cwd=root))
+        replay = root / "synthetic-repair.json"
+        replay.write_text(json.dumps([{"choices": [{"message": {"content": "```python\n" + known_repair + "```"}}]}]))
+        simulated = json.loads(run([str(interpreter), "-I", "-m", "docdrift", "--state-dir", str(root / "state"),
+                                   "repair", "--strategy", "one_shot", "--execution-backend", "sandbox-simulation",
+                                   "--replay", str(replay)], cwd=root))
+        if (simulated.get("outcome") != "synthetic_contract_passed" or simulated.get("evidence") != "synthetic_not_execution"
+                or simulated.get("scored") is not False or simulated.get("verified") is not False
+                or any(simulated.get(key) != 0 for key in ("compute_operations", "live_requests", "code_executions"))):
+            raise DistributionError("Installed Sandbox pipeline claimed real execution or repair evidence")
+        evidence = root / "state" / "runs" / simulated["run_id"] / "evidence.zip"
+        integrity = json.loads(run([str(interpreter), "-I", "-m", "docdrift", "verify-evidence", str(evidence)], cwd=root))
+        if (integrity.get("status") != "integrity_verified" or integrity.get("execution_attested") is not False
+                or integrity.get("authenticity_attested") is not False):
+            raise DistributionError("Installed evidence checker failed its limited integrity claim")
         return {"installed_outside_checkout": True, "console_help": True, "fixture_inspection": True,
                 "offline_synthetic_contract": True, "static_policy_challenge": True,
+                "synthetic_sandbox_repair": True, "evidence_integrity": True,
                 "live_requests": 0, "paid_calls": 0, "code_executions": 0}
 
 

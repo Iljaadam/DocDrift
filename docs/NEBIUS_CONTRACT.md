@@ -58,7 +58,8 @@ credits exist, or provider costs are covered.
 must be canonical paths below `/work/docdrift/`, excluding credential/metadata
 entries. At most 2,000 files and 50 MiB are accepted. Matching content reuses an
 upload UUID inside one adapter; an ambiguous upload cannot be retried by that
-instance. Upload reconciliation across controller restarts is unfinished.
+instance. The execution bridge also persists upload attempts and accepted UUIDs
+by content hash across restarts; ambiguous uploads stay blocked.
 
 `RemoteExecutionRequest` contains a canonical immutable image UUID, direct
 absolute executable, tuple of arguments, nonsecret `DOCDRIFT_INPUT`, injected
@@ -86,10 +87,10 @@ run/phase is refused even after restart or with changed request bytes.
 
 `recover(run_id, phase, expected_image_id=…, expected_disposable=…)` reads the
 existing receipt and registers its known operation. Interrupted submissions
-without IDs become uncertain. Recovery does not submit a replacement. The future
-engine must freeze the expected image/retention contract outside model-controlled
-inputs and supply those expectations during recovery; the journal retains the
-request digest rather than arbitrary request bodies.
+without IDs become uncertain. Recovery does not submit a replacement. The
+execution bridge freezes expected image/retention and request identities outside
+model-controlled inputs and supplies them during recovery. The journal retains
+request digests rather than arbitrary request bodies.
 
 `observe(id, timeout_seconds=30)` separates service state from process exit,
 signal, and timeout. `SUCCESS` with exit 1 is a completed failing process. Missing
@@ -109,13 +110,37 @@ be restored with `recover`. `download(id, paths)` requires a retained result ima
 and bounds all downloaded bytes to 20 MiB. Disposable runs provide no artifact
 continuation image. Downloads do not execute or unpack returned content.
 
-## Remaining acceptance gates
+## Offline execution integration
 
-This module is not integrated into the documentation execution engine. It does
-not import an OCI image, install dependencies, prepare a pristine dependency
+`SandboxExecutionAdapter` connects this contract to final verification, evaluation
+baselines, and model probes. Every method, including reads, requires an actual
+`httpx.MockTransport` with no foreign mounts. The bridge cannot issue even a live
+preflight request. It freezes bounded regular snapshot files and a separate
+controller runner, injects them beneath `/work/docdrift/`, and requests an
+immutable image UUID and direct Python executable. No code is executed by the
+bridge or the fixture-response service.
+
+The simulator persists uploads and operation envelopes in SQLite for recovery
+across controller restarts. It matches registered code/input pairs and protected
+package bytes. Responses are manufactured from curator contracts, not provider
+recordings. Select `repair|evaluate --execution-backend sandbox-simulation`;
+model strategies require synthetic replay. Outcomes remain unscored and never
+become behavior-verified evidence.
+
+Accepted IDs are durable before observation, including preliminary probes.
+Interrupted callbacks recover their accepted receipts without another submit.
+Client wait timeouts remain incomplete with IDs available to resume. Terminal
+success is not cancelled implicitly. Explicit cancellation still requires
+ownership and subsequent observation. Signals, missing evidence, wrong images,
+failed service states, and timeouts cannot pass verification.
+
+## Remaining live acceptance gates
+
+Integration is exercised offline only. It does not import an OCI image, install
+dependencies, prepare a pristine dependency
 image, prove Python/network capability, manage image deletion or retention, or
 reconcile ambiguous submissions through an operation-history search. Those
 workflows remain gated by confirmed access and protection against personal
 charges. The independently checked local Docker evidence remains local evidence;
 the plan's remote milestone is unfinished. Actual Nemotron repairs have passed
-local Docker verification (`docs/FEEDBACK_LOG.md` F3–F5).
+local Docker verification (`docs/FEEDBACK_LOG.md` F3–F6).

@@ -87,6 +87,7 @@ def _diff(content: str) -> str:
 
 def _operation(record: dict, ordinal: int) -> str:
     result, checks = _mapping(record.get('result')), _mapping(record.get('checks'))
+    synthetic = result.get('synthetic') is True
     phase = record.get('phase', 'Unknown phase')
     identity = record.get('case_id') or record.get('operation_id') or result.get('operation_id') or 'Identity not recorded'
     facts = _facts([
@@ -96,6 +97,9 @@ def _operation(record: dict, ordinal: int) -> str:
         ('Exit code', result.get('exit_code')),
         ('Elapsed seconds', result.get('elapsed_seconds')),
         ('Timed out', result.get('timed_out')),
+        ('Service state', result.get('service_state')), ('Process signal', result.get('signal')),
+        ('Client wait timed out', result.get('observation_timed_out')),
+        ('Evidence complete', result.get('evidence_complete')), ('Synthetic receipt', result.get('synthetic')),
     ])
     errors = checks.get('errors') or checks.get('observable_errors') or []
     rows = ''.join(f'<li>{_escape(item)}</li>' for item in errors if isinstance(item, str))
@@ -111,9 +115,9 @@ def _operation(record: dict, ordinal: int) -> str:
         detail += _pre(result.get(stream) or '(empty or not recorded)')
     return (
         f'<details class="operation" id="operation-{ordinal}"><summary>'
-        f'<span>{_escape(phase)} <small>{_escape(identity)}</small></span>'
-        f'<span class="check-label">Execution {_flag(checks.get("execution_passed"))} '
-        f'Output {_flag(checks.get("observable_passed"))} Behavior {_flag(checks.get("behavior_passed"))}</span>'
+        f'<span>{"Synthetic receipt · " if synthetic else ""}{_escape(phase)} <small>{_escape(identity)}</small></span>'
+        f'<span class="check-label">{"Execution contract" if synthetic else "Execution"} {_flag(checks.get("execution_passed"))} '
+        f'Output {_flag(checks.get("observable_passed"))} {"Behavior contract" if synthetic else "Behavior"} {_flag(checks.get("behavior_passed"))}</span>'
         f'</summary><div class="operation-body">{detail}</div></details>'
     )
 
@@ -160,13 +164,16 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     fixture_label = 'Owned fixture' if owned else 'Repository snapshot; ownership not recorded'
     status = report.get('status', 'incomplete')
     verdict = report.get('repair_verdict', 'unattempted')
-    verified = status == 'completed' and verdict == 'behavior_verified' and report.get('protected_hashes_preserved') is not False and report.get('evidence_exported') is not False
+    simulated = report.get('synthetic_execution') is True or report.get('execution_evidence') == 'synthetic_not_execution'
+    verified = not simulated and status == 'completed' and verdict == 'behavior_verified' and report.get('protected_hashes_preserved') is not False and report.get('evidence_exported') is not False
     if verified:
         headline, tone = 'Behavior verified', 'good'
     elif status == 'rejected' or verdict == 'rejected':
         headline, tone = 'Repair rejected', 'bad'
     elif status != 'completed':
         headline, tone = 'Verification incomplete', 'warn'
+    elif simulated:
+        headline, tone = ('Synthetic contract passed', 'warn') if verdict == 'synthetic_contract_passed' else ('Synthetic contract checks', 'warn')
     elif verdict == 'execution_passed':
         headline, tone = 'Execution passed; behavior unverified', 'warn'
     else:
@@ -192,8 +199,8 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     summary = '<div class="metrics">' + ''.join(
         f'<article><p>{label}</p><strong>{_escape(value)}</strong><small>{_escape(note)}</small></article>'
         for label, value, note in [
-            ('Execution checks', f'{executed} / {len(final)}' if final else 'Not run', 'Recorded final target + regression checks'),
-            ('Behavior checks', f'{behavior} / {len(final)}' if final else 'Not run', 'Recorded final checks; see coverage limits'),
+            ('Synthetic execution checks' if simulated else 'Execution checks', f'{executed} / {len(final)}' if final else 'Not run', 'Recorded final target + regression checks'),
+            ('Synthetic behavior checks' if simulated else 'Behavior checks', f'{behavior} / {len(final)}' if final else 'Not run', 'Recorded final checks; see coverage limits'),
             ('Repair source', repair_label, source_text),
             ('Model calls', usage.get('inference_calls', inference.get('model_calls', 'Not recorded')), 'Token usage below'),
         ]
@@ -203,6 +210,8 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
         findings += '<p class="finding">' + _escape(report['finding']) + '</p>'
     if not verified:
         findings += '<p>The saved run does not establish a completed behavior-verified repair.</p>'
+    if simulated:
+        findings += '<p class="qualification">Synthetic Sandbox responses only. No guest code executed, no provider calls occurred, and this is not behavioral execution evidence.</p>'
     summary += _section('outcome', 'Recorded outcome', findings)
 
     if baseline:
@@ -252,6 +261,7 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
         ('Inference calls', usage.get('inference_calls', inference.get('model_calls'))), ('Prompt tokens', inference.get('prompt_tokens')),
         ('Completion tokens', inference.get('completion_tokens')), ('Total recorded tokens', token_total),
         ('Model exploration snippet runs', inference.get('snippet_runs')), ('Final verification operations', usage.get('compute_operations')),
+        ('Simulated operation receipts', usage.get('simulated_operations')),
         ('Calls marked paid in the ledger', usage.get('paid_calls')),
     ])
     usage_body += '<p>Tokens and calls are recorded usage, not a dollar estimate or a statement about the current account balance. Calls marked paid identify live inference requests against account credits; they do not report personal spending.</p>'
@@ -276,7 +286,7 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     files = '<p>The archive contains saved source, checks, patch, logs, and a SHA-256 manifest for its listed members. This HTML is a view of that evidence, not a fresh verification.</p><div class="file-links">'
     files += ''.join(f'<a href="{name}">{label}</a>' for name, label in links)
     files += '</div>'
-    sections = summary + _section('failure', 'Original failure', original_failure) + _section('patch', 'Proposed documentation repair', code) + _section('regressions', 'Healthy example preservation', regression) + _section('provenance', 'Provenance & execution', provenance_body) + _section('usage', 'Model & usage', usage_body) + _section('operations', 'Operations & logs', operation_body) + _section('limits', 'Coverage & limitations', limits) + _section('evidence', 'Inspect the evidence', files)
+    sections = summary + _section('failure', 'Synthetic original response' if simulated else 'Original failure', original_failure) + _section('patch', 'Proposed documentation repair', code) + _section('regressions', 'Synthetic healthy contracts' if simulated else 'Healthy example preservation', regression) + _section('provenance', 'Provenance & execution', provenance_body) + _section('usage', 'Model & usage', usage_body) + _section('operations', 'Operations & logs', operation_body) + _section('limits', 'Coverage & limitations', limits) + _section('evidence', 'Inspect the evidence', files)
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
@@ -333,6 +343,7 @@ def render_evaluation_review(report: dict, *, run_links: dict[str, str] | None =
         'live_inference': 'Live inference recorded',
         'synthetic_not_evidence': 'Synthetic rehearsal; not model evidence',
         'no_model': 'No model used',
+        'synthetic_not_execution': 'Synthetic Sandbox contract; no code executed',
     }.get(evidence, 'Evidence source not established') if isinstance(evidence, str) else 'Evidence source not established'
     held_out = report.get('include_held_out')
     held_out_label = 'Included in this saved report' if held_out is True else 'Excluded from this saved report' if held_out is False else 'Not recorded'
@@ -344,6 +355,7 @@ def render_evaluation_review(report: dict, *, run_links: dict[str, str] | None =
         ('Inventory SHA-256', inventory_label), ('Inventory name', report.get('inventory_name')),
         ('Inventory case count', report.get('inventory_case_count')),
         ('Total recorded compute operations', report.get('compute_operations')),
+        ('Simulated operation receipts', report.get('simulated_operations')),
     ])
     if not fingerprint:
         facts += '<p class="qualification">Historical inventory unspecified. This report does not establish which later fixture additions were present. Only its saved case rows are shown.</p>'
@@ -355,7 +367,9 @@ def render_evaluation_review(report: dict, *, run_links: dict[str, str] | None =
         facts += '<p>Execution was recorded as local Docker. This report does not establish Nebius Sandbox execution or competition eligibility.</p>'
     else:
         facts += '<p>The backend is shown as recorded. This review does not probe provider access or establish that a contract double executed code.</p>'
-    if evidence == 'synthetic_not_evidence':
+    if evidence == 'synthetic_not_execution':
+        facts += '<p class="qualification">Sandbox responses are synthetic. No code executed and no provider calls occurred. These contract rows are unscored and establish no verified repairs or model performance.</p>'
+    elif evidence == 'synthetic_not_evidence':
         facts += '<p class="qualification">Synthetic model responses rehearse the evaluation pipeline. Recorded repair verdicts are not evidence of live model performance.</p>'
     elif evidence == 'live_inference':
         facts += '<p>The evaluation records a live inference client. Execution-only, healthy, unsupported and setup rows may use no model calls; usage is shown per strategy.</p>'

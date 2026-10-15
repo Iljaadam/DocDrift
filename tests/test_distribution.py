@@ -152,4 +152,5 @@ def test_actual_wheel_installs_outside_checkout_and_runs_only_offline_commands(t
     assert artifacts["fixture_hashes_preserved"] and smoke["installed_outside_checkout"]
     assert smoke["fixture_inspection"] and smoke["offline_synthetic_contract"]
     assert smoke["static_policy_challenge"]
+    assert smoke['synthetic_sandbox_repair'] and smoke['evidence_integrity']
     assert smoke["live_requests"] == smoke["paid_calls"] == smoke["code_executions"] == 0

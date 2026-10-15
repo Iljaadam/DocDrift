@@ -21,10 +21,12 @@ from pathlib import Path
 from typing import Callable
 
 from .adapters import ExecutionRequest
+from .execution import is_simulated, perform_execution
 from .markdown import extract_examples
 from .profile import ProfileError, check_result, load_profile
 from .repair import STRATEGIES, RepairBudget, RepairContext, describe_failure
 from .snapshot import resolve_local, sha256
+from .store import StateStore
 
 
 ALL_STRATEGIES = ('execution_only', 'one_shot', 'agent')
@@ -41,22 +43,24 @@ def _selected_cases(index: dict, include_held_out: bool) -> list[dict]:
 
 
 class _Executor:
-    def __init__(self, adapter, image: str):
+    def __init__(self, adapter, image: str, state_root: Path):
         self.adapter = adapter
         self.image_id = None
         self.image = image
         self.operations = 0
+        self.probe_index = 0
+        self.store = StateStore(state_root)
+        self.run_id = uuid.uuid4().hex
+        self.store.create_run(self.run_id, {'kind': 'evaluation_probes', 'execution_backend': type(adapter).__name__, 'synthetic_execution': is_simulated(adapter)})
 
     def run(self, snapshot: Path, code: str, env: dict) -> dict:
         if self.image_id is None:
             preflight = self.adapter.preflight(self.image)
             self.image_id = preflight.get('image_id') or preflight.get('image')
+        result = perform_execution(self.adapter, self.store, self.run_id, f'probe/{self.probe_index}',
+                                   ExecutionRequest(snapshot=snapshot, code=code, environment=env, image=self.image_id, timeout_seconds=30))
+        self.probe_index += 1
         self.operations += 1
-        result = asdict(self.adapter.execute(ExecutionRequest(snapshot=snapshot, code=code, environment=env, image=self.image_id, timeout_seconds=30), on_accepted=lambda _: None))
-        if result.get('operation_id'):
-            self.adapter.cancel(result['operation_id'])
-            if hasattr(self.adapter, 'cleanup'):
-                self.adapter.cleanup(result['operation_id'])
         return result
 
 
@@ -121,7 +125,7 @@ def _profiled_case(source: Path, profile_path: Path, selected: dict, strategies:
             report = start_run(repository, 'HEAD', profile_path, replacement, state_root, image, executor.adapter, repair_record=proposal)
             row.update({'outcome': report['repair_verdict'], 'run_id': report['run_id'], 'run_status': report['status'],
                         'verified': report['repair_verdict'] == 'behavior_verified'})
-            executor.operations += report['usage']['compute_operations']
+            executor.operations += report['usage']['compute_operations'] + report['usage'].get('simulated_operations', 0)
     return rows
 
 
@@ -134,11 +138,17 @@ def evaluate_fixture(fixture: Path, strategy: str, client, state_root: Path, ima
     profile_path = fixture / 'profile.json'
     profile, _ = load_profile(profile_path)
     adapter = adapter or LocalDockerAdapter(StateStore(state_root).root / 'docker-operations')
-    executor = _Executor(adapter, image)
+    if is_simulated(adapter) and getattr(client, 'live', False):
+        raise ValueError('Sandbox simulation accepts synthetic replay only; live inference is disabled')
+    executor = _Executor(adapter, image, state_root)
     [row] = _profiled_case(fixture / 'repository', profile_path, profile['target'], [strategy], executor, client=client, budget=budget,
                            state_root=state_root, image=image, prepare_repository=prepare_repository or demo_repository)
-    row['evidence'] = 'live_inference' if getattr(client, 'live', False) else 'synthetic_not_evidence'
-    row['compute_operations'] = executor.operations
+    row['evidence'] = 'synthetic_not_execution' if is_simulated(adapter) else 'live_inference' if getattr(client, 'live', False) else 'synthetic_not_evidence'
+    row['compute_operations'] = 0 if is_simulated(adapter) else executor.operations
+    row['simulated_operations'] = executor.operations if is_simulated(adapter) else 0
+    row['probe_run_id'] = executor.run_id
+    if is_simulated(adapter):
+        row.update(scored=False, synthetic_execution=True, live_requests=0, code_executions=0)
     return row
 
 
@@ -151,12 +161,14 @@ def evaluate(index_path: Path, strategies: list[str], state_root: Path, *, adapt
         raise ValueError(f'Unknown strategies: {sorted(unknown)}')
     if any(name in STRATEGIES for name in strategies) and client is None:
         raise ValueError('Model strategies need a model client')
+    if is_simulated(adapter) and getattr(client, 'live', False):
+        raise ValueError('Sandbox simulation accepts synthetic replay only; live inference is disabled')
     prepare_repository = prepare_repository or demo_repository
     index_bytes = index_path.read_bytes()
     index = json.loads(index_bytes)
     cases = _selected_cases(index, include_held_out)
     root = index_path.resolve().parents[2]
-    executor = _Executor(adapter, image)
+    executor = _Executor(adapter, image, state_root)
     rows = []
     for case in cases:
         base = {'case': case['id'], 'kind': case['kind'], 'split': case['split'], 'label': case['label']}
@@ -171,13 +183,17 @@ def evaluate(index_path: Path, strategies: list[str], state_root: Path, *, adapt
                                  client=client, budget=budget, state_root=state_root, image=image, prepare_repository=prepare_repository)
         rows += [base | row for row in results]
     live = client is not None and bool(getattr(client, 'live', False))
-    evidence = 'no_model' if client is None else 'live_inference' if live else 'synthetic_not_evidence'
+    if is_simulated(adapter):
+        rows = [row | {'scored': False, 'synthetic_execution': True} for row in rows]
+    evidence = 'synthetic_not_execution' if is_simulated(adapter) else 'no_model' if client is None else 'live_inference' if live else 'synthetic_not_evidence'
     return {'kind': 'docdrift_evaluation', 'evidence': evidence, 'execution_backend': type(adapter).__name__,
             'inventory_sha256': sha256(index_bytes), 'inventory_name': index.get('name', index_path.parent.name),
             'inventory_case_count': len(index['cases']), 'selected_case_ids': [case['id'] for case in cases],
             'model': getattr(client, 'model', None), 'strategies': strategies, 'include_held_out': include_held_out,
             'budget': asdict(budget), 'rows': rows, 'summary': summarize(rows, strategies),
-            'compute_operations': executor.operations}
+            'compute_operations': 0 if is_simulated(adapter) else executor.operations,
+            'simulated_operations': executor.operations if is_simulated(adapter) else 0, 'probe_run_id': executor.run_id,
+            **({'live_requests': 0, 'code_executions': 0} if is_simulated(adapter) else {})}
 
 
 def summarize(rows: list[dict], strategies: list[str]) -> dict:

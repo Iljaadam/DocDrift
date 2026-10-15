@@ -30,7 +30,10 @@ The check validates frozen fixture inventory and SHA-256 hashes, source and whee
 licenses, the console entry point, wheel RECORD hashes, and package-source parity.
 It installs the wheel with runtime dependencies exported from `uv.lock`, then
 checks console help, `demo --inspect-only`, `sandbox-contract-demo`, and the static
-`challenge` command.
+`challenge` command. It also runs a scripted repair through the connected HTTP-mock
+Sandbox backend, checks that every outcome remains synthetic and unscored, and
+validates that export with the installed `verify-evidence` command. None of these
+checks executes target code or contacts a provider.
 The installed smoke strips provider credentials and Python checkout paths,
 blocks socket connections, and permits only local Git subprocesses. It runs no
 Docker command, target snippet, inference, or provider request. The synthetic

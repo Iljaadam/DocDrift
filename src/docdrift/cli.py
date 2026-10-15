@@ -50,6 +50,25 @@ def add_model_arguments(command) -> None:
     command.add_argument('--max-model-calls', type=int, default=8)
 
 
+def execution_backend(args, fixtures: list[Path]):
+    """Select explicit offline mocks without ever reading provider credentials."""
+    if args.execution_backend == 'sandbox-simulation':
+        if args.live:
+            raise ValueError('Sandbox simulation requires synthetic replay; --live is disabled')
+        from .sandbox_simulation import IMAGE_ID, create_fixture_simulation
+        if args.image is not None and args.image != IMAGE_ID:
+            raise ValueError('Sandbox simulation uses its fixed synthetic image UUID; omit --image')
+        return create_fixture_simulation(args.state_dir, fixtures), IMAGE_ID
+    from .adapters import LocalDockerAdapter
+    from .store import StateStore
+    return LocalDockerAdapter(StateStore(args.state_dir).root / 'docker-operations'), args.image or 'python:3.12-slim'
+
+
+def close_backend(adapter) -> None:
+    if hasattr(adapter, 'close'):
+        adapter.close()
+
+
 def write_evaluation_review(report: dict, output: Path, state_root: Path) -> Path:
     from .review import render_evaluation_review
     if output.suffix.lower() != '.html':
@@ -106,13 +125,15 @@ def main() -> None:
     repair = commands.add_parser('repair', help='Propose a model repair for one owned fixture, then verify it in local Docker')
     repair.add_argument('--fixture', type=Path, default=default_fixture_path())
     repair.add_argument('--strategy', choices=['one_shot', 'agent'], default='agent')
-    repair.add_argument('--image', default='python:3.12-slim')
+    repair.add_argument('--image', default=None)
+    repair.add_argument('--execution-backend', choices=['local-docker', 'sandbox-simulation'], default='local-docker', help='Default: local Docker; Sandbox simulation uses synthetic HTTP responses and never executes guest code')
     add_model_arguments(repair)
     evaluate = commands.add_parser('evaluate', help='Score strategies over the frozen evaluation inventory with local Docker')
     evaluate.add_argument('--index', type=Path, default=Path(__file__).resolve().parents[2] / 'fixtures' / 'evaluation' / 'index.json')
     evaluate.add_argument('--strategies', default='execution_only', help='Comma-separated: execution_only,one_shot,agent')
     evaluate.add_argument('--include-held-out', action='store_true', help='Only for the final scored run')
-    evaluate.add_argument('--image', default='python:3.12-slim')
+    evaluate.add_argument('--image', default=None)
+    evaluate.add_argument('--execution-backend', choices=['local-docker', 'sandbox-simulation'], default='local-docker')
     evaluate.add_argument('--output', type=Path, default=None)
     add_model_arguments(evaluate)
     resume = commands.add_parser('resume', help='Reconcile saved local operation IDs and continue frozen phases')
@@ -124,6 +145,8 @@ def main() -> None:
     evaluation_review = commands.add_parser('review-evaluation', help='Render a saved evaluation comparison without inference or execution')
     evaluation_review.add_argument('report', type=Path)
     evaluation_review.add_argument('--output', type=Path, help='HTML output path; defaults to the saved report with .html extension')
+    verify = commands.add_parser('verify-evidence', help='Check a ZIP manifest and file hashes offline; no extraction, execution, or attestation')
+    verify.add_argument('archive', type=Path)
     args = parser.parse_args()
     try:
         if args.command == 'inspect':
@@ -159,22 +182,36 @@ def main() -> None:
         elif args.command == 'repair':
             from .evaluation import evaluate_fixture
             from .repair import RepairBudget
+            if args.execution_backend == 'sandbox-simulation' and args.live:
+                raise ValueError('Sandbox simulation requires synthetic replay; --live is disabled')
             client = model_client(args)
             if client is None:
                 raise ValueError('repair needs --live (real inference) or --replay (synthetic)')
-            result = evaluate_fixture(args.fixture, args.strategy, client, args.state_dir, args.image, RepairBudget(max_model_calls=args.max_model_calls))
+            adapter, image = execution_backend(args, [args.fixture])
+            try:
+                result = evaluate_fixture(args.fixture, args.strategy, client, args.state_dir, image, RepairBudget(max_model_calls=args.max_model_calls), adapter=adapter)
+            finally:
+                close_backend(adapter)
         elif args.command == 'evaluate':
-            from .adapters import LocalDockerAdapter
-            from .evaluation import evaluate as run_evaluation, markdown_summary
+            from .evaluation import evaluate as run_evaluation, load_cases, markdown_summary
             from .repair import RepairBudget
-            from .store import StateStore
             strategies = [name.strip() for name in args.strategies.split(',') if name.strip()]
             output = args.output or args.state_dir / 'evaluations' / 'latest.json'
             if output.suffix.lower() != '.json':
                 raise ValueError('Evaluation output must end in .json')
-            store = StateStore(args.state_dir)
-            report = run_evaluation(args.index, strategies, args.state_dir, adapter=LocalDockerAdapter(store.root / 'docker-operations'), image=args.image,
-                                    client=model_client(args), budget=RepairBudget(max_model_calls=args.max_model_calls), include_held_out=args.include_held_out)
+            if args.execution_backend == 'sandbox-simulation' and args.live:
+                raise ValueError('Sandbox simulation requires synthetic replay; --live is disabled')
+            fixtures = []
+            if args.execution_backend == 'sandbox-simulation':
+                root = args.index.resolve().parents[2]
+                fixtures = list(dict.fromkeys(root / case['fixture'] for case in load_cases(args.index, include_held_out=args.include_held_out)
+                                             if case.get('ownership') == 'owned' and case['kind'] in {'broken', 'healthy'} and case.get('profile')))
+            adapter, image = execution_backend(args, fixtures)
+            try:
+                report = run_evaluation(args.index, strategies, args.state_dir, adapter=adapter, image=image,
+                                        client=model_client(args), budget=RepairBudget(max_model_calls=args.max_model_calls), include_held_out=args.include_held_out)
+            finally:
+                close_backend(adapter)
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
             output.with_suffix('.md').write_text(markdown_summary(report))
@@ -189,7 +226,23 @@ def main() -> None:
                 raise ValueError('Choose an HTML output separate from the saved JSON report')
             result = {'review_path': str(write_evaluation_review(report, output, args.state_dir)), 'source_report': str(args.report.resolve())}
         elif args.command == 'resume':
-            result = resume_run(args.run_id, args.state_dir)
+            from .store import StateStore
+            if not re.fullmatch(r'[0-9a-f]{32}', args.run_id):
+                raise ValueError('Expected a saved 32-character run ID')
+            metadata = StateStore(args.state_dir).run(args.run_id)['metadata']
+            if metadata.get('adapter') == 'nebius_sandbox_simulation':
+                from .sandbox_simulation import create_fixture_simulation
+                adapter = create_fixture_simulation(args.state_dir, [])
+                try:
+                    adapter.simulation.register_run(args.state_dir.resolve() / 'runs' / args.run_id)
+                    result = resume_run(args.run_id, args.state_dir, adapter=adapter)
+                finally:
+                    close_backend(adapter)
+            else:
+                result = resume_run(args.run_id, args.state_dir)
+        elif args.command == 'verify-evidence':
+            from .evidence import verify_evidence
+            result = verify_evidence(args.archive)
         elif args.command == 'review':
             archive = export_evidence(args.run_id, args.state_dir)
             result = {'review_path': str(archive.parent / 'review.html'), 'archive': str(archive)}

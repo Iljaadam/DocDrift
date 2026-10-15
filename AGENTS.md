@@ -57,6 +57,8 @@ uv run --no-sync docdrift evaluate --strategies execution_only    # baseline, lo
 uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic rehearsal
 uv run --no-sync docdrift review <run-id>                    # saved evidence, no execution
 uv run --no-sync docdrift review-evaluation saved.json       # saved comparison, no execution
+uv run --no-sync docdrift verify-evidence evidence.zip       # offline hashes, no extraction
+uv run --no-sync docdrift evaluate --execution-backend sandbox-simulation # synthetic HTTP only
 ```
 
 Run state lives in `.docdrift/` (gitignored).

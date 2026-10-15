@@ -86,8 +86,23 @@ NEBIUS_API_KEY=... uv run --no-sync docdrift evaluate --strategies execution_onl
 ```
 
 `evaluate --index` defaults to the checkout's `fixtures/evaluation/index.json`;
-run it from a checkout. Execution is local Docker in both commands; the Nebius
-Sandbox adapter is not wired into these paths yet.
+run it from a checkout. Execution defaults to local Docker. Both commands accept
+`--execution-backend sandbox-simulation`, which uses persistent synthetic REST
+responses without Docker, guest execution, credentials, or network calls. Live
+Sandbox execution remains disabled. Simulation rejects `--live`; model strategies
+require an explicit synthetic `--replay`.
+
+Simulation matches only registered fixture snippet/input pairs and protected
+package bytes. It does not execute Python or predict arbitrary model proposals;
+unknown probes receive an explicitly synthetic failure. Rows remain unscored,
+use `synthetic_not_execution`, and never count as verified repairs. Final checks
+can yield `synthetic_contract_passed`; every example's `verified` flag stays false.
+Simulated receipts are counted separately from compute operations.
+
+Shared routing persists evaluation baseline/model-probe IDs as well as final
+verifier IDs. Probe scope IDs appear in reports. Final verifier `resume` recovers
+the saved backend/IDs and original run limits without restarting inference.
+Resuming an interrupted model session itself is not implemented.
 
 ## Observed so far (local Docker, no model, Oct 14)
 

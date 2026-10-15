@@ -51,6 +51,7 @@ its report, patch, original/repaired snippets, profile, source snapshots, ledger
 uv run --no-sync docdrift resume <run-id>
 uv run --no-sync docdrift export <run-id>
 uv run --no-sync docdrift review <run-id>
+uv run --no-sync docdrift verify-evidence .docdrift/runs/<run-id>/evidence.zip
 uv run --no-sync pytest
 ```
 
@@ -61,6 +62,9 @@ synthetic replays, and live model proposals separately. Its download link uses
 the adjacent `evidence.zip`; the ZIP also includes the HTML in its SHA-256
 manifest. `review` regenerates saved evidence without executing code or making
 model/provider requests. A saved review is evidence browsing, not a live repair service.
+`verify-evidence` checks ZIP structure, member coverage, CRCs, and SHA-256 hashes
+without extracting or executing anything. `integrity_verified` does not prove
+origin or substantiate saved execution claims. See [evidence boundaries](docs/EVIDENCE.md).
 
 The CLI wheel includes its frozen owned fixture and license, so inspection,
 synthetic contracts, and the static challenge also work outside a checkout.
@@ -126,6 +130,22 @@ acceptance, recovery of the same ID, refusal to repeat an ambiguous submission,
 nonzero process status despite service success, cancellation, and artifact bytes.
 The resulting labeled report is saved under `.docdrift/contracts/<run-id>/`.
 See [the REST contract and live-access gaps](docs/NEBIUS_CONTRACT.md).
+
+The same adapter is connected to `repair` and `evaluate` in explicit simulation:
+
+```sh
+uv run --no-sync docdrift evaluate --execution-backend sandbox-simulation \
+  --index fixtures/development/index.json --strategies execution_only \
+  --output .docdrift/evaluations/sandbox-contract.json
+```
+
+This manufactures synthetic HTTP responses from supplied owned fixture contracts.
+It needs neither Docker nor credentials and executes no guest code. Rows stay
+unscored with `evidence: synthetic_not_execution`; successful mock repairs are
+`synthetic_contract_passed`, never `behavior_verified`. `repair` accepts this
+backend with `--replay`; `--live` is rejected before client construction.
+Interrupted final verification resumes saved operation IDs using the saved
+backend. Unresolved uploads and submissions are not retried.
 
 Live mutation methods reject before contacting a transport. The only mutation
 path requires an explicitly selected `httpx.MockTransport`. Token Factory

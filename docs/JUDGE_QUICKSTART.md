@@ -41,7 +41,12 @@ Regenerate a saved review without any execution:
 
 ```sh
 uv run --no-sync docdrift review <run-id>
+uv run --no-sync docdrift verify-evidence .docdrift/runs/<run-id>/evidence.zip
 ```
+
+The integrity command checks ZIP members and manifest hashes without extraction
+or execution. Success is not proof of origin or execution; see [evidence
+boundaries](EVIDENCE.md).
 
 Run the rejection challenge and synthetic provider contract:
 
@@ -53,6 +58,16 @@ uv run --no-sync docdrift sandbox-contract-demo
 The challenge checks deliberately constructed bad patches, with no code
 execution. The Sandbox contract command uses synthetic responses, not Nebius
 runtime access. Neither command consumes provider credits.
+
+Exercise the connected evaluation path without Docker:
+
+```sh
+uv run --no-sync docdrift evaluate --execution-backend sandbox-simulation \
+  --strategies execution_only --output .docdrift/evaluations/sandbox-contract.json
+```
+
+This generates synthetic HTTP receipts from owned fixture contracts and runs no
+guest code. Rows are explicitly unscored and establish no verified repairs.
 
 ## Compare recorded strategies
 

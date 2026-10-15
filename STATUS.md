@@ -44,7 +44,8 @@ call. All execution so far is local Docker.
 **Evaluation and review (milestone 4)**
 - [x] 14-case inventory frozen; two held-out broken cases reserved
 - [x] Execution-only and one-shot baselines + `docdrift evaluate` harness
-- [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
+- [x] Wire `repair`/`evaluate` through offline Sandbox bridge with persistent synthetic
+  responses; live Sandbox transport remains disabled, outcomes unscored
 - [x] Live development-split run: one_shot 2/2, agent 2/2 verified (F4)
 - [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
 - [x] D9 approved Oct 15: frozen supplemental source-inspection development fixture
@@ -55,6 +56,8 @@ call. All execution so far is local Docker.
 - [x] Self-contained HTML review in evidence ZIPs; `docdrift review <run-id>` renders
   saved live Nemotron repairs without inference/execution or rescoring (Oct 15)
 - [x] HTML strategy comparison with inventory fingerprints and `review-evaluation`
+- [x] Offline `verify-evidence` validates ZIP structure, manifest coverage, CRCs,
+  and hashes without extraction or execution; no origin/execution attestation
 - [x] Free credential-free local judge quickstart (`docs/JUDGE_QUICKSTART.md`);
   demonstrates a manual repair, so free live-agent access below remains unresolved
 - [x] CLI wheel with fixtures, offline install check
@@ -73,8 +76,9 @@ call. All execution so far is local Docker.
   not an independently verified budget (first repair ~7k tokens).
 
 **Next**, in order: (1) await the Sandbox access application response and user OK
-for read-only `whoami` (project ID recorded above); (2) if access and coverage permit, wire the Sandbox
-adapter into `repair`/`evaluate` (live execution still needs separate approval);
+for read-only `whoami` (project ID recorded above); (2) if access and coverage permit,
+validate actual Sandbox capabilities and design approved live execution activation
+(the connected bridge currently permits HTTP mocks only);
 (3) decide timing/backend for the scored held-out run (D8); (4) complete the free
 live-agent judge-access route and submission evidence. D9 and its single
 supplemental comparison are complete; D8 remains proposed.
@@ -122,6 +126,15 @@ Who decided what, and when. Don't reverse one without the user.
   evaluation inputs and retain all proposal transcripts, including failures.
   Compare once with bounded approved inference after fixture freeze; no retries
   or fixture tuning to manufacture an agent advantage.
+- D14 (user, Oct 15, "let's do that both"): Build offline Sandbox integration and
+  the offline evidence-integrity command while provider approval is pending.
+  This grants no live Sandbox call authorization.
+- D15 (agent, Oct 15): Synthetic execution uses `synthetic_not_execution` evidence,
+  unscored evaluation rows, zero real compute operations, and
+  `synthetic_contract_passed` instead of `behavior_verified`. Persist upload and
+  execution receipts before requests; resume accepted IDs, never retry uncertainty.
+  Integrity verification checks unsigned bytes and makes no authenticity or
+  execution-attestation claim.
 
 ## Session log
 
@@ -182,6 +195,16 @@ Who decided what, and when. Don't reverse one without the user.
   evaluation artifacts unchanged, no held-out model or Sandbox calls. 526 tests
   and wheel check passed before inference; code unchanged since. Next: provider
   Sandbox approval, D8 decision, and free live-agent judge access.
+- 2026-10-15 (offline Sandbox and integrity): Connected `repair`/`evaluate` to a
+  persistent HTTP-mock Sandbox bridge, journaled model probes and uploads, and
+  tested accepted-ID/timeout recovery across final target and healthy checks.
+  Synthetic rows stay unscored with no verified examples or real compute counts.
+  Added bounded `verify-evidence` with adversarial ZIP tests and explicit
+  integrity-only claims. 644 tests pass; installed wheel exercises synthetic
+  repair plus integrity checks with sockets/subprocesses blocked; real Docker
+  demo still behavior_verified (12 operations). Both frozen inventories unchanged.
+  No live Sandbox calls or inference used. Next: provider access approval, then
+  approved live capability checks/activation; D8 and free live judging remain open.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

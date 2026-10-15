@@ -52,10 +52,16 @@ class ExecutionResult:
     stderr: str
     operation_id: str | None
     image_id: str | None
-    elapsed_seconds: float
+    elapsed_seconds: float | None
     timed_out: bool = False
     stdout_truncated: bool = False
     stderr_truncated: bool = False
+    service_state: str | None = None
+    signal: int | None = None
+    observation_timed_out: bool = False
+    evidence_complete: bool = True
+    synthetic: bool = False
+    error_code: str | None = None
 
 
 class AdapterError(RuntimeError):

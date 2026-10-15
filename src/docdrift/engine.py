@@ -16,6 +16,7 @@ from pathlib import Path
 
 from .adapters import ExecutionRequest, LocalDockerAdapter
 from .challenge import validate_protected_changes
+from .execution import backend_name, is_simulated, perform_execution
 from .markdown import extract_examples
 from .policy import PolicyError, apply_replacement
 from .profile import ProfileError, check_result, freeze_profile, load_profile
@@ -30,7 +31,9 @@ MAX_RUN_SECONDS = 900
 
 def failure_signature(record: dict) -> tuple | None:
     result = record['result']
-    if result.get('state') != 'completed' or result.get('timed_out') or type(result.get('exit_code')) is not int:
+    if (result.get('state') != 'completed' or result.get('timed_out') or result.get('observation_timed_out')
+            or result.get('evidence_complete', True) is not True or result.get('signal') not in {None, 0}
+            or result.get('service_state') not in {None, 'SUCCESS'} or type(result.get('exit_code')) is not int):
         return None
     if result.get('stdout_truncated') or result.get('stderr_truncated'):
         return None
@@ -112,7 +115,7 @@ def start_run(repository: Path, ref: str, profile_path: Path, replacement_path: 
     provenance = resolve_local(repository, ref, run_dir / 'original')
     profile_hashes = freeze_profile(profile_files, run_dir / 'profile')
     (run_dir / 'replacement.py').write_bytes(replacement)
-    metadata = {'provenance': provenance, 'profile_hashes': profile_hashes, 'replacement_sha256': sha256(replacement), 'image': image, 'adapter': 'local_docker', 'repair_source': 'supplied_manual_patch', 'paid_calls_enabled': False}
+    metadata = {'provenance': provenance, 'profile_hashes': profile_hashes, 'replacement_sha256': sha256(replacement), 'image': image, 'adapter': backend_name(adapter), 'synthetic_execution': is_simulated(adapter), 'execution_contract': getattr(adapter, 'execution_contract', None), 'repair_source': 'supplied_manual_patch', 'paid_calls_enabled': False}
     if repair_record is not None:
         if repair_record.get('replacement') != replacement.decode('utf-8'):
             raise PolicyError('The repair record does not match the replacement being verified')
@@ -159,13 +162,23 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
     if 'finished' in saved['phases'] and report_path.is_file():
         return json.loads(report_path.read_text())
     adapter = adapter or LocalDockerAdapter(store.root / 'docker-operations')
+    if backend_name(adapter) != metadata['adapter']:
+        raise ValueError('Resume requires the same execution backend as the saved run')
+    synthetic = is_simulated(adapter)
+    if synthetic != metadata.get('synthetic_execution', False):
+        raise ValueError('Saved execution evidence type does not match the adapter')
     deadline = datetime.fromisoformat(saved['created_at']).timestamp() + MAX_RUN_SECONDS
-    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': 'local_docker', 'repair_source': metadata['repair_source'], 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': metadata.get('inference_usage', {}).get('model_calls', 0), 'paid_calls': metadata.get('inference_usage', {}).get('model_calls', 0) if metadata.get('paid_calls_enabled') else 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs across declared inputs, the required API call, and that call result reaching the printed output (static must-flow check) are checked. This local owned-fixture run does not establish Nebius access or competition eligibility.'}
+    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': metadata['adapter'], 'synthetic_execution': synthetic, 'execution_evidence': 'synthetic_not_execution' if synthetic else 'recorded_execution', 'repair_source': metadata['repair_source'], 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': metadata.get('inference_usage', {}).get('model_calls', 0), 'paid_calls': metadata.get('inference_usage', {}).get('model_calls', 0) if metadata.get('paid_calls_enabled') else 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs across declared inputs, the required API call, and that call result reaching the printed output (static must-flow check) are checked. This owned-fixture run does not establish Nebius access or competition eligibility.'}
+    if synthetic:
+        report['coverage_note'] = 'Synthetic Sandbox responses exercise controller contracts only. No guest code executed and no provider access, network isolation, Python capability, or behavioral repair is established.'
+        report.update(live_requests=0, code_executions=0)
     write_json(report_path, report)
 
     def finish(status: str) -> dict:
         report['status'] = status
-        report['usage']['compute_operations'] = len(store.operations(run_id))
+        operation_count = len(store.operations(run_id))
+        report['usage']['compute_operations'] = 0 if synthetic else operation_count
+        report['usage']['simulated_operations'] = operation_count if synthetic else 0
         report['protected_hashes_preserved'] = file_hashes(root / 'original') == metadata['provenance']['files'] and file_hashes(root / 'profile') == metadata['profile_hashes']
         if 'patched_file_hashes' in report:
             report['protected_hashes_preserved'] = report['protected_hashes_preserved'] and file_hashes(root / 'patched') == report['patched_file_hashes']
@@ -176,7 +189,8 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
             for item in report['examples']:
                 item['verified'] = False
         report['evidence_exported'] = True
-        report['usage']['operation_count_scope'] = 'Snippet operations; excludes local Python-version preflight probes'
+        report['usage']['operation_count_scope'] = 'Simulated snippet receipts; no guest code execution' if synthetic else 'Snippet operations; excludes local Python-version preflight probes'
+        report['behavior_verified'] = not synthetic and report['repair_verdict'] == 'behavior_verified' and report['status'] == 'completed'
         write_json(report_path, report)
         try:
             export_evidence(run_id, state_root)
@@ -185,6 +199,7 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
             report['evidence_exported'] = False
             report['repair_verdict'] = 'execution_passed' if report['repair_verdict'] == 'behavior_verified' else report['repair_verdict']
             report['finding'] = f'Evidence export is incomplete: {exc}'
+            report['behavior_verified'] = False
             for item in report['examples']:
                 item['verified'] = False
             write_json(report_path, report)
@@ -232,26 +247,20 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
             else:
                 if datetime.now(timezone.utc).timestamp() > deadline:
                     raise RuntimeError('Run time budget exhausted; verification is incomplete')
-                if existing:
-                    result = asdict(adapter.observe(existing['operation_id'], timeout_seconds=30))
-                else:
-                    if len(operations) >= MAX_OPERATIONS:
-                        raise RuntimeError('Operation budget exhausted; verification is incomplete')
-                    request = ExecutionRequest(snapshot=snapshot, code=example['code'], environment=case['env'], image=image_id, timeout_seconds=30)
-                    result = asdict(adapter.execute(request, on_accepted=lambda op: store.save_operation(run_id, key, op)))
-                if not result.get('operation_id'):
-                    raise RuntimeError('Missing operation identity; do not retry an uncertain submission')
-                store.complete_operation(run_id, result['operation_id'], result)
-                # Retain operation identity and bounded logs in the evidence, then release local container.
-                adapter.cancel(result['operation_id'])
-                if hasattr(adapter, 'cleanup'):
-                    adapter.cleanup(result['operation_id'])
+                if not existing and len(operations) >= MAX_OPERATIONS:
+                    raise RuntimeError('Operation budget exhausted; verification is incomplete')
+                request = ExecutionRequest(snapshot=snapshot, code=example['code'], environment=case['env'], image=image_id, timeout_seconds=30)
+                result = perform_execution(adapter, store, run_id, key, request)
             if result.get('image_id') != image_id:
                 raise RuntimeError('Execution result came from a different environment image')
+            if result.get('synthetic') and not synthetic:
+                raise RuntimeError('Synthetic observations cannot verify a recorded-execution run')
             checks = check_result(result, case, example['code'], spec['required_call'], spec['operation_ast_sha256'])
             record = {'phase': phase, 'example_id': example['id'], 'case_id': case['id'], 'result': result, 'checks': checks}
             report['results'].append(record)
             write_json(report_path, report)
+            if result.get('observation_timed_out') or result.get('state') == 'pending':
+                raise RuntimeError('Operation observation is incomplete; resume will reconcile its saved ID')
             return record
 
         initial_case = target_spec['cases'][0]
@@ -265,7 +274,7 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
         confirmed = execute('confirm_original', target_spec, target, initial_case, root / 'original')
         if failure_signature(original) is None or failure_signature(confirmed) != failure_signature(original):
             return finish('incomplete')
-        report['diagnosis'] = 'documentation_drift'
+        report['diagnosis'] = 'simulated_documentation_drift' if synthetic else 'documentation_drift'
         report['original_failure_kind'] = 'process_exit' if original_result['exit_code'] != 0 else 'frozen_acceptance_check'
         for spec, item in healthy:
             for case in spec['cases']:
@@ -297,8 +306,8 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
         regressions = [execute('healthy_regression', spec, item, case, patched) for spec, item in healthy for case in spec['cases']]
         checks_pass = all(record['checks']['behavior_passed'] for record in final + regressions)
         execution_pass = all(record['checks']['execution_passed'] for record in final + regressions)
-        report['repair_verdict'] = 'behavior_verified' if checks_pass else 'execution_passed' if execution_pass else 'rejected'
-        if checks_pass:
+        report['repair_verdict'] = ('synthetic_contract_passed' if checks_pass else 'synthetic_contract_failed') if synthetic else 'behavior_verified' if checks_pass else 'execution_passed' if execution_pass else 'rejected'
+        if checks_pass and not synthetic:
             for item in report['examples']:
                 item['verified'] = item['profiled'] and item['status'] == 'candidate'
         report['healthy_preservation'] = {'required_examples': len(healthy), 'required_cases': len(regressions), 'all_passed': all(record['checks']['behavior_passed'] for record in regressions)}
@@ -331,8 +340,9 @@ def export_evidence(run_id: str, state_root: Path) -> Path:
         commands = []
         logs = root / 'logs'
         logs.mkdir(exist_ok=True)
+        contract = run['metadata'].get('execution_contract') or {'executable': 'python', 'arguments': ['-B', '/work/example.py'], 'network': 'none'}
         for operation in run['operations']:
-            commands.append({'operation_id': operation['operation_id'], 'phase': operation['phase'], 'executable': 'python', 'arguments': ['-B', '/work/example.py'], 'network': 'none', 'timeout_seconds': 30})
+            commands.append({**contract, 'operation_id': operation['operation_id'], 'phase': operation['phase'], 'timeout_seconds': 30})
             if operation['result']:
                 for stream_name in ['stdout', 'stderr']:
                     (logs / f"{operation['operation_id']}.{stream_name}.txt").write_text(operation['result'][stream_name])
@@ -346,6 +356,8 @@ def export_evidence(run_id: str, state_root: Path) -> Path:
         if sum(path.stat().st_size for path in sources.values()) > 20 * 1024 * 1024:
             raise ValueError('Evidence exceeds 20 MiB; archive export is incomplete')
         temporary_manifest.write_text(json.dumps({'algorithm': 'sha256', 'files': {name: sha256(path.read_bytes()) for name, path in sources.items()}}, indent=2) + '\n', encoding='utf-8')
+        if temporary_manifest.stat().st_size + sum(path.stat().st_size for path in sources.values()) > 20 * 1024 * 1024:
+            raise ValueError('Evidence including manifest exceeds 20 MiB; archive export is incomplete')
         with zipfile.ZipFile(temporary_archive, 'w', zipfile.ZIP_DEFLATED) as stream:
             for name, path in sources.items():
                 stream.write(path, name)
