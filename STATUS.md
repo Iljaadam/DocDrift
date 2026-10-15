@@ -47,10 +47,14 @@ call. All execution so far is local Docker.
 - [ ] Wire the Nebius Sandbox adapter into `repair`/`evaluate` (local Docker only today)
 - [x] Live development-split run: one_shot 2/2, agent 2/2 verified (F4)
 - [x] Fixture prose made neutral and re-frozen (F5); dev rerun still 2/2 for both strategies
-- [ ] Decide D9: add a source-only case (no current-API neighbor) so agent vs one_shot separates (F5)
+- [x] D9 approved Oct 15: frozen supplemental source-inspection development fixture
+  and unrelated healthy neighbor (`fixtures/development/`); original 14 cases unchanged
 - [ ] Scored held-out run, once (D8)
 - [x] Self-contained HTML review in evidence ZIPs; `docdrift review <run-id>` renders
   saved live Nemotron repairs without inference/execution or rescoring (Oct 15)
+- [x] HTML strategy comparison with inventory fingerprints and `review-evaluation`
+- [x] Free credential-free local judge quickstart (`docs/JUDGE_QUICKSTART.md`);
+  demonstrates a manual repair, so free live-agent access below remains unresolved
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
@@ -69,8 +73,8 @@ call. All execution so far is local Docker.
 **Next**, in order: (1) await the Sandbox access application response and user OK
 for read-only `whoami` (project ID recorded above); (2) if access and coverage permit, wire the Sandbox
 adapter into `repair`/`evaluate` (live execution still needs separate approval);
-(3) settle D9 before adding a source-only case; (4) scored held-out run (D8).
-HTML review work is complete; D8/D9 remain proposed.
+(3) one bounded supplemental-development comparison after its fixture freeze;
+(4) scored held-out run (D8). D9 is approved; D8 remains proposed.
 
 ## Decisions
 
@@ -95,8 +99,10 @@ Who decided what, and when. Don't reverse one without the user.
   held-out model run (F4, F5).
 - D8 (proposed by agent, awaiting user): run the held-out split once, after Sandbox wiring.
   If there is no Sandbox by Oct 22, run it on local Docker and label it so.
-- D9 (proposed by agent, awaiting user): add a fixture whose fix needs the source (no
-  current-API neighbour, no traceback hint), so the agent can beat one-shot.
+- D9 (user-approved Oct 15, "go for it"; originally proposed by agent): add a
+  source-inspection development fixture with no current-API neighbor or intended
+  traceback hint. Test whether source tools help; one-shot guessing remains possible
+  and no agent advantage is guaranteed. Keep original held-out cases unchanged.
 - D10 (user, Oct 15): Token Factory credits are already on the account; user estimates
   approximately $30 after initially saying $25. Record this as user-reported receipt,
   not an exact verified balance or evidence of Sandbox coverage. The $0 personal-spend
@@ -108,6 +114,11 @@ Who decided what, and when. Don't reverse one without the user.
 - D12 (user, Oct 15): Supplied the Nebius project ID recorded above and reported
   applying for Sandbox access. Await provider approval; this is not confirmation
   of access, credit coverage, or authorization for a live Sandbox call.
+- D13 (agent, Oct 15): Keep D9 in a separate supplemental development inventory;
+  preserve the original fourteen-case bytes and prior results. Fingerprint new
+  evaluation inputs and retain all proposal transcripts, including failures.
+  Compare once with bounded approved inference after fixture freeze; no retries
+  or fixture tuning to manufacture an agent advantage.
 
 ## Session log
 
@@ -153,6 +164,14 @@ Who decided what, and when. Don't reverse one without the user.
 - 2026-10-15 (access update): Saved the user-supplied Nebius project ID and recorded
   the submitted Sandbox application; awaiting provider response and user approval
   before any live check. No provider calls. 488 tests pass.
+- 2026-10-15 (development fixture): Implemented approved D9 in a separately frozen
+  two-case inventory, preserving all 41 original evaluation artifacts. Manual
+  Docker verification passed 3 target and 3 healthy cases (12 operations), with no
+  replacement-API hint in the original traceback. Added HTML evaluation comparison,
+  saved-report rendering, inventory hashes, failed-proposal records, and a free
+  manual local judge quickstart. 526 tests and offline wheel install pass.
+  Next: one bounded live supplemental comparison;
+  Sandbox access and D8 remain pending.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

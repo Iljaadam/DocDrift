@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -47,6 +48,32 @@ def add_model_arguments(command) -> None:
     command.add_argument('--live', action='store_true', help='Send real inference requests; uses NEBIUS_API_KEY and may consume credits')
     command.add_argument('--replay', type=Path, help='Synthetic scripted responses (JSON list); not model evidence')
     command.add_argument('--max-model-calls', type=int, default=8)
+
+
+def write_evaluation_review(report: dict, output: Path, state_root: Path) -> Path:
+    from .review import render_evaluation_review
+    if output.suffix.lower() != '.html':
+        raise ValueError('Evaluation review output must end in .html')
+    links = {}
+    for row in report.get('rows', []):
+        run_id = row.get('run_id', '')
+        if not isinstance(run_id, str) or not re.fullmatch(r'[0-9a-f]{32}', run_id):
+            continue
+        review = state_root.resolve() / 'runs' / run_id / 'review.html'
+        if review.is_file():
+            links[run_id] = Path(os.path.relpath(review, output.resolve().parent)).as_posix()
+    output.parent.mkdir(parents=True, exist_ok=True)
+    html = render_evaluation_review(report, run_links=links)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=output.parent, prefix='docdrift-evaluation-', suffix='.html.tmp', delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(html)
+        temporary.replace(output)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    return output.resolve()
 
 
 def main() -> None:
@@ -94,6 +121,9 @@ def main() -> None:
     export.add_argument('run_id')
     review = commands.add_parser('review', help='Generate an HTML review and evidence ZIP from a saved run without executing code')
     review.add_argument('run_id')
+    evaluation_review = commands.add_parser('review-evaluation', help='Render a saved evaluation comparison without inference or execution')
+    evaluation_review.add_argument('report', type=Path)
+    evaluation_review.add_argument('--output', type=Path, help='HTML output path; defaults to the saved report with .html extension')
     args = parser.parse_args()
     try:
         if args.command == 'inspect':
@@ -139,14 +169,25 @@ def main() -> None:
             from .repair import RepairBudget
             from .store import StateStore
             strategies = [name.strip() for name in args.strategies.split(',') if name.strip()]
+            output = args.output or args.state_dir / 'evaluations' / 'latest.json'
+            if output.suffix.lower() != '.json':
+                raise ValueError('Evaluation output must end in .json')
             store = StateStore(args.state_dir)
             report = run_evaluation(args.index, strategies, args.state_dir, adapter=LocalDockerAdapter(store.root / 'docker-operations'), image=args.image,
                                     client=model_client(args), budget=RepairBudget(max_model_calls=args.max_model_calls), include_held_out=args.include_held_out)
-            output = args.output or args.state_dir / 'evaluations' / 'latest.json'
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
             output.with_suffix('.md').write_text(markdown_summary(report))
-            result = {'evidence': report['evidence'], 'summary': report['summary'], 'report_path': str(output.resolve())}
+            html = write_evaluation_review(report, output.with_suffix('.html'), args.state_dir)
+            result = {'evidence': report['evidence'], 'summary': report['summary'], 'report_path': str(output.resolve()), 'review_path': str(html)}
+        elif args.command == 'review-evaluation':
+            report = json.loads(args.report.read_text())
+            if report.get('kind') != 'docdrift_evaluation':
+                raise ValueError('Expected a saved docdrift_evaluation report')
+            output = args.output or args.report.with_suffix('.html')
+            if output.resolve() == args.report.resolve() or output.exists() and os.path.samefile(output, args.report):
+                raise ValueError('Choose an HTML output separate from the saved JSON report')
+            result = {'review_path': str(write_evaluation_review(report, output, args.state_dir)), 'source_report': str(args.report.resolve())}
         elif args.command == 'resume':
             result = resume_run(args.run_id, args.state_dir)
         elif args.command == 'review':

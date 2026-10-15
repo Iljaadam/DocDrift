@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+import uuid
 from dataclasses import asdict
 from pathlib import Path
 from typing import Callable
@@ -23,7 +24,7 @@ from .adapters import ExecutionRequest
 from .markdown import extract_examples
 from .profile import ProfileError, check_result, load_profile
 from .repair import STRATEGIES, RepairBudget, RepairContext, describe_failure
-from .snapshot import resolve_local
+from .snapshot import resolve_local, sha256
 
 
 ALL_STRATEGIES = ('execution_only', 'one_shot', 'agent')
@@ -31,6 +32,10 @@ ALL_STRATEGIES = ('execution_only', 'one_shot', 'agent')
 
 def load_cases(index_path: Path, *, include_held_out: bool = False) -> list[dict]:
     index = json.loads(index_path.read_text())
+    return _selected_cases(index, include_held_out)
+
+
+def _selected_cases(index: dict, include_held_out: bool) -> list[dict]:
     splits = {'development', 'reference'} | ({'held_out'} if include_held_out else set())
     return [case for case in index['cases'] if case['split'] in splits]
 
@@ -72,7 +77,7 @@ def _abstention(case: dict, root: Path) -> dict:
 
 def _profiled_case(source: Path, profile_path: Path, selected: dict, strategies: list[str], executor: _Executor, *,
                    client, budget: RepairBudget, state_root: Path, image: str, prepare_repository) -> list[dict]:
-    from .engine import start_run
+    from .engine import start_run, write_json
     rows = []
     with tempfile.TemporaryDirectory(prefix='docdrift-eval-') as temporary:
         repository, snapshot = Path(temporary) / 'repository', Path(temporary) / 'snapshot'
@@ -102,7 +107,12 @@ def _profiled_case(source: Path, profile_path: Path, selected: dict, strategies:
             runner = lambda code, env=first['env']: executor.run(snapshot, code, env)
             context = RepairContext(snapshot, path, example, describe_failure(observed, checks['observable_errors']), run_python=runner)
             proposal = STRATEGIES[name](context, client, budget)
-            row.update({'repair_status': proposal['status'], 'usage': proposal['usage']})
+            proposal_id = uuid.uuid4().hex
+            proposal_path = state_root / 'proposals' / f'{proposal_id}.json'
+            proposal_path.parent.mkdir(parents=True, exist_ok=True)
+            write_json(proposal_path, proposal)
+            row.update({'repair_status': proposal['status'], 'usage': proposal['usage'],
+                        'proposal_id': proposal_id, 'proposal_sha256': sha256(proposal_path.read_bytes())})
             if proposal['status'] != 'proposed':
                 row['outcome'] = 'no_accepted_proposal'
                 continue
@@ -142,10 +152,13 @@ def evaluate(index_path: Path, strategies: list[str], state_root: Path, *, adapt
     if any(name in STRATEGIES for name in strategies) and client is None:
         raise ValueError('Model strategies need a model client')
     prepare_repository = prepare_repository or demo_repository
+    index_bytes = index_path.read_bytes()
+    index = json.loads(index_bytes)
+    cases = _selected_cases(index, include_held_out)
     root = index_path.resolve().parents[2]
     executor = _Executor(adapter, image)
     rows = []
-    for case in load_cases(index_path, include_held_out=include_held_out):
+    for case in cases:
         base = {'case': case['id'], 'kind': case['kind'], 'split': case['split'], 'label': case['label']}
         if case['split'] == 'reference':
             rows += [base | {'strategy': name, 'outcome': 'pending_reproduction', 'scored': False} for name in strategies]
@@ -160,6 +173,8 @@ def evaluate(index_path: Path, strategies: list[str], state_root: Path, *, adapt
     live = client is not None and bool(getattr(client, 'live', False))
     evidence = 'no_model' if client is None else 'live_inference' if live else 'synthetic_not_evidence'
     return {'kind': 'docdrift_evaluation', 'evidence': evidence, 'execution_backend': type(adapter).__name__,
+            'inventory_sha256': sha256(index_bytes), 'inventory_name': index.get('name', index_path.parent.name),
+            'inventory_case_count': len(index['cases']), 'selected_case_ids': [case['id'] for case in cases],
             'model': getattr(client, 'model', None), 'strategies': strategies, 'include_held_out': include_held_out,
             'budget': asdict(budget), 'rows': rows, 'summary': summarize(rows, strategies),
             'compute_operations': executor.operations}

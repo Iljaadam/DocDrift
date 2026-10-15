@@ -6,6 +6,7 @@ returns the known repair, so these tests check plumbing and scoring only.
 """
 
 import ast
+import hashlib
 import json
 from pathlib import Path
 
@@ -107,6 +108,9 @@ def test_execution_only_baseline_needs_no_model_and_skips_held_out_by_default(tm
     assert summary['correct_abstentions'] == summary['unsupported_or_setup_cases'] == 4
     assert summary['unsupported_incorrectly_verified'] == 0 and summary['model_calls'] == 0
     assert report['evidence'] == 'no_model' and report['execution_backend'] == 'ContractAdapter'
+    assert report['inventory_sha256'] == hashlib.sha256(INDEX.read_bytes()).hexdigest()
+    assert report['inventory_case_count'] == 14
+    assert set(report['selected_case_ids']) == cases
     assert all(row['outcome'] == 'pending_reproduction' and not row['scored'] for row in report['rows'] if row['split'] == 'reference')
 
 
@@ -149,6 +153,22 @@ def test_single_fixture_repair_command_path(tmp_path):
     assert row['outcome'] == 'behavior_verified' and row['evidence'] == 'synthetic_not_evidence'
 
 
+def test_rejected_or_malformed_proposals_keep_their_transcript_and_usage(tmp_path):
+    response = {'choices': [{'message': {'content': 'No replacement submitted.'}}]}
+    client = ScriptedModel([response, response])
+    report = run(tmp_path, ['one_shot'], client=client)
+    broken = [row for row in report['rows'] if row['kind'] == 'broken']
+    assert len(broken) == 2
+    for row in broken:
+        assert row['outcome'] == 'no_accepted_proposal'
+        path = tmp_path / 'state' / 'proposals' / f"{row['proposal_id']}.json"
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == row['proposal_sha256']
+        proposal = json.loads(path.read_text())
+        assert proposal['status'] == 'malformed_responses'
+        assert proposal['usage']['model_calls'] == 1
+        assert proposal['transcript'][0]['content'] == 'No replacement submitted.'
+
+
 def test_engine_rejects_a_repair_record_that_does_not_match_the_replacement(tmp_path):
     from docdrift.cli import demo_repository
     fixture = ROOT / 'fixtures' / 'renamed_method'
@@ -157,3 +177,50 @@ def test_engine_rejects_a_repair_record_that_does_not_match_the_replacement(tmp_
     record = {'strategy': 'agent', 'replacement': 'print(1)\n', 'usage': {'model_calls': 1}, 'live_inference': False}
     with pytest.raises(PolicyError):
         start_run(repository, 'HEAD', fixture / 'profile.json', fixture / 'repair.py', tmp_path / 'state', IMAGE_ID, ContractAdapter(), repair_record=record)
+
+
+def test_saved_evaluation_review_command_uses_saved_json_without_execution(tmp_path, monkeypatch, capsys):
+    from docdrift.cli import main
+    report = run(tmp_path, ['execution_only'])
+    source = tmp_path / 'saved.json'
+    source.write_text(json.dumps(report))
+    before = source.read_bytes()
+    def forbidden(*args, **kwargs):
+        pytest.fail('Saved comparison must not evaluate or execute')
+    monkeypatch.setattr('docdrift.evaluation.evaluate', forbidden)
+    monkeypatch.setattr('docdrift.adapters.LocalDockerAdapter', forbidden)
+    monkeypatch.setattr('sys.argv', ['docdrift', 'review-evaluation', str(source)])
+    main()
+    result = json.loads(capsys.readouterr().out)
+    assert Path(result['review_path']) == source.with_suffix('.html')
+    html = source.with_suffix('.html').read_text()
+    assert 'ContractAdapter' in html and report['inventory_sha256'] in html
+    assert source.read_bytes() == before
+
+
+def test_evaluate_command_writes_json_markdown_and_html(tmp_path, monkeypatch, capsys):
+    from docdrift.cli import main
+    monkeypatch.setattr('docdrift.adapters.LocalDockerAdapter', lambda *args: ContractAdapter())
+    output = tmp_path / 'results.json'
+    monkeypatch.setattr('sys.argv', ['docdrift', '--state-dir', str(tmp_path / 'state'), 'evaluate', '--index', str(INDEX), '--output', str(output)])
+    main()
+    result = json.loads(capsys.readouterr().out)
+    assert result['evidence'] == 'no_model'
+    assert json.loads(output.read_text())['inventory_sha256'] == hashlib.sha256(INDEX.read_bytes()).hexdigest()
+    assert output.with_suffix('.md').is_file()
+    assert Path(result['review_path']) == output.with_suffix('.html')
+
+
+def test_saved_comparison_refuses_a_hardlink_to_its_input(tmp_path, monkeypatch, capsys):
+    from docdrift.cli import main
+    source = tmp_path / 'saved.json'
+    source.write_text(json.dumps({'kind': 'docdrift_evaluation'}))
+    before = source.read_bytes()
+    output = tmp_path / 'alias.html'
+    output.hardlink_to(source)
+    monkeypatch.setattr('sys.argv', ['docdrift', 'review-evaluation', str(source), '--output', str(output)])
+    with pytest.raises(SystemExit) as error:
+        main()
+    assert error.value.code == 2
+    assert 'separate from the saved JSON report' in capsys.readouterr().err
+    assert source.read_bytes() == before

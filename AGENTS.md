@@ -56,6 +56,7 @@ uv run --no-sync docdrift challenge                        # bad-patch rejection
 uv run --no-sync docdrift evaluate --strategies execution_only    # baseline, local Docker
 uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic rehearsal
 uv run --no-sync docdrift review <run-id>                    # saved evidence, no execution
+uv run --no-sync docdrift review-evaluation saved.json       # saved comparison, no execution
 ```
 
 Run state lives in `.docdrift/` (gitignored).

@@ -25,6 +25,10 @@ The export also includes `review.html`, a self-contained page with provenance,
 failure logs, diff, execution/behavior checks, regressions, and model usage.
 Generate it for an existing run with `docdrift review <run-id>`; this reads saved
 evidence without inference or execution and does not rescore the run.
+Evaluation also saves every model outcome under `.docdrift/proposals/<id>.json`,
+including malformed or rejected submissions that never enter final verification.
+Rows record the proposal ID and SHA-256 so failure transcripts and token use
+remain inspectable alongside successful repairs.
 
 Stop conditions, all recorded as `status`: `proposed`, `all_candidates_rejected`,
 `budget_exhausted` (model calls or total tokens), `malformed_responses`,
@@ -52,6 +56,19 @@ baseline observation per case and the same verifier. Held-out cases need
 `--include-held-out`; public reference candidates stay `pending_reproduction`.
 The report's `evidence` field is `no_model`, `synthetic_not_evidence`, or
 `live_inference`.
+
+New evaluation reports record `inventory_name`, `inventory_sha256`, the original
+inventory case count, and `selected_case_ids`. The additive source-inspection
+development inventory lives at `fixtures/development/index.json`; it does not
+change the original fourteen cases or their held-out splits. Compare its results
+separately. Existing reports without an inventory fingerprint remain historical
+reports with unspecified inventory identity, rather than inheriting new cases.
+
+`evaluate` writes a matching `.html` comparison alongside JSON and Markdown.
+`docdrift review-evaluation saved.json` renders an existing comparison without
+inference or execution, preserving its original results and scope. Pending public
+references remain unscored. The page links to individual run reviews when those
+files are available in the chosen state directory.
 
 ## Commands
 

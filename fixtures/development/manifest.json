@@ -1,0 +1,17 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "README.md": "038addb19ed325ef17ce2068016b10f7d5bb35e831d7f6610ce5abe88b1e20c0",
+    "index.json": "24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c",
+    "source_only/README.md": "a5e97ec99475e7e06d995ce8898d9871311cfda193c21ee26fb326f00009751c",
+    "source_only/checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+    "source_only/manifest.json": "e54d205f7bed9a83e98979e05d8805f66c34b0d00f3e54da21c44cbb5a05f8d7",
+    "source_only/profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2",
+    "source_only/provenance.json": "979c58345a28ae44d43f02c887998d4a8e7537530f8e4655967aefed0b04e5b2",
+    "source_only/repair.py": "d25a2ab22bf909830e32935660a3017d0423296327005469f4cfcc67acb43920",
+    "source_only/repository/LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+    "source_only/repository/README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+    "source_only/repository/drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+    "source_only/repository/pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+  }
+}

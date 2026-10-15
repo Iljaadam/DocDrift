@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "name": "supplemental_source_only_development",
+  "status": "frozen_not_evaluated",
+  "case_count": 2,
+  "owned_case_count": 2,
+  "public_candidate_count": 0,
+  "held_out_broken": [],
+  "cases": [
+    {
+      "id": "source_only_broken",
+      "ownership": "owned",
+      "kind": "broken",
+      "label": "documentation_drift",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/development/source_only",
+      "repository": "fixtures/development/source_only/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 0
+      },
+      "profile": "fixtures/development/source_only/profile.json",
+      "known_repair": "fixtures/development/source_only/repair.py",
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "predicted_original_failure": "process_exit",
+      "fixture_manifest_sha256": "e54d205f7bed9a83e98979e05d8805f66c34b0d00f3e54da21c44cbb5a05f8d7"
+    },
+    {
+      "id": "source_only_healthy",
+      "ownership": "owned",
+      "kind": "healthy",
+      "label": "no_failure_found",
+      "label_basis": "curator_authored_contract",
+      "split": "development",
+      "fixture": "fixtures/development/source_only",
+      "repository": "fixtures/development/source_only/repository",
+      "documentation": [
+        "README.md"
+      ],
+      "example": {
+        "path": "README.md",
+        "ordinal": 1
+      },
+      "profile": "fixtures/development/source_only/profile.json",
+      "known_repair": null,
+      "reproduction_status": "not_run",
+      "behavior_verified": false,
+      "fixture_manifest_sha256": "e54d205f7bed9a83e98979e05d8805f66c34b0d00f3e54da21c44cbb5a05f8d7"
+    }
+  ]
+}

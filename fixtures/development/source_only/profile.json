@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "name": "owned-source-only",
+  "python": "3.12",
+  "documentation": [
+    "README.md"
+  ],
+  "setup": {
+    "kind": "source_tree",
+    "dependencies": []
+  },
+  "target": {
+    "path": "README.md",
+    "ordinal": 0
+  },
+  "examples": [
+    {
+      "path": "README.md",
+      "ordinal": 0,
+      "role": "target",
+      "required_call": {
+        "receiver": "OccurrenceIndex",
+        "method": "positions"
+      },
+      "operation_ast_sha256": "7e603360197cbef18963cd02d868a0b2926a6e4c7e0a063dcc9c4afecae149cf",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": {}
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\",\"blue\",\"red\"]"
+          },
+          "expected_json": {
+            "red": [
+              0,
+              2
+            ],
+            "blue": [
+              1
+            ]
+          }
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\",\"é\",\"é\",\"E\",\"two words\",\" \",\"\"]"
+          },
+          "expected_json": {
+            "": [
+              0,
+              6
+            ],
+            "é": [
+              1,
+              2
+            ],
+            "E": [
+              3
+            ],
+            "two words": [
+              4
+            ],
+            " ": [
+              5
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "path": "README.md",
+      "ordinal": 1,
+      "role": "healthy",
+      "required_call": {
+        "receiver": "TokenMetrics",
+        "method": "measure"
+      },
+      "operation_ast_sha256": "4cc4b23947e7511e8ac44041d8b34e34f12094380fdf6fea4e347ac246871dd2",
+      "cases": [
+        {
+          "id": "empty",
+          "env": {
+            "DOCDRIFT_INPUT": "[]"
+          },
+          "expected_json": {
+            "tokens": 0,
+            "characters": 0
+          }
+        },
+        {
+          "id": "repeated",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"red\",\"blue\",\"red\"]"
+          },
+          "expected_json": {
+            "tokens": 3,
+            "characters": 10
+          }
+        },
+        {
+          "id": "exact-strings",
+          "env": {
+            "DOCDRIFT_INPUT": "[\"\",\"é\",\"é\",\"E\",\"two words\",\" \",\"\"]"
+          },
+          "expected_json": {
+            "tokens": 7,
+            "characters": 13
+          }
+        }
+      ]
+    }
+  ],
+  "checks": "checks.py",
+  "known_repair": "repair.py"
+}

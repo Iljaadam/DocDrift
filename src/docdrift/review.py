@@ -285,6 +285,156 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
 <footer>DocDrift · frozen inputs, bounded repair, independent checks · review generated from saved evidence</footer></div></body></html>'''
 
 
+def _evaluation_link(value: object) -> str | None:
+    """Accept explicit local HTML paths, including links to sibling run folders."""
+    if not isinstance(value, str) or not value or len(value) > 2048 or not value.endswith('.html'):
+        return None
+    # Exclude URLs, absolute paths, escaped separators, queries, fragments and
+    # control characters. Parent segments are needed by evaluations/ -> runs/.
+    if value.startswith('/') or any(not (char.isascii() and (char.isalnum() or char in '._-/')) for char in value):
+        return None
+    if any(not part for part in value.split('/')):
+        return None
+    return value
+
+
+def _evaluation_count(value: object) -> str:
+    return str(value) if type(value) is int and value >= 0 else 'Not recorded'
+
+
+def _evaluation_ratio(part: object, whole: object) -> str:
+    if type(part) is not int or type(whole) is not int or min(part, whole) < 0:
+        return 'Not recorded'
+    return f'{part} / {whole}'
+
+
+def render_evaluation_review(report: dict, *, run_links: dict[str, str] | None = None) -> str:
+    """Render one saved evaluation without reading files or running any checks.
+
+    Summary counts stay as recorded. Public-reference and pending-reproduction
+    rows are shown separately from scored cases. A caller may provide explicit
+    relative links to saved run reviews; run IDs never create links on their own.
+    """
+    rows = _records(report.get('rows'))
+    summaries = _mapping(report.get('summary'))
+    strategies = []
+    recorded_strategies = report.get('strategies')
+    candidates = (recorded_strategies if isinstance(recorded_strategies, list) else []) + list(summaries)
+    candidates += [row.get('strategy') for row in rows]
+    for name in candidates:
+        if isinstance(name, str) and name not in strategies:
+            strategies.append(name)
+    links = run_links if isinstance(run_links, dict) else {}
+    scored = [row for row in rows if row.get('scored') is True and row.get('split') != 'reference' and row.get('outcome') != 'pending_reproduction']
+    unscored = [row for row in rows if row not in scored]
+    case_ids = {row['case'] for row in scored if isinstance(row.get('case'), str)}
+    evidence = report.get('evidence')
+    evidence_label = {
+        'live_inference': 'Live inference recorded',
+        'synthetic_not_evidence': 'Synthetic rehearsal; not model evidence',
+        'no_model': 'No model used',
+    }.get(evidence, 'Evidence source not established') if isinstance(evidence, str) else 'Evidence source not established'
+    held_out = report.get('include_held_out')
+    held_out_label = 'Included in this saved report' if held_out is True else 'Excluded from this saved report' if held_out is False else 'Not recorded'
+    fingerprint = report.get('inventory_sha256')
+    inventory_label = fingerprint if fingerprint else 'Historical inventory unspecified'
+    facts = _facts([
+        ('Recorded evidence', evidence), ('Model', report.get('model')),
+        ('Execution backend', report.get('execution_backend')), ('Held-out cases', held_out_label),
+        ('Inventory SHA-256', inventory_label), ('Inventory name', report.get('inventory_name')),
+        ('Inventory case count', report.get('inventory_case_count')),
+        ('Total recorded compute operations', report.get('compute_operations')),
+    ])
+    if not fingerprint:
+        facts += '<p class="qualification">Historical inventory unspecified. This report does not establish which later fixture additions were present. Only its saved case rows are shown.</p>'
+    selected = report.get('selected_case_ids')
+    if isinstance(selected, list):
+        facts += '<details><summary>Recorded selected case IDs</summary>' + _pre('\n'.join(str(value) for value in selected)) + '</details>'
+    backend = report.get('execution_backend')
+    if backend == 'LocalDockerAdapter':
+        facts += '<p>Execution was recorded as local Docker. This report does not establish Nebius Sandbox execution or competition eligibility.</p>'
+    else:
+        facts += '<p>The backend is shown as recorded. This review does not probe provider access or establish that a contract double executed code.</p>'
+    if evidence == 'synthetic_not_evidence':
+        facts += '<p class="qualification">Synthetic model responses rehearse the evaluation pipeline. Recorded repair verdicts are not evidence of live model performance.</p>'
+    elif evidence == 'live_inference':
+        facts += '<p>The evaluation records a live inference client. Execution-only, healthy, unsupported and setup rows may use no model calls; usage is shown per strategy.</p>'
+    elif evidence == 'no_model':
+        facts += '<p>This saved evaluation used no model. Its results describe detection and abstention rather than model-generated repairs.</p>'
+    facts += '<p>Case labels and splits come from this saved report. Public references awaiting reproduction are unscored. This page does not run a new evaluation or combine results from different inventories.</p>'
+
+    total_calls = [ _mapping(summaries.get(name)).get('model_calls') for name in strategies ]
+    calls = str(sum(total_calls)) if total_calls and all(type(value) is int and value >= 0 for value in total_calls) else 'Not recorded'
+    cards = '<div class="metrics">' + ''.join(
+        f'<article><p>{label}</p><strong>{_escape(value)}</strong><small>{_escape(note)}</small></article>'
+        for label, value, note in [
+            ('Scored cases', len(case_ids), 'Unique case IDs in scored rows'),
+            ('Strategies', len(strategies), 'Recorded in this evaluation'),
+            ('Model calls', calls, 'Sum of recorded strategy usage'),
+            ('Held-out scope', 'Included' if held_out is True else 'Excluded' if held_out is False else 'Not recorded', 'Scope of this saved evaluation'),
+        ]
+    ) + '</div>'
+    comparison = '<p>Counts and denominators are the saved strategy summary. Tokens are prompt plus completion tokens. Execution-only does not propose repairs.</p>'
+    comparison += '<div class="table-scroll"><table id="strategy-results"><thead><tr><th scope="col">Strategy</th><th scope="col">Drift detected<br><small>broken cases</small></th><th scope="col">Behavior verified<br><small>broken cases</small></th><th scope="col">False drift reports<br><small>healthy cases</small></th><th scope="col">Correct abstentions<br><small>unsupported / setup</small></th><th scope="col">Model calls</th><th scope="col">Tokens<br><small>prompt + completion</small></th></tr></thead><tbody>'
+    for name in strategies:
+        values = _mapping(summaries.get(name))
+        prompt, completion = values.get('prompt_tokens'), values.get('completion_tokens')
+        tokens = f'{prompt + completion} ({prompt} + {completion})' if all(type(value) is int and value >= 0 for value in [prompt, completion]) else 'Not recorded'
+        cells = [
+            _evaluation_ratio(values.get('drift_detected'), values.get('broken_cases')),
+            'Not attempted' if name == 'execution_only' else _evaluation_ratio(values.get('behavior_verified_repairs'), values.get('broken_cases')),
+            _evaluation_ratio(values.get('false_drift_reports'), values.get('healthy_cases')),
+            _evaluation_ratio(values.get('correct_abstentions'), values.get('unsupported_or_setup_cases')),
+            _evaluation_count(values.get('model_calls')), tokens,
+        ]
+        comparison += '<tr><th scope="row">' + _escape(name) + '</th>' + ''.join('<td>' + _escape(value) + '</td>' for value in cells) + '</tr>'
+    comparison += '</tbody></table></div>' if strategies else '<tr><td colspan="7">No strategy summary recorded.</td></tr></tbody></table></div>'
+
+    def case_table(records: list[dict], identifier: str) -> str:
+        if not records:
+            return '<p class="empty">No case rows recorded in this group.</p>'
+        table = f'<div class="table-scroll"><table id="{identifier}"><thead><tr><th scope="col">Case</th><th scope="col">Split / kind</th><th scope="col">Strategy</th><th scope="col">Drift detected</th><th scope="col">Recorded outcome</th><th scope="col">Saved run</th></tr></thead><tbody>'
+        for row in records:
+            case = _escape(row.get('case', 'Not recorded'))
+            if row.get('label'):
+                case += '<small>' + _escape(row['label']) + '</small>'
+            split_kind = _escape(row.get('split', 'Not recorded')) + '<small>' + _escape(row.get('kind', 'Not recorded')) + '</small>'
+            outcome = _escape(row.get('outcome', 'Not recorded'))
+            if row.get('reason'):
+                outcome += '<small>' + _escape(row['reason']) + '</small>'
+            run_id = row.get('run_id')
+            run = _escape(run_id) if run_id is not None else 'Not recorded'
+            link = _evaluation_link(links.get(run_id)) if isinstance(run_id, str) else None
+            if link:
+                run = f'<a href="{_escape(link)}">{run}</a>'
+            if row.get('run_status'):
+                run += '<small>Status: ' + _escape(row['run_status']) + '</small>'
+            detected = 'Yes' if row.get('detected') is True else 'No' if row.get('detected') is False else 'Not recorded'
+            table += '<tr><th scope="row">' + case + '</th><td>' + split_kind + '</td><td>' + _escape(row.get('strategy', 'Not recorded')) + '</td><td>' + detected + '</td><td>' + outcome + '</td><td>' + run + '</td></tr>'
+        return table + '</tbody></table></div>'
+
+    cases = '<p>These rows were marked scored. Expand an individual saved run through its supplied review link when available.</p>' + case_table(scored, 'scored-cases')
+    pending = '<p>Public-reference and pending-reproduction rows are excluded from scored cases. Other rows without a positive scored flag are also listed here.</p>' + case_table(unscored, 'unscored-cases')
+    limits = '<p>This is a view of saved results, not fresh verification. A recorded behavior-verified outcome covers the declared fixture inputs and checks; it is not a guarantee for every input. Case counts, usage and inventory scope must be considered before comparing strategies.</p><p>Token counts and model calls are usage records, not dollar estimates or a statement about account balance. Compute totals include evaluation baseline, exploration and verification operations as recorded.</p>'
+    limits += '<p>Execution-only detects process failures. Model strategies use frozen observable checks for detection, so their detection counts answer a broader question. No strategy is claimed superior by this report.</p>'
+    if isinstance(report.get('budget'), dict):
+        limits += '<details><summary>Recorded per-case repair budget</summary>' + _facts(list(report['budget'].items())) + '</details>'
+    sections = cards + _section('scope', 'Evidence & inventory scope', facts) + _section('comparison', 'Strategy comparison', comparison) + _section('cases', 'Scored case outcomes', cases) + _section('unscored', 'Unscored cases & public references', pending) + _section('evaluation-limits', 'Comparison limits', limits)
+    return f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>DocDrift evaluation comparison</title><style>{_CSS}{_EVALUATION_CSS}</style></head><body>
+<div class="shell comparison"><header><div class="brand"><span class="brand-mark" aria-hidden="true">D/</span> DocDrift <span>evaluation review</span></div>
+<div class="hero"><div><p class="eyebrow">Saved strategy results</p><h1>Evaluation comparison</h1><p class="subtitle">{_escape(evidence_label)}</p></div></div></header>
+<nav aria-label="Evaluation sections"><a href="#scope">Scope</a><a href="#comparison">Strategies</a><a href="#cases">Cases</a><a href="#unscored">Unscored</a><a href="#evaluation-limits">Limits</a></nav><main>{sections}</main>
+<footer>DocDrift · evaluation review generated from one saved report</footer></div></body></html>'''
+
+
+_EVALUATION_CSS = '''
+.comparison .table-scroll{overflow-x:auto}.comparison table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.6;text-align:left}.comparison th,.comparison td{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}.comparison thead th{font-size:11px;color:var(--muted);font-weight:600;background:#f4f6f6}.comparison tbody th{font-weight:600;overflow-wrap:anywhere}.comparison td{overflow-wrap:anywhere}.comparison th small,.comparison td small{display:block;color:var(--muted);font-weight:400;font-size:10px;margin-top:4px}.comparison tbody tr:last-child>*{border-bottom:0}.comparison #strategy-results td{white-space:nowrap}.comparison #scored-cases,.comparison #unscored-cases{min-width:750px}.comparison #strategy-results{min-width:850px}
+'''
+
+
 _CSS = '''
 :root{color-scheme:light;--ink:#162b38;--muted:#586d77;--line:#dbe3e5;--paper:#fff;--green:#17674b;--mint:#e7f2ec;--red:#a33635;--amber:#82530d}
 *{box-sizing:border-box}body{margin:0;background:#f3f5f4;color:var(--ink);font:15px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:1200px;margin:auto;padding:38px 36px}header{padding:0 0 25px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:750;letter-spacing:-.5px}.brand>span:last-child{font-size:13px;color:var(--muted);font-weight:450;letter-spacing:0}.brand-mark{background:var(--ink);color:#fff;border-radius:9px;width:38px;height:38px;text-align:center;line-height:38px}.hero{display:flex;align-items:center;justify-content:space-between;gap:26px;margin-top:35px}.eyebrow{text-transform:uppercase;letter-spacing:1.5px;font-size:11px;font-weight:700;color:var(--green)}h1{font-size:clamp(28px,4vw,44px);line-height:1.16;letter-spacing:-1.6px;margin:8px 0 13px}.subtitle{color:var(--muted);margin:0}.button{display:inline-flex;gap:20px;align-items:center;white-space:nowrap;background:var(--ink);color:white;padding:12px 19px;border-radius:7px;text-decoration:none;font-size:13px;font-weight:650}.run-line{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:27px;font-size:12px;color:var(--muted)}.pill{display:inline-block;white-space:nowrap;font-size:11px;font-weight:650;border-radius:5px;padding:2px 7px}.good{color:var(--green);background:var(--mint)}.bad{color:var(--red);background:#fbeceb}.warn{color:var(--amber);background:#fff0d7}.muted{color:var(--muted);background:#e9edee}nav{display:flex;flex-wrap:wrap;gap:24px;padding:16px 0 23px;font-size:13px}a{color:var(--green);text-underline-offset:4px}nav a{text-decoration:none;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.metrics article{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:17px 19px}.metrics p{font-size:12px;color:var(--muted);margin:0 0 8px}.metrics strong{font-size:22px;line-height:1.3;display:block;letter-spacing:-.5px;overflow-wrap:anywhere}.metrics small{display:block;font-size:11px;color:var(--muted);margin-top:9px}section{background:var(--paper);border:1px solid var(--line);border-radius:9px;margin-top:20px;padding:25px 27px;scroll-margin-top:15px}h2{font-size:18px;letter-spacing:-.4px;margin:0 0 20px}h3{font-size:13px;margin:18px 0 10px}h4{font-size:11px;text-transform:uppercase;color:var(--muted);letter-spacing:1px;margin:18px 0 7px}p{margin:12px 0;color:var(--muted)}p:last-child{margin-bottom:0}.facts{margin:0}.facts>div{display:grid;grid-template-columns:210px minmax(0,1fr);gap:18px;padding:8px 0;border-bottom:1px solid #eef1f1;font-size:12px}.facts>div:last-child{border-bottom:0}dt{color:var(--muted)}dd{margin:0;overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.finding,.qualification{border-left:3px solid #d3a342;padding:10px 14px;background:#fff9ed;color:#654c26;font-size:13px}.code-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.code-pair h3{margin-top:0}pre{font:12px/1.75 ui-monospace,SFMono-Regular,Consolas,monospace;background:#f4f6f6;border:1px solid #e4e9e9;border-radius:6px;padding:15px 17px;margin:0;overflow:auto;tab-size:4}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}pre code{font:inherit;white-space:pre}.diff{padding:12px 0}.diff span{display:block;white-space:pre;padding:0 17px;min-height:1.75em}.diff .added{background:#e9f6ed;color:#205f3c}.diff .removed{background:#fcefee;color:#9b3c38}.diff .context{color:#63757b}details{margin-top:12px;border:1px solid var(--line);border-radius:6px;overflow:hidden}summary{padding:12px 15px;cursor:pointer;font-size:12px;font-weight:600}details>.facts,details>p{margin:10px 16px}summary small{font-weight:400;color:var(--muted);margin-left:8px;overflow-wrap:anywhere}.operation summary{display:flex;justify-content:space-between;align-items:center;gap:12px}.operation summary:before{content:'+';font-size:17px;color:var(--muted)}.operation[open] summary:before{content:'−'}.operation summary>span:first-of-type{flex:1;overflow-wrap:anywhere}.check-label{font-size:10px;font-weight:400;color:var(--muted)}.operation-body{padding:0 18px 18px;border-top:1px solid var(--line)}.errors{font-size:12px;color:var(--red);padding-left:20px}.operation-body p{font-size:12px}.file-links{display:flex;flex-wrap:wrap;gap:10px 24px;margin-top:20px;font-size:12px}.empty,.archive-unavailable{font-size:13px;color:var(--muted)}footer{font-size:11px;text-align:center;color:var(--muted);padding:24px}a:focus-visible,summary:focus-visible{outline:3px solid #429a79;outline-offset:3px}

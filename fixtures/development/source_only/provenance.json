@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "created_on": "2026-10-15",
+  "ownership": "owned",
+  "origin": "DocDrift curator-authored fixture",
+  "label_basis": "curator_authored_contract",
+  "split": "development",
+  "scope": "additive development fixture; original fourteen-case inventory unchanged",
+  "model_evaluation_status_at_freeze": "not_run",
+  "predicted_original_failure": "process_exit",
+  "behavior_verified_at_freeze": false,
+  "claim_limit": "Current target API is available in source, not a README neighbor; one-shot guessing remains possible."
+}

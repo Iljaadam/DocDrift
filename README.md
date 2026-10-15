@@ -12,6 +12,8 @@ ZIP, plus a self-contained HTML review. The included renamed-method example is a
 
 The architecture is preserved in [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
 [STATUS.md](STATUS.md) records completed work and the remaining access gate.
+For a free local test with no provider credentials, follow the
+[judge quickstart](docs/JUDGE_QUICKSTART.md).
 The Nebius REST contract and durable submission journal can now be exercised
 offline with synthetic responses. Live Nemotron inference is connected to repair
 and evaluation; execution uses local Docker. Live Sandbox execution remains
@@ -79,6 +81,20 @@ with synthetic `--replay` responses; `--live --model <id>` sends real Token
 Factory requests (approved on 2026-10-14; the user reports approximately $30
 promotional credits on 2026-10-15, exact balance and expiry unverified). See
 [docs/MODEL_REPAIR.md](docs/MODEL_REPAIR.md).
+
+Evaluations write JSON, Markdown, and a self-contained HTML comparison with
+strategy counts, tokens, scope, and links to saved run evidence. Render an
+existing evaluation without inference or execution:
+
+```sh
+uv run --no-sync docdrift review-evaluation .docdrift/evaluations/dev-live-2.json
+```
+
+The original fourteen-case inventory remains frozen. The separate
+[supplemental development inventory](fixtures/development/README.md) adds a
+source-inspection case and an unrelated healthy neighbor. Select it explicitly
+with `evaluate --index fixtures/development/index.json`; its results must be
+reported separately. New reports identify the inventory by its index SHA-256.
 
 ## Work while provider access is pending
 
