@@ -7,9 +7,11 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
-Sandboxes: permission never checked. The Sandbox API is on the same Token Factory host and
-takes a bearer key plus a `Project` header, so a read-only `GET whoami` with this key and the
-user's project ID would show it (needs user OK and the ID). All execution so far is local Docker.
+Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
+Sandboxes: user applied for access on Oct 15; provider response pending. Permission
+has never been checked. A read-only `GET whoami` uses the bearer key plus this
+project ID in the `Project` header; user approval is still required before the
+call. All execution so far is local Docker.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -19,6 +21,7 @@ user's project ID would show it (needs user OK and the ID). All execution so far
   (initially described as $25). Exact balance, expiry, and grant/form route unverified.
   The own-spend restriction discussed on Oct 14 applies to cloud compute, not Token Factory.
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
+- [x] Sandbox access application submitted, per user Oct 15; provider response pending
 - [ ] Sandbox permission (read-only `whoami`, needs user OK); offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
 **Manual vertical slice (milestone 1)**
@@ -63,8 +66,8 @@ user's project ID would show it (needs user OK and the ID). All execution so far
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next**, in order: (1) with user OK and project ID, read-only Sandbox `whoami`
-(asked Oct 15, awaiting reply); (2) if access and coverage permit, wire the Sandbox
+**Next**, in order: (1) await the Sandbox access application response and user OK
+for read-only `whoami` (project ID recorded above); (2) if access and coverage permit, wire the Sandbox
 adapter into `repair`/`evaluate` (live execution still needs separate approval);
 (3) settle D9 before adding a source-only case; (4) scored held-out run (D8).
 HTML review work is complete; D8/D9 remain proposed.
@@ -102,6 +105,9 @@ Who decided what, and when. Don't reverse one without the user.
   `docdrift review <run-id>` regenerates HTML and its checksum ZIP without inference,
   execution, or rescoring. Leave D8/D9 proposed; no standing push authorization inferred
   from the user's approval to push the two previous commits.
+- D12 (user, Oct 15): Supplied the Nebius project ID recorded above and reported
+  applying for Sandbox access. Await provider approval; this is not confirmation
+  of access, credit coverage, or authorization for a live Sandbox call.
 
 ## Session log
 
@@ -144,6 +150,9 @@ Who decided what, and when. Don't reverse one without the user.
   passes, real Docker demo `behavior_verified` (12 operations). No new inference or
   live Sandbox calls. Next: Sandbox `whoami` once user approval/project ID arrive;
   D8/D9 still proposed. Commit locally; no standing push permission inferred.
+- 2026-10-15 (access update): Saved the user-supplied Nebius project ID and recorded
+  the submitted Sandbox application; awaiting provider response and user approval
+  before any live check. No provider calls. 488 tests pass.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
