@@ -106,7 +106,7 @@ source-inspection case and an unrelated healthy neighbor. Select it explicitly
 with `evaluate --index fixtures/development/index.json`; its results must be
 reported separately. New reports identify the inventory by its index SHA-256.
 
-## Work while provider access is pending
+## Offline contracts and bounded Sandbox preparation
 
 Inspect a public GitHub snapshot without authentication or code execution:
 
@@ -153,9 +153,18 @@ backend with `--replay`; `--live` is rejected before client construction.
 Interrupted final verification resumes saved operation IDs using the saved
 backend. Unresolved uploads and submissions are not retried.
 
-Live mutation methods reject before contacting a transport. The only mutation
-path requires an explicitly selected `httpx.MockTransport`. Token Factory
-credits are user-reported; Sandbox coverage and expiration remain unconfirmed.
+The default Sandbox adapter rejects live mutations; its synthetic mutation path
+requires an explicitly selected `httpx.MockTransport`. A separate
+[fixed-F6 verification runner](docs/SANDBOX_VERIFICATION.md) prepares reuse of
+the saved live model proposal with zero current inference: one private image
+import, three runtime probes, and 12 verifier operations. It leaves the ordinary
+CLI and mocked bridge restrictions unchanged and requires explicitly supplied
+credentials plus factual execution/import/storage coverage before network use.
+
+The read-only Sandbox access check succeeded, but no Sandbox resources have been
+created and runtime behavior remains untested. Preparation used public Docker
+Hub image metadata and local tests. Token Factory credits are user-reported;
+Sandbox coverage remains unconfirmed and no coverage record has been created.
 The user's personal spending limit is $0.
 
 Check deliberately constructed bad patches without executing them:

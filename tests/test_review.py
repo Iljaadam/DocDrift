@@ -92,6 +92,55 @@ def test_review_explains_real_run_evidence_and_preserves_saved_usage(tmp_path):
     assert report == saved_report()  # Rendering is read-only.
 
 
+def test_saved_live_proposal_separates_historical_generation_from_current_usage(tmp_path):
+    historical_usage = {'model_calls': 5, 'prompt_tokens': 7100, 'completion_tokens': 741, 'snippet_runs': 1}
+    repair = {'strategy': 'agent', 'model': 'nvidia/nemotron', 'live_inference': True, 'usage': historical_usage}
+    save_json(tmp_path, 'repair.json', repair)
+    original_transcript = (tmp_path / 'repair.json').read_bytes()
+    save_json(tmp_path, 'ledger.json', {'metadata': {
+        'inference_usage': {'model_calls': 0, 'prompt_tokens': 0, 'completion_tokens': 0, 'snippet_runs': 0},
+        'historical_generation': {
+            'source_run_id': 'prior-generation-run', 'proposal_sha256': 'd' * 64,
+            **repair, 'note': 'Saved model generation; no new inference in this verification.',
+        },
+    }})
+    report = {
+        'run_id': 'prepared-verification', 'status': 'incomplete', 'repair_verdict': 'unattempted',
+        'repair_source': 'saved_model_agent', 'adapter': 'sandbox',
+        # Even a copied historical report count cannot override this run's metadata.
+        'usage': {'inference_calls': 5, 'paid_calls': 0, 'compute_operations': 0},
+    }
+    source = render_review(report, tmp_path)
+    page = Page(source)
+    assert 'Saved live model proposal' in page.text
+    assert 'Live model repair' not in page.text
+    assert 'Current model calls0' in page.text
+    assert '<h1>Verification incomplete</h1>' in source
+    assert '<h1>Behavior verified</h1>' not in source
+    current, historical = source.split('<section id="usage">', 1)[1].split('<h3>Historical generation · prior run</h3>', 1)
+    current_text = Page(current).text
+    for expected in ['Current inference usage', 'Live inference in this runFalse', 'Inference calls0', 'Prompt tokens0', 'Completion tokens0', 'Total recorded tokens0', 'Model exploration snippet runs0']:
+        assert expected in current_text
+    assert all(str(value) not in current_text for value in [7100, 741, 7841])
+    historical_text = Page(historical.split('</section>', 1)[0]).text
+    for expected in ['prior-generation-run', 'd' * 64, 'Historical inference calls5', 'Historical prompt tokens7100', 'Historical completion tokens741', 'Historical total tokens7841', 'Historical snippet runs1', 'not counted as current inference', 'No new model call is recorded']:
+        assert expected in historical_text
+    assert (tmp_path / 'repair.json').read_bytes() == original_transcript
+    assert json.loads(original_transcript)['usage'] == historical_usage
+
+
+def test_saved_proposal_without_current_usage_does_not_reuse_historical_tokens(tmp_path):
+    save_json(tmp_path, 'repair.json', {'live_inference': True, 'usage': {'model_calls': 5, 'prompt_tokens': 7100, 'completion_tokens': 741}})
+    source = render_review({'repair_source': 'saved_model_agent'}, tmp_path)
+    assert 'Current model callsNot recorded' in Page(source).text
+    current = source.split('<section id="usage">', 1)[1].split('<h3>Historical generation · prior run</h3>', 1)[0]
+    current_text = Page(current).text
+    assert 'Inference callsNot recorded' in current_text
+    assert 'Total recorded tokensNot recorded' in current_text
+    assert all(str(value) not in current_text for value in [7100, 741, 7841])
+    assert 'No new model call is recorded' not in Page(source).text
+
+
 def test_all_untrusted_evidence_is_escaped_and_page_has_no_active_content(tmp_path):
     hostile = '</code></pre><script>alert("oops")</script><img src="https://bad.invalid">&'
     report = saved_report()

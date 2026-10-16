@@ -12,8 +12,10 @@ Sandboxes: access confirmed by one user-approved read-only `GET whoami` on
 Oct 16 (F7). The existing bearer key plus this project ID in the `Project` header
 returned import, spawn, disposable-spawn, list, cancel, and image-tag permissions.
 No resources were created; credit coverage and live execution remain unverified.
-All snippet execution so far is local Docker. Further live calls need scoped
-approval; mutations remain disabled.
+All snippet execution so far is local Docker. User requested proceeding with
+planned verification (D20); its bounded runner is prepared, but no Sandbox
+resource call may run until actual coverage/no personal charges are confirmed.
+The coverage question is pending. Default adapters/CLI still block mutations.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -31,6 +33,9 @@ approval; mutations remain disabled.
 **Manual vertical slice (milestone 1)**
 - [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
 - [x] Pinned public GitHub snapshots; offline Nebius REST/receipt contracts
+- [x] Prepare dedicated bounded Sandbox re-verification of the saved F6 model
+  output: frozen offline plan, pinned official Python OCI manifest, durable
+  import/probe/verification receipts, and separate historical/current model usage
 - [ ] Same slice on Nebius Sandbox: remote prep, original reproduction, pristine re-verification, operation reconciliation
 
 **Model repair (milestone 2)**
@@ -84,9 +89,12 @@ approval; mutations remain disabled.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** resolve Sandbox credit coverage and approved live capabilities/activation
-now that read-only access is confirmed (the bridge currently permits HTTP mocks
-only). The real F6 demo bundle,
+**Next:** obtain the missing factual Sandbox coverage/no-personal-charges
+confirmation for execution, image import, and storage. The fixed-F6 runner is
+prepared and stops before network access without it; see
+`docs/SANDBOX_VERIFICATION.md`. After confirmation, run its one private image
+import, three capability probes, and twelve saved-repair verifier operations.
+No new model evaluation is needed. The real F6 demo bundle,
 submission draft, and 2:45 video script are ready for review without further
 inference. Record the video from saved evidence, keeping local Docker provenance
 visible. D8 and the free live-agent judge-access route remain unresolved. D9 and
@@ -135,12 +143,41 @@ identity/expiration were omitted; the key remains outside the repo.
 This was the first live Sandbox call: one access GET, zero compute operations,
 zero inference. The six permission booleans match the adapter's expected schema.
 Credit coverage, image/Python availability, network denial, execution, image
-reuse, cancellation, artifact download, and recovery still need approved live
-checks; access alone does not authorize them. Live mutations remain disabled,
-and historical F6 execution stays local Docker. Next: resolve coverage and
-approved live verification, D8, and free functional live-agent access through
-December 15. No new model evaluation is needed to browse the demo or record
-its video.
+reuse, cancellation, artifact download, and recovery remain unverified. The
+follow-up request to proceed authorizes the planned bounded verification once
+the $0 spending constraint is established (D20). Historical F6 execution stays
+local Docker. D8 and free functional live-agent access through December 15 remain
+unresolved. No new model evaluation is needed to browse the demo or record its
+video.
+
+**Sandbox step prepared, not run:**
+`scripts/verify_saved_f6_sandbox.py prepare` now freezes the committed evidence,
+proposal, original source, checks, and exact twelve verifier phases into
+`.docdrift/sandbox-f6-plan/`. It works offline without the original `.docdrift/`
+run or its deleted temporary Git repository. The dedicated `run` path permits
+one private digest-pinned Python import (120-second limit), three fixed runtime
+probes (Python 3.12/nonroot/network interfaces, retained-artifact download, and
+cancellation), and twelve verifier operations (30 seconds each). It saves
+submission receipts before requests, resumes accepted IDs without another POST,
+and refuses uncertain retries or changed plan/project/image/coverage bindings.
+Default simulation and CLI guards are unchanged.
+
+The new run preserves the original model transcript and identifies it as a
+saved live proposal; current inference usage is zero, with prior generation
+shown separately. Provider `signal=-1` is normalized to no terminating signal,
+and documented UTF-8 stream aliases are accepted. These compatibility changes
+and the runner are tested locally with synthetic HTTP responses, not real
+Sandbox execution. Published F6 files still reproduce byte-for-byte.
+
+No coverage record was invented or created. The actual Sandbox approval's
+billing terms were requested from the user and remain unanswered. Public usage
+and billing docs do not establish this project's free/grant coverage. Preparation
+consulted public documentation and made one credential-free public Docker Hub
+tag lookup to pin the Linux amd64 manifest; no further live Sandbox API request,
+new inference, resource creation, deployment, or push occurred. To resume, read
+`docs/SANDBOX_VERIFICATION.md`; establish actual coverage first, then use the
+prepared runner. Preserve `.docdrift/sandbox-f6/` if any future submission is
+incomplete; do not delete receipts and resubmit uncertain work.
 
 ## Previous resume handoff — October 15, 2026
 
@@ -278,6 +315,20 @@ Who decided what, and when. Don't reverse one without the user.
   booleans are true (F7). This authorizes the access check only, not provisioning,
   execution, new model evaluation, deployment, or further live calls. The $0
   personal-spend limit and unverified Sandbox credit coverage remain in force.
+- D20 (user/agent, Oct 16, "proceed with what we planned"): Continue the planned
+  Sandbox verification using saved F6 output without another model evaluation.
+  Bound activation to one private image import, three fixed runtime probes,
+  and twelve pristine verifier operations. This retains the $0 personal-spend
+  rule: actual execution/import/storage coverage and no personal charges must
+  be established before resource requests. User was asked what approval covers;
+  no factual confirmation has arrived. Prepare and test the concrete runner
+  offline meanwhile; no deployment, held-out inference, or push is authorized.
+- D21 (agent, Oct 16): Keep the default Sandbox adapter and synthetic CLI guarded;
+  isolate planned live activation to the pinned F6 plan, explicit factual
+  coverage record, immutable image/project, durable bounded receipts, and exact
+  allowed inputs. Reuse the saved proposal unchanged, reporting zero current
+  inference and historical generation separately. Accept documented no-signal
+  and UTF-8 wire representations without weakening behavior checks.
 
 ## Session log
 
@@ -371,6 +422,16 @@ Who decided what, and when. Don't reverse one without the user.
   scope. No resources created, snippet execution, or inference. 644 tests pass.
   Next: Sandbox credit coverage and approved live capability checks/activation,
   then D8, free live-agent judging access, and video recording.
+- 2026-10-16 (Sandbox preparation): Prepared the saved F6 source/proposal into
+  a frozen twelve-operation plan and dedicated bounded live runner with private
+  import, three fixed capability probes, durable receipts, restart recovery,
+  and explicit factual coverage gating. Added documented signal/UTF-8 parsing
+  compatibility and separated historical proposal usage from zero new inference.
+  705 tests pass, including installed-wheel checks and synthetic full lifecycle;
+  the published 16-file F6 bundle still rebuilds byte-for-byte. No live Sandbox
+  API call, model evaluation, resource creation, deployment, or push. Next:
+  answer the pending coverage question, then run the prepared Sandbox step;
+  D8 and free live-agent judging access remain unresolved.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

@@ -168,7 +168,7 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
     if synthetic != metadata.get('synthetic_execution', False):
         raise ValueError('Saved execution evidence type does not match the adapter')
     deadline = datetime.fromisoformat(saved['created_at']).timestamp() + MAX_RUN_SECONDS
-    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': metadata['adapter'], 'synthetic_execution': synthetic, 'execution_evidence': 'synthetic_not_execution' if synthetic else 'recorded_execution', 'repair_source': metadata['repair_source'], 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': metadata.get('inference_usage', {}).get('model_calls', 0), 'paid_calls': metadata.get('inference_usage', {}).get('model_calls', 0) if metadata.get('paid_calls_enabled') else 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs across declared inputs, the required API call, and that call result reaching the printed output (static must-flow check) are checked. This owned-fixture run does not establish Nebius access or competition eligibility.'}
+    report = {'schema_version': 1, 'run_id': run_id, 'status': 'incomplete', 'diagnosis': 'inconclusive', 'repair_verdict': 'unattempted', 'adapter': metadata['adapter'], 'synthetic_execution': synthetic, 'execution_evidence': 'synthetic_not_execution' if synthetic else 'recorded_execution', 'repair_source': metadata['repair_source'], 'provider_qualification': 'unconfirmed', 'provenance': metadata['provenance'], 'frozen_profile_hashes': metadata['profile_hashes'], 'examples': [], 'results': [], 'usage': {'inference_calls': metadata.get('inference_usage', {}).get('model_calls', 0), 'paid_calls': metadata.get('inference_usage', {}).get('model_calls', 0) if metadata.get('paid_calls_enabled') else 0, 'compute_operations': 0}, 'coverage_note': 'Only the frozen JSON outputs across declared inputs, the required API call, and that call result reaching the printed output (static must-flow check) are checked. This owned-fixture result alone does not establish competition eligibility.'}
     if synthetic:
         report['coverage_note'] = 'Synthetic Sandbox responses exercise controller contracts only. No guest code executed and no provider access, network isolation, Python capability, or behavioral repair is established.'
         report.update(live_requests=0, code_executions=0)
@@ -190,6 +190,8 @@ def _resume_run(run_id: str, state_root: Path, adapter=None) -> dict:
                 item['verified'] = False
         report['evidence_exported'] = True
         report['usage']['operation_count_scope'] = 'Simulated snippet receipts; no guest code execution' if synthetic else 'Snippet operations; excludes local Python-version preflight probes'
+        if metadata['adapter'] == 'nebius_sandbox':
+            report['usage']['operation_count_scope'] = 'Verifier snippet operations; image import and runtime capability probes are recorded separately'
         report['behavior_verified'] = not synthetic and report['repair_verdict'] == 'behavior_verified' and report['status'] == 'completed'
         write_json(report_path, report)
         try:

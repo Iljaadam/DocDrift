@@ -103,6 +103,8 @@ class RemoteExecutionRequest:
 
 @dataclass(frozen=True)
 class RemoteResult:
+    """Parsed operation evidence; provider no-signal sentinel ``-1`` becomes None."""
+
     operation_id: str
     image_id: str | None
     result_image_id: str | None
@@ -402,6 +404,10 @@ class NebiusSandboxAdapter:
                 decoded = base64.b64decode(value["value"], validate=True)
             elif encoding == "ascii":
                 decoded = value["value"].encode("ascii")
+            elif encoding in {"utf-8", "utf8"}:
+                # The official networking-disabled recipe also accepts these
+                # text encodings alongside the API schema's ascii/base64.
+                decoded = value["value"].encode("utf-8")
             else:
                 return "", True, False
         except (ValueError, UnicodeError, binascii.Error):
@@ -432,6 +438,11 @@ class NebiusSandboxAdapter:
         stderr, stderr_truncated, stderr_valid = self._stream(result.get("stderr"), limit)
         exit_code = process.get("exit_code")
         signal = process.get("signal")
+        # The official recipe treats -1 as ordinary completion without a
+        # signal. Normalize it for shared execution checks and journal records:
+        # https://docs.tokenfactory.nebius.com/sandboxes/cookbook/verify-with-networking-disabled
+        if type(signal) is int and signal == -1:
+            signal = None
         process_types_valid = (type(exit_code) is int or exit_code is None) and (type(signal) is int or signal is None) and type(process.get("timed_out")) is bool
         if ((exit_code is not None and type(exit_code) is int and not -(2**31) <= exit_code < 2**31)
                 or (signal is not None and type(signal) is int and not 0 <= signal < 2**31)):

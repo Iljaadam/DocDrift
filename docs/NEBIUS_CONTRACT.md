@@ -21,15 +21,16 @@ token identity, expiration, and raw response body were omitted. See
 That was one HTTP request attempt with **zero compute operations and zero
 inference calls**. It confirms permission discovery only. No image was selected
 or inspected, and Python capability, network isolation, execution, cancellation,
-artifact download, and Sandbox credit coverage remain untested. The user approved
-only this access read; live mutations remain disabled.
+artifact download, and Sandbox credit coverage remain untested. No live Sandbox
+resource has been created. The separate fixed-case execution path below remains
+blocked by missing factual coverage confirmation.
 
 ## The $0 gate
 
-`NebiusSandboxAdapter` permits live GET/HEAD requests only. All POST/DELETE
-operations fail before transport and before a submission receipt is created.
-There is no live execution override, account setup, automatic credential lookup,
-model call, provisioning, or billing action. An explicitly selected
+The default `NebiusSandboxAdapter` permits live GET/HEAD requests only. Its live
+POST/DELETE operations fail before transport and before a submission receipt is
+created. It performs no automatic credential lookup, model call, provisioning,
+or billing action. An explicitly selected
 `httpx.MockTransport` with `offline_simulation=True` enables synthetic mutation
 contracts. The adapter checks the actual transport again on every mutation and
 rejects foreign mounted transports. The simulation flag is read-only.
@@ -37,13 +38,16 @@ rejects foreign mounted transports. The simulation flag is read-only.
 Constructing a GET client still requires explicitly supplied credentials. The
 approved access read used the adapter directly. The CLI currently constructs
 only synthetic Sandbox clients, with invented credentials; those commands do
-not contact the provider or inspect the user's OS credentials.
+not contact the provider or inspect the user's OS credentials. A dedicated
+fixed-F6 runner uses a separate implementation and an explicit coverage gate;
+it does not change these default adapter or CLI restrictions.
 
 The current provider billing page describes bank-card onboarding and automatic
 charging; it does not establish an enforceable credit-only stop. Sandbox beta
-status establishes neither free execution nor promotional-credit coverage. Live
-execution therefore stays disabled while Sandbox credit coverage, expiration,
-and protection against personal charges remain unconfirmed. The user reports
+status establishes neither free execution nor promotional-credit coverage. The
+fixed-F6 runner refuses missing or unconfirmed coverage before making a provider
+request. Sandbox coverage, expiration, and protection against personal charges
+remain unconfirmed; no actual coverage record has been created. The user reports
 approximately $30 in Token Factory credits; that does not establish Sandbox
 coverage. Preserve NewsBias's
 resources and any shared credit pool. See [current billing](https://docs.tokenfactory.nebius.com/other-capabilities/billing-new)
@@ -119,8 +123,12 @@ settings cannot pass execution. A client wait expiring sets
 `observation_timed_out`; it does not invent a guest timeout or cancel the guest.
 Cancellation acceptance likewise requires subsequent status reconciliation.
 
-The documented uppercase service states are parsed strictly. Streams support
-documented base64/ASCII envelopes, retain at most 256 KiB, and report truncation.
+The documented uppercase service states are parsed strictly. The documented
+no-signal sentinel `-1` is normalized to an absent signal. Streams support
+base64/ASCII and `utf-8`/`utf8` string envelopes, retain at most 256 KiB, and
+report truncation. These compatibility changes follow the official
+[network-disabled verification recipe](https://docs.tokenfactory.nebius.com/sandboxes/cookbook/verify-with-networking-disabled)
+and were checked locally; they are not observations from a real Sandbox run.
 Unknown encoding/state shapes fail closed. Raw resource metrics, including
 `cost`, keep their provider values with **unspecified cost units**; they are not
 dollars or invoice estimates. No adapter field claims behavioral verification.
@@ -156,13 +164,24 @@ failed service states, and timeouts cannot pass verification.
 
 ## Remaining live acceptance gates
 
-Execution integration is exercised offline only. It does not import an OCI image, install
-dependencies, prepare a pristine dependency
-image, prove Python/network capability, manage image deletion or retention, or
-reconcile ambiguous submissions through an operation-history search. Those
-workflows remain gated by separate execution authorization, capability checks,
-and protection against personal charges. The approved `whoami` read confirms
-advertised permission flags, without satisfying those execution gates.
-The independently checked local Docker evidence remains local evidence;
-the plan's remote milestone is unfinished. Actual Nemotron repairs have passed
-local Docker verification (`docs/FEEDBACK_LOG.md` F3–F6).
+The dedicated `scripts/verify_saved_f6_sandbox.py` and
+`src/docdrift/sandbox_live.py` prepare a bounded reuse of the saved F6 agent
+proposal: zero current inference, one private image import (at most 120 seconds),
+three fixed runtime probes, and 12 frozen verifier operations (at most 30 seconds
+each). The probes check Python/nonroot/network capability, a retained fixed
+artifact download, and cancellation. Durable receipts precede submissions;
+unknown outcomes are not retried. The ordinary mocked execution bridge remains
+unchanged. See [fixed verification instructions](SANDBOX_VERIFICATION.md).
+
+For this fixed path, only offline preparation and local tests have run. Public Docker Hub metadata
+supplied the immutable Linux amd64 Python image pin; it was not imported into
+Sandboxes. No new provider request, Sandbox resource, or inference was needed
+for this preparation. Image/Python/network capability, execution, cancellation,
+download, and coverage remain unestablished. The missing coverage statement
+must be factual; its schema is neither evidence nor a provider billing cap.
+
+General dependency installation, arbitrary repositories, image lifecycle
+management, and operation-history discovery remain outside this fixed path.
+The independently checked F6 Docker evidence remains local evidence, and the
+remote milestone is unfinished. Actual Nemotron repairs have passed local
+Docker verification ([feedback log](FEEDBACK_LOG.md) F3–F6).

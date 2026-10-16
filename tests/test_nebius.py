@@ -215,6 +215,69 @@ def test_service_success_and_process_success_remain_distinct(tmp_path, response,
     assert not hasattr(result, "cost_dollars") and not hasattr(result, "behavior_verified")
 
 
+@pytest.mark.parametrize("encoding", ["utf-8", "utf8"])
+def test_documented_utf8_text_streams_preserve_unicode(tmp_path, encoding):
+    data = fixture("success.json")
+    stdout = '{"city": "Zürich", "mascot": "🐾"}\n'
+    stderr = "診断: succès\n"
+    for stream, text in (("stdout", stdout), ("stderr", stderr)):
+        data["metadata"]["result"][stream] = {
+            "value": text, "encoding": encoding, "truncated": False,
+        }
+    with adapter(tmp_path, lambda req: httpx.Response(200, json=data)) as client:
+        result = client.observe(OPERATION)
+    assert result.stdout == stdout and result.stderr == stderr
+    assert result.execution_passed and result.evidence_complete
+
+
+@pytest.mark.parametrize("exit_code", [0, 1])
+def test_documented_no_signal_sentinel_preserves_exit_code_and_journal(tmp_path, exit_code):
+    data = fixture("success.json")
+    data["metadata"]["result"]["state"].update(exit_code=exit_code, signal=-1)
+
+    def handler(req):
+        return httpx.Response(201, json={"uuid": OPERATION}) if req.method == "POST" else httpx.Response(200, json=data)
+
+    with adapter(tmp_path, handler) as client:
+        client.submit(request(), lambda operation: None, run_id="run", phase="baseline")
+        result = client.observe(OPERATION)
+    assert result.signal is None and result.exit_code == exit_code
+    assert result.evidence_complete and result.execution_passed is (exit_code == 0)
+    recorded = SubmissionJournal(tmp_path).lookup("run", "baseline")["result_metadata"]
+    assert recorded["signal"] is None and recorded["exit_code"] == exit_code
+
+
+def test_real_positive_signal_cannot_pass_even_with_exit_zero(tmp_path):
+    data = fixture("success.json")
+    data["metadata"]["result"]["state"]["signal"] = 9
+    with adapter(tmp_path, lambda req: httpx.Response(200, json=data)) as client:
+        result = client.observe(OPERATION)
+    assert result.signal == 9 and result.exit_code == 0
+    assert result.evidence_complete and not result.execution_passed
+
+
+@pytest.mark.parametrize("signal", [-2, -(2**31), False])
+def test_undocumented_negative_or_boolean_signal_fails_closed(tmp_path, signal):
+    data = fixture("success.json")
+    data["metadata"]["result"]["state"]["signal"] = signal
+    with adapter(tmp_path, lambda req: httpx.Response(200, json=data)) as client:
+        result = client.observe(OPERATION)
+    assert result.state == "incomplete"
+    assert not result.evidence_complete and not result.execution_passed
+
+
+def test_utf8_capture_limit_counts_bytes_and_records_truncation(tmp_path):
+    data = fixture("success.json")
+    data["metadata"]["truncate_output_at"] = 4
+    data["metadata"]["result"]["stdout"] = {
+        "value": "雪雪", "encoding": "utf-8", "truncated": False,
+    }
+    with adapter(tmp_path, lambda req: httpx.Response(200, json=data)) as client:
+        result = client.observe(OPERATION)
+    assert result.stdout == "雪\ufffd" and result.stdout_truncated
+    assert not result.execution_passed
+
+
 def test_observation_timeout_is_not_execution_timeout_or_cancellation(tmp_path):
     calls = []
 

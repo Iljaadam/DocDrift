@@ -36,9 +36,13 @@ demo-able submission.
     promotional credits already on the account, approximately $30 (exact balance
     and expiry unverified). Keep runs small and log token use.
   - Sandboxes: user approved one read-only `GET whoami` on 2026-10-16; it
-    succeeded (feedback log F7). Further live calls require scoped approval.
-    Resource creation/execution is not approved, credit coverage is unverified,
-    and live Sandbox mutations have no enable switch on purpose.
+    succeeded (feedback log F7), then requested proceeding with the planned
+    verification. The fixed-F6 runner is limited to one private image import,
+    three runtime probes, and twelve verifier operations, with no new inference.
+    Do not run it until actual free/grant coverage and no personal charges are
+    confirmed for execution, import, and storage. That confirmation is still
+    missing. Default adapters/CLI keep their live mutation blocks; there is no
+    general live-execution switch. See `docs/SANDBOX_VERIFICATION.md` and D20.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

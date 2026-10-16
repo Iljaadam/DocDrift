@@ -145,10 +145,14 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     provenance = _mapping(report.get('provenance')) or _mapping(metadata.get('provenance'))
     environment = _mapping(report.get('environment'))
     usage = _mapping(report.get('usage'))
-    inference = _mapping(repair.get('usage')) or _mapping(metadata.get('inference_usage'))
     source = report.get('repair_source', metadata.get('repair_source', 'Not recorded'))
     source_text = str(source)
-    if source_text.startswith('synthetic_') or repair.get('live_inference') is False:
+    saved_model = source_text.startswith('saved_model_')
+    inference = _mapping(metadata.get('inference_usage')) if saved_model else _mapping(repair.get('usage')) or _mapping(metadata.get('inference_usage'))
+    inference_calls = inference.get('model_calls') if saved_model else usage.get('inference_calls', inference.get('model_calls'))
+    if saved_model:
+        repair_label = 'Saved live model proposal'
+    elif source_text.startswith('synthetic_') or repair.get('live_inference') is False:
         repair_label = 'Synthetic model replay'
     elif source_text.startswith('model_'):
         repair_label = 'Live model repair'
@@ -202,7 +206,7 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
             ('Synthetic execution checks' if simulated else 'Execution checks', f'{executed} / {len(final)}' if final else 'Not run', 'Recorded final target + regression checks'),
             ('Synthetic behavior checks' if simulated else 'Behavior checks', f'{behavior} / {len(final)}' if final else 'Not run', 'Recorded final checks; see coverage limits'),
             ('Repair source', repair_label, source_text),
-            ('Model calls', usage.get('inference_calls', inference.get('model_calls', 'Not recorded')), 'Token usage below'),
+            ('Current model calls' if saved_model else 'Model calls', inference_calls if inference_calls is not None else 'Not recorded', 'Token usage below'),
         ]
     ) + '</div>'
     findings = _facts([('Saved status', status), ('Saved repair verdict', verdict), ('Diagnosis', report.get('diagnosis')), ('Protected hashes preserved', report.get('protected_hashes_preserved'))])
@@ -255,10 +259,11 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
             provenance_body += '<details><summary>' + title + '</summary>' + _facts(list(values.items())) + '</details>'
 
     token_total = inference.get('prompt_tokens', 0) + inference.get('completion_tokens', 0) if all(type(inference.get(key)) is int for key in ['prompt_tokens', 'completion_tokens']) else None
-    usage_body = _facts([
-        ('Model', repair.get('model', metadata.get('model'))), ('Strategy', repair.get('strategy')),
-        ('Repair source', source), ('Live inference recorded', repair.get('live_inference')),
-        ('Inference calls', usage.get('inference_calls', inference.get('model_calls'))), ('Prompt tokens', inference.get('prompt_tokens')),
+    usage_body = '<h3>Current inference usage</h3>' if saved_model else ''
+    usage_body += _facts([
+        ('Proposal model' if saved_model else 'Model', repair.get('model', metadata.get('model'))), ('Proposal strategy' if saved_model else 'Strategy', repair.get('strategy')),
+        ('Repair source', source), ('Live inference in this run' if saved_model else 'Live inference recorded', False if saved_model and inference_calls == 0 else None if saved_model else repair.get('live_inference')),
+        ('Inference calls', inference_calls), ('Prompt tokens', inference.get('prompt_tokens')),
         ('Completion tokens', inference.get('completion_tokens')), ('Total recorded tokens', token_total),
         ('Model exploration snippet runs', inference.get('snippet_runs')), ('Final verification operations', usage.get('compute_operations')),
         ('Simulated operation receipts', usage.get('simulated_operations')),
@@ -267,6 +272,28 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     usage_body += '<p>Tokens and calls are recorded usage, not a dollar estimate or a statement about the current account balance. Calls marked paid identify live inference requests against account credits; they do not report personal spending.</p>'
     if usage.get('operation_count_scope'):
         usage_body += '<p>' + _escape(usage['operation_count_scope']) + '.</p>'
+    if saved_model:
+        historical = _mapping(metadata.get('historical_generation'))
+        historical_usage = _mapping(historical.get('usage')) or _mapping(repair.get('usage'))
+        historical_total = historical_usage['prompt_tokens'] + historical_usage['completion_tokens'] if all(type(historical_usage.get(key)) is int for key in ['prompt_tokens', 'completion_tokens']) else None
+        usage_body += '<h3>Historical generation · prior run</h3>'
+        usage_body += '<p>The original proposal transcript is retained in repair.json. Its generation usage belongs to the prior source run and is not counted as current inference.</p>'
+        if inference_calls == 0:
+            usage_body += '<p>No new model call is recorded for this run.</p>'
+        usage_body += _facts([
+            ('Source run ID', historical.get('source_run_id')),
+            ('Proposal SHA-256', historical.get('proposal_sha256')),
+            ('Generation model', historical.get('model', repair.get('model'))),
+            ('Generation strategy', historical.get('strategy', repair.get('strategy'))),
+            ('Live inference in source run', historical.get('live_inference', repair.get('live_inference'))),
+            ('Historical inference calls', historical_usage.get('model_calls')),
+            ('Historical prompt tokens', historical_usage.get('prompt_tokens')),
+            ('Historical completion tokens', historical_usage.get('completion_tokens')),
+            ('Historical total tokens', historical_total),
+            ('Historical snippet runs', historical_usage.get('snippet_runs')),
+        ])
+        if historical.get('note'):
+            usage_body += '<p>' + _escape(historical['note']) + '</p>'
 
     operation_body = '<p>Expand a phase for its operation and image IDs, check findings, stdout, and stderr. Execution success and behavior acceptance are separate results.</p>'
     operation_body += ''.join(_operation(item, index) for index, item in enumerate(results)) or '<p class="empty">No completed check records were saved.</p>'

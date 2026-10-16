@@ -165,3 +165,21 @@ it created no resources and performed no execution or inference.
 - Suggestion: make effective permissions easy to connect to credit coverage and
   billed-unit guidance so a successful access check can lead to a bounded,
   credit-funded execution test without assuming that access means free compute.
+
+### F8 — Prepare saved-repair verification; reconcile documented wire variants (2026-10-16, offline)
+
+- Product / API: Sandbox operation results; documentation review and synthetic
+  contract tests only. No further authenticated Sandbox request was made.
+- Finding: the official [networking-disabled recipe](https://docs.tokenfactory.nebius.com/sandboxes/cookbook/verify-with-networking-disabled)
+  treats signal `-1` as no terminating signal and accepts `utf-8`/`utf8` output.
+  Earlier DocDrift contracts covered nonnegative signals and ASCII/base64 only.
+- Change: normalize that sentinel to `None`, preserve valid exit codes, accept
+  the documented UTF-8 envelopes, and retain byte limits and truncation checks.
+  Other negative signals and unknown encodings remain incomplete evidence.
+- Effect on DocDrift: a separate fixed-F6 runner now freezes the saved proposal
+  and twelve verifier phases, with bounded import/runtime probes and durable
+  recovery. It reports zero new inference and separates prior generation usage.
+  All runtime responses used in its tests are synthetic; no live execution or
+  credit coverage is claimed. See [the prepared workflow](SANDBOX_VERIFICATION.md).
+- Suggestion: keep stream encoding enums and no-signal semantics consistent
+  between the runnable recipe and [operation reference](https://docs.tokenfactory.nebius.com/api-reference/sandboxes/operations/get-an-operation-status).
