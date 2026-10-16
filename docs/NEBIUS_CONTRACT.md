@@ -1,11 +1,28 @@
-# Sandbox REST contract: offline simulation only
+# Sandbox REST contract and live access status
 
-Reviewed against official documentation on October 14, 2026. No provider request,
-credential check, live recording, compute operation, or inference call was made.
-The fixtures in `tests/fixtures/nebius/` are **synthetic documented-shape responses**;
-their IDs, outputs, timings, and resource values are invented. Their manifest
-records provenance and hashes. They do not demonstrate remote access, actual
-execution, credit coverage, or competition qualification.
+The execution contract was reviewed against official documentation on October
+14, 2026 and exercised offline. The fixtures in `tests/fixtures/nebius/` remain
+**synthetic documented-shape responses**: their IDs, outputs, timings, and
+resource values are invented. Their manifest records provenance and hashes.
+They are not provider recordings and demonstrate no actual execution, credit
+coverage, or competition qualification.
+
+On **October 16, 2026 at 14:37:10 UTC**, one separately approved live
+`GET whoami` through `NebiusSandboxAdapter` succeeded in 0.168 seconds. The
+returned `import`, `spawn`, `spawn_disposable`, `list`, `cancel`, and
+`set_image_tag` permission flags were all `true`. Returned limits were
+`instance_max_timeout=3600`, `instance_max_concurrency=50`,
+`instance_max_layer_bytes=12884901888`, `images_import_max_concurrency=8`, and
+`images_import_max_timeout=3600`. The adapter did not retain the precise HTTP
+status code. A sanitized local receipt records field types and filtered values;
+token identity, expiration, and raw response body were omitted. See
+[feedback entry F7](FEEDBACK_LOG.md#f7--read-only-sandbox-access-check-succeeds-2026-10-16).
+
+That was one HTTP request attempt with **zero compute operations and zero
+inference calls**. It confirms permission discovery only. No image was selected
+or inspected, and Python capability, network isolation, execution, cancellation,
+artifact download, and Sandbox credit coverage remain untested. The user approved
+only this access read; live mutations remain disabled.
 
 ## The $0 gate
 
@@ -17,15 +34,18 @@ model call, provisioning, or billing action. An explicitly selected
 contracts. The adapter checks the actual transport again on every mutation and
 rejects foreign mounted transports. The simulation flag is read-only.
 
-Constructing a GET client still requires explicitly supplied credentials. The CLI
-currently constructs only synthetic clients, with invented credentials. It does
+Constructing a GET client still requires explicitly supplied credentials. The
+approved access read used the adapter directly. The CLI currently constructs
+only synthetic Sandbox clients, with invented credentials; those commands do
 not contact the provider or inspect the user's OS credentials.
 
 The current provider billing page describes bank-card onboarding and automatic
 charging; it does not establish an enforceable credit-only stop. Sandbox beta
 status establishes neither free execution nor promotional-credit coverage. Live
-execution therefore stays disabled while the Builder grant, coverage, expiration,
-and protection against personal charges remain unconfirmed. Preserve NewsBias's
+execution therefore stays disabled while Sandbox credit coverage, expiration,
+and protection against personal charges remain unconfirmed. The user reports
+approximately $30 in Token Factory credits; that does not establish Sandbox
+coverage. Preserve NewsBias's
 resources and any shared credit pool. See [current billing](https://docs.tokenfactory.nebius.com/other-capabilities/billing-new)
 and [Sandbox limits and usage](https://docs.tokenfactory.nebius.com/sandboxes/operate/limits-retention-and-usage).
 
@@ -136,11 +156,13 @@ failed service states, and timeouts cannot pass verification.
 
 ## Remaining live acceptance gates
 
-Integration is exercised offline only. It does not import an OCI image, install
+Execution integration is exercised offline only. It does not import an OCI image, install
 dependencies, prepare a pristine dependency
 image, prove Python/network capability, manage image deletion or retention, or
 reconcile ambiguous submissions through an operation-history search. Those
-workflows remain gated by confirmed access and protection against personal
-charges. The independently checked local Docker evidence remains local evidence;
+workflows remain gated by separate execution authorization, capability checks,
+and protection against personal charges. The approved `whoami` read confirms
+advertised permission flags, without satisfying those execution gates.
+The independently checked local Docker evidence remains local evidence;
 the plan's remote milestone is unfinished. Actual Nemotron repairs have passed
 local Docker verification (`docs/FEEDBACK_LOG.md` F3–F6).

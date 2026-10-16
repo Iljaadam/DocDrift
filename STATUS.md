@@ -8,10 +8,12 @@ Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
 Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
-Sandboxes: user applied for access on Oct 15 and reported on Oct 16 that access
-should now be available. Permission has not been checked. A read-only `GET whoami`
-uses the bearer key plus this project ID in the `Project` header; explicit approval
-for that single check has been requested. All execution so far is local Docker.
+Sandboxes: access confirmed by one user-approved read-only `GET whoami` on
+Oct 16 (F7). The existing bearer key plus this project ID in the `Project` header
+returned import, spawn, disposable-spawn, list, cancel, and image-tag permissions.
+No resources were created; credit coverage and live execution remain unverified.
+All snippet execution so far is local Docker. Further live calls need scoped
+approval; mutations remain disabled.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -21,9 +23,10 @@ for that single check has been requested. All execution so far is local Docker.
   (initially described as $25). Exact balance, expiry, and grant/form route unverified.
   The own-spend restriction discussed on Oct 14 applies to cloud compute, not Token Factory.
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
-- [x] Sandbox access application submitted, per user Oct 15; user expects access Oct 16,
-  not yet verified
-- [ ] Sandbox permission (read-only `whoami`, needs user OK); offline execution, image reuse, result parsing, cancellation, artifact download checked live
+- [x] Sandbox access application submitted Oct 15; permission confirmed Oct 16
+  by one approved read-only `whoami` (F7)
+- [ ] Sandbox offline execution, image reuse, result parsing, cancellation, and
+  artifact download checked live after coverage confirmation and scoped approval
 
 **Manual vertical slice (milestone 1)**
 - [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
@@ -74,15 +77,16 @@ for that single check has been requested. All execution so far is local Docker.
   actual F4/F5/F6 results; held-out results and free live-agent access remain open)
 
 **Decision dates**
-- Oct 22: still no Sandbox access → user decides: submit with real Nemotron on Token Factory
-  and local Docker execution, clearly labelled (Coding eligibility uncertain), or stop.
+- Oct 22 access fallback is no longer triggered: permission confirmed Oct 16.
+  Live runtime acceptance and credit coverage are still outstanding; local
+  Docker evidence alone leaves Coding eligibility uncertain.
 - Sandbox access after ~Oct 26: swap only the final verification onto Sandboxes; keep the rest.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** check reported Sandbox access after explicit approval for one read-only
-`whoami`; then resolve credit coverage and approved live capabilities/activation
-(the bridge currently permits HTTP mocks only). The real F6 demo bundle,
+**Next:** resolve Sandbox credit coverage and approved live capabilities/activation
+now that read-only access is confirmed (the bridge currently permits HTTP mocks
+only). The real F6 demo bundle,
 submission draft, and 2:45 video script are ready for review without further
 inference. Record the video from saved evidence, keeping local Docker provenance
 visible. D8 and the free live-agent judge-access route remain unresolved. D9 and
@@ -102,8 +106,9 @@ were redacted from report/ledger copies; the four JSON pointers and original
 value hashes are disclosed in `docs/demo/f6/provenance.json`. HTML and the unsigned
 ZIP manifest were regenerated; model proposals, comparison JSON/Markdown, source,
 checks, snippets, and logs retain their original bytes. All 50 saved input files
-remain unchanged. Both frozen inventories remain unchanged. No inference,
-snippet execution, live Sandbox call, deployment, or push occurred this session.
+remain unchanged. Both frozen inventories remain unchanged. Packaging made no
+inference, snippet execution, live Sandbox call, deployment, or push. A separate
+approved access check is recorded below.
 
 Published ZIP SHA-256:
 `ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b`.
@@ -118,14 +123,24 @@ published bundle; it need not rebuild. The script pins the original input hashes
 and refuses different evidence. Verify the published archive with
 `.venv/bin/docdrift verify-evidence docs/demo/f6/agent/evidence.zip`.
 
-User reports Sandbox access should now be available. Approval for one read-only
-`GET whoami` has been requested but not received; no live call was made. The key
-file is present with mode 600 and the project ID is above. Access alone would
-not confirm credit coverage or authorize resource creation/execution. Live
-mutations remain disabled, and historical F6 execution stays local Docker.
-Next: resolve that access check and coverage, then approved live verification,
-D8, and free functional live-agent access through December 15. No new model
-evaluation is needed to browse the demo or record its video.
+User approved one read-only `GET whoami` on Oct 16 (D19); it succeeded at
+14:37:10 UTC in 0.168 seconds. All six returned permissions are true: `import`,
+`spawn`, `spawn_disposable`, `list`, `cancel`, `set_image_tag`. Reported limits:
+instance timeout 3,600 seconds, concurrency 50, layer 12,884,901,888 bytes;
+image import concurrency 8 and timeout 3,600 seconds. These are API-reported
+limits, not exercised capabilities or a budget. Filtered response/schema record:
+`.docdrift/access/sandbox-whoami-2026-10-16.json` (mode 600, gitignored). Token
+identity/expiration were omitted; the key remains outside the repo.
+
+This was the first live Sandbox call: one access GET, zero compute operations,
+zero inference. The six permission booleans match the adapter's expected schema.
+Credit coverage, image/Python availability, network denial, execution, image
+reuse, cancellation, artifact download, and recovery still need approved live
+checks; access alone does not authorize them. Live mutations remain disabled,
+and historical F6 execution stays local Docker. Next: resolve coverage and
+approved live verification, D8, and free functional live-agent access through
+December 15. No new model evaluation is needed to browse the demo or record
+its video.
 
 ## Previous resume handoff — October 15, 2026
 
@@ -210,7 +225,7 @@ Who decided what, and when. Don't reverse one without the user.
   no automatic retry.
 - D5 (user, Oct 14): Live inference approved on the $1 Token Factory trial key. The user
   was asked to confirm no card and no auto top-up and replied "yes go ahead".
-  Sandbox calls are not approved yet.
+  Sandbox calls were not approved then; D19 later approves one access GET only.
 - D6 (agent, Oct 14): Working model `nvidia/nemotron-3-super-120b-a12b`: tool calling
   verified (F2). The other Nemotron IDs are listed in F1.
 - D7 (user, Oct 14): Broken-fixture README prose neutralised and re-frozen before any
@@ -258,6 +273,11 @@ Who decided what, and when. Don't reverse one without the user.
   and frozen inventories. User expects Sandbox access but has not yet approved
   the separately requested single read-only check. No deployment or standing
   push authorization is inferred.
+- D19 (user, Oct 16, "i approve go"): Approved the pending single read-only
+  Sandbox `GET whoami`. It succeeded with the existing key/project; six permission
+  booleans are true (F7). This authorizes the access check only, not provisioning,
+  execution, new model evaluation, deployment, or further live calls. The $0
+  personal-spend limit and unverified Sandbox credit coverage remain in force.
 
 ## Session log
 
@@ -345,6 +365,12 @@ Who decided what, and when. Don't reverse one without the user.
   644 tests pass. No new inference, snippet execution, provider call, or push.
   Next: approved Sandbox access check/coverage, real cloud verification, D8,
   free live-agent judging route, and video recording.
+- 2026-10-16 (access check): User approved one read-only Sandbox `whoami`; it
+  succeeded with all six permission booleans true in 0.168 seconds (F7). Saved
+  a filtered mode-600 access record; updated current status and authorization
+  scope. No resources created, snippet execution, or inference. 644 tests pass.
+  Next: Sandbox credit coverage and approved live capability checks/activation,
+  then D8, free live-agent judging access, and video recording.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

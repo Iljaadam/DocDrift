@@ -22,15 +22,18 @@ well as successes. One entry per finding. Never paste API keys.
 - [x] Nemotron model IDs available to this account (F1); context window still unknown.
 - [x] `tools` / `tool_choice` support and tool-call response shape (F2).
 - [x] Usage fields in responses (F2); how credits are drawn still unchecked in the console.
-- [ ] Sandbox: permission, offline execution, image reuse, cancellation timing, artifact download, billed units.
+- [x] Sandbox: one approved read-only `whoami` confirmed permission flags and effective limits (F7).
+- [ ] Sandbox: credit coverage/billed units, image/Python capability, network isolation,
+  execution, image reuse, cancellation timing, and artifact download.
 
 ## Entries
 
 Account: same Token Factory key originally issued for the $1 trial; user reports
 approximately $30 promotional credits on Oct 15 (balance/expiry unverified).
 The user approved live calls on Oct 14 after
-being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execution in these
-entries is local Docker, not Nebius Sandboxes.
+being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execution in
+F3–F6 is local Docker. F7 is one separately approved live Sandbox access read;
+it created no resources and performed no execution or inference.
 
 ### F1 — Model listing works; four Nemotron models (2026-10-14)
 
@@ -130,3 +133,35 @@ entries is local Docker, not Nebius Sandboxes.
   reported separately; it is not a held-out result or a general superiority claim.
 - Suggestion: retain the failed baseline alongside the success, and keep the
   frozen checks and budgets unchanged for subsequent evaluation.
+
+### F7 — Read-only Sandbox access check succeeds (2026-10-16)
+
+- Product / API: Sandbox `GET /sandboxes/v1/whoami` through the existing
+  `NebiusSandboxAdapter`; one user-approved read-only request at
+  **2026-10-16 14:37:10 UTC**. No image inspection or other provider request.
+- Expected: permission and effective-limit maps without creating resources.
+- Actual: the adapter returned successfully (`read_succeeded`). It accepts
+  successful 2xx responses but does not retain the precise HTTP status, so no
+  exact status code is claimed. Permission flags `import`, `spawn`,
+  `spawn_disposable`, `list`, `cancel`, and `set_image_tag` were all `true`.
+  The observed schema contained `token_uuid`, `token_expiration`, `permissions`,
+  `operations_stat`, and `limits`; token identity, expiration, and raw response
+  body were omitted from the saved record.
+- Effective limits returned: `instance_max_timeout=3600`,
+  `instance_max_concurrency=50`, `instance_max_layer_bytes=12884901888`,
+  `images_import_max_concurrency=8`, `images_import_max_timeout=3600`.
+- Latency / usage: **0.168 s** elapsed, **1 HTTP request attempt**, **0 compute
+  operations**, **0 inference calls**. No billed amount was recorded; this read
+  does not confirm promotional-credit coverage for Sandbox resources.
+- Evidence: sanitized local record
+  `.docdrift/access/sandbox-whoami-2026-10-16.json` (gitignored). It retains
+  permission booleans, numeric limits, response field types, and the original
+  response body's SHA-256; no credential or raw token identity is published.
+- Effect on DocDrift: live permission discovery is confirmed for this project.
+  Live mutations remain disabled. Image availability, Python capability,
+  network isolation, execution, cancellation, artifact download, and credit
+  coverage remain untested; this approval covered only the one access read.
+  F6 remains live Nemotron generation with local Docker verification.
+- Suggestion: make effective permissions easy to connect to credit coverage and
+  billed-unit guidance so a successful access check can lead to a bounded,
+  credit-funded execution test without assuming that access means free compute.

@@ -35,8 +35,10 @@ demo-able submission.
     trial key (`--live` on `repair`/`evaluate`). On 2026-10-15 the user reported
     promotional credits already on the account, approximately $30 (exact balance
     and expiry unverified). Keep runs small and log token use.
-  - Sandboxes: no live call yet, not even read-only, until the user approves.
-    Live Sandbox mutations have no enable switch on purpose.
+  - Sandboxes: user approved one read-only `GET whoami` on 2026-10-16; it
+    succeeded (feedback log F7). Further live calls require scoped approval.
+    Resource creation/execution is not approved, credit coverage is unverified,
+    and live Sandbox mutations have no enable switch on purpose.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.
