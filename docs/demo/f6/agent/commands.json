@@ -1,0 +1,136 @@
+{
+  "operations": [
+    {
+      "operation_id": "9e6f3ed68718f38bebd4c600518263639ec652b081bc27035bdb743f33dee5f0",
+      "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "414948a94361672819598f1fec97bb66a5a0668820057fd6774b7ef8ba40f716",
+      "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "47fcd3198b06122bd0513425ad92e75f205e348da2b8ea1125dea2119bf9fd55",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "313ddc200565cb4620c23aca9f2644fea05e0b3cbeade56e372a1c2b7a8a1d8b",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "84814b87233a27d6abdcde778ed8e2925ee7a3ea0913b32fe1ba5726d5b8fe05",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "65ccfdbdba5b50ba93d4c7c016e97b0e0f9d82081e9da7fa29e70474c2f205e0",
+      "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "53702a655d0e731c594e2823fde5abf7bc9e6f80193aa98f0a7921832aab788c",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "696f1e26d05f5c561089f95efadec41c235abbd6b9385f779215a62543286569",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "5325afbb830757cb5adcded9005a13fff16f325a237d6d9b9371a1c8f237eba0",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "fcbe60216df1601515b255142744f59854dc8d8db63b8501b738d0733922baad",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "127b5060c6903271596e678fc019382849f15d11fe75ff6fdb310cade531dab9",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    },
+    {
+      "operation_id": "d095202e46fb7476990779a1237b11f167654acdf4c18eb60c46cd8cbed044c8",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+      "executable": "python",
+      "arguments": [
+        "-B",
+        "/work/example.py"
+      ],
+      "network": "none",
+      "timeout_seconds": 30
+    }
+  ]
+}

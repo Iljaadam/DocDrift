@@ -11,13 +11,19 @@ diff, logs, source snapshots, frozen checks, operation identities, and a checksu
 ZIP, plus a self-contained HTML review. The included renamed-method example is an owned fixture.
 
 The architecture is preserved in [ARCHITECTURE_PLAN.md](ARCHITECTURE_PLAN.md).
-[STATUS.md](STATUS.md) records completed work and the remaining access gate.
+[STATUS.md](STATUS.md) records completed work and remaining delivery gates.
+Open the [saved real demo bundle](docs/demo/f6/index.html) from a fresh clone:
+it includes a live Nemotron agent repair, the rejected one-shot proposal, a
+strategy comparison, and downloadable evidence. No credentials, inference,
+Docker, or web server are needed to browse it. This is one exploratory owned
+development fixture, generated with live Token Factory calls and verified in
+local Docker; it is neither a held-out result nor a live repair service.
 For a free local test with no provider credentials, follow the
 [judge quickstart](docs/JUDGE_QUICKSTART.md).
 The Nebius REST contract and durable submission journal can now be exercised
 offline with synthetic responses. Live Nemotron inference is connected to repair
-and evaluation; execution uses local Docker. Live Sandbox execution remains
-unconnected and its permission has not been checked. NewsBias infrastructure is separate.
+and evaluation. The published model-repair evidence uses local Docker; current
+Sandbox readiness is tracked in [STATUS.md](STATUS.md).
 
 ## Run from a checkout
 

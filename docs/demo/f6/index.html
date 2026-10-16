@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>DocDrift · saved F6 demo</title><style>
+body{margin:0;background:#f3f5f4;color:#162b38;font:16px/1.6 system-ui,sans-serif}main{max-width:900px;margin:auto;padding:40px 24px}h1{font-size:clamp(28px,5vw,44px);line-height:1.15}h2{font-size:21px}a{color:#17674b;text-underline-offset:4px}section{background:#fff;border:1px solid #dbe3e5;border-radius:10px;margin:22px 0;padding:22px}code{font-size:.85em;overflow-wrap:anywhere}p{color:#586d77}.tag{font-size:13px;color:#17674b;font-weight:700}.notice{padding:14px;background:#fff9ed;border-left:3px solid #d3a342}li{margin:12px 0}.button{display:inline-block;background:#162b38;color:white;border-radius:6px;padding:12px 18px;text-decoration:none}table{border-collapse:collapse;width:100%;text-align:left}th,td{padding:10px;border-bottom:1px solid #dbe3e5}footer{font-size:13px;color:#586d77}</style></head><body><main>
+<p class="tag">DocDrift-owned fixture · live Nemotron generation · local Docker execution</p>
+<h1>A saved repair you can inspect offline</h1>
+<p>F6 follows one broken documentation example through a failed one-shot proposal and a successful agent repair. Browse the recorded evidence directly from this checkout.</p>
+<p><a class="button" href="comparison.html">Open strategy comparison</a></p>
+<section><h2>The recorded result</h2><table><thead><tr><th>Strategy</th><th>Verified repairs</th><th>Model calls</th><th>Tokens</th></tr></thead><tbody><tr><th>One-shot</th><td>0 / 1</td><td>1</td><td>940</td></tr><tr><th>Agent</th><td>1 / 1</td><td>5</td><td>7,841</td></tr></tbody></table>
+<p>Both model strategies made zero false drift reports on one unrelated healthy example. The full comparison, including execution-only, recorded 15 local snippet operations.</p>
+<p>This is one exploratory development comparison, added after earlier development results. It is not held out and does not establish general superiority. Execution was local Docker; this evidence does not establish Nebius Sandbox execution.</p></section>
+<section><h2>Follow the evidence</h2><ol>
+<li><a href="proposals/one-shot.json">Inspect the failed one-shot proposal</a>: <code>OccurrenceIndex.build(words)</code> removed the constructor and was statically rejected.</li>
+<li><a href="proposals/agent.json">Read the agent transcript</a>: it listed files, read source and documentation, and probed a replacement before submitting it.</li>
+<li><a href="agent/review.html">Review the successful repair</a>: <code>OccurrenceIndex().positions(words, include_empty=True)</code>, with three frozen target checks and three healthy regression checks.</li>
+<li><a href="agent/evidence.zip" download>Download the evidence ZIP</a>: saved source, checks, logs, report, patch, ledger, and rebuilt SHA-256 manifest.</li>
+</ol></section>
+<section><h2>Presentation and integrity</h2><p class="notice">Sanitized presentation copies: two private absolute path values were replaced in report/ledger copies; HTML and unsigned ZIP hashes were rebuilt. Saved outcomes are unchanged. This is not a fresh execution or a signed execution attestation.</p>
+<p><a href="README.md">Read provenance, exact redaction locations, and rebuild instructions</a>, or inspect <a href="provenance.json">original input hashes and published integrity results</a>. The original saved evidence was preserved.</p>
+<p>Machine-readable comparison: <a href="comparison.json">JSON</a> · <a href="comparison.md">Markdown</a>. Repair: <a href="agent/report.json">report</a> · <a href="agent/repair.json">record</a> · <a href="agent/repair.patch">patch</a>.</p></section>
+<footer>No credentials, inference, Docker, web server, or network connection is required to browse these files. Recorded behavior acceptance covers declared inputs, not every possible input.</footer>
+</main></body></html>

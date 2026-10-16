@@ -178,18 +178,27 @@ The requested judging update favors planning, writing, testing, and iteration on
 
 Award combinations are one Overall Award alone **or** one Track Award plus one Bonus Award. Do not stack overall plus bonus, or two bonuses. Prioritize Coding. Consider Tavily only after a measured dependency case benefits from a functional runtime search of official migration/release documentation. Otherwise omit it and produce useful feedback; feedback is required regardless of award targeting. [Prizes update](https://nebiusglobalaihackathon.devpost.com/updates/46206-did-someone-say-prizes), [organizer clarification](https://nebiusglobalaihackathon.devpost.com/forum_topics/45140-clarifications-submissions-award-stacking-and-tavily-credit-access).
 
-Proposed **2:45 video**:
+The concrete **2:45 video** uses the [saved real F6 bundle](docs/demo/f6/index.html).
+Use the narration and recording checklist in [the final script](docs/DEMO_VIDEO_SCRIPT.md).
+Keep a visible label: **Recorded Oct 15 · owned development fixture · live
+Nemotron / local Docker**. No new inference or cloud execution is needed.
 
 | Time | Footage |
 |---|---|
-| 0:00–0:15 | Maintainer problem, exact supported scope, pinned commit; label the main case an owned fixture. |
-| 0:15–0:40 | Execute the original quickstart in Nebius Sandboxes; show the real traceback and healthy neighbor. |
-| 0:40–1:15 | Show an actual Nemotron investigation/tool trace and generated small Markdown diff. |
-| 1:15–1:55 | Clean verification with immutable image/check identities; meaningful behavior passes and healthy example remains healthy. |
-| 1:55–2:20 | Clearly label “Deliberately constructed verification challenge”; submit a hardcoded-output or swallowed-exception patch and show rejection. Do not imply the model generated it. |
-| 2:20–2:45 | Download patch/evidence; show small evaluation counts and a pinned real example with its honest status. |
+| 0:00–0:20 | Maintainer problem, bounded scope, and saved-run provenance on the bundle landing page. |
+| 0:20–0:40 | Saved original snippet and real `AttributeError`; pinned source and check identities. |
+| 0:40–1:00 | Retained failed one-shot proposal and static rejection before execution. |
+| 1:00–1:25 | Actual agent source reads, one probe, and generated Markdown diff. |
+| 1:25–1:55 | Saved fresh-container verification: three target inputs, three healthy regressions, protected hashes, and local Docker provenance. |
+| 1:55–2:15 | F6 agent 1/1, one-shot 0/1; 6 calls / 8,781 tokens / 15 local snippet operations; one exploratory supplemental case, not held out. |
+| 2:15–2:45 | Evidence download, integrity boundary, earlier 2/2 development results for both model strategies, and free judge quickstart. |
 
-Record actual application runs. Trim waiting time with disclosed edits or time compression, not fabricated execution. Keep actual full logs downloadable. No award promise or invented performance results.
+Record actual saved application evidence. Disclose edits or time compression if
+using recorded terminal footage. Keep full published logs downloadable. The
+constructed bad-patch challenge is optional footage outside this cut and must
+be labelled as constructed. Static evidence browsing and the separate manual
+Docker demo do not resolve free live-agent access. No award promise or invented
+performance results.
 
 Keep a feedback log from the first live probe: SDK/API/model/version, minimal reproduction, input hashes, expected/actual behavior, error codes, latency, separate usage, effect on DocDrift, and a concrete suggestion. Record model repair failures as well as successes. Include findings in the submission; do not contact providers during this planning task.
 

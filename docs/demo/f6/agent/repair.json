@@ -1,0 +1,119 @@
+{
+  "strategy": "agent",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "live_inference": true,
+  "status": "proposed",
+  "replacement": "import json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex().positions(words, include_empty=True)\nprint(json.dumps(result, sort_keys=True))",
+  "candidates": [
+    {
+      "code_sha256": "9e7931d832359dbbbdda763dd27a40f477533e97c0ab4469dcd2fb24cb5e2f66",
+      "code": "import json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex().positions(words, include_empty=True)\nprint(json.dumps(result, sort_keys=True))",
+      "static_verdict": "accepted_static",
+      "reason": null
+    }
+  ],
+  "usage": {
+    "model_calls": 5,
+    "prompt_tokens": 7100,
+    "completion_tokens": 741,
+    "snippet_runs": 1,
+    "malformed_responses": 0
+  },
+  "transcript": [
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-b047932440b32dd5",
+          "function": {
+            "arguments": "{}",
+            "name": "list_files"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-b047932440b32dd5",
+      "content": "LICENSE\nREADME.md\ndrift_demo/__init__.py\npyproject.toml"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-8c886a418b2cec52",
+          "function": {
+            "arguments": "{\"path\": \"drift_demo/__init__.py\"}",
+            "name": "read_file"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-8c886a418b2cec52",
+      "content": "\"\"\"Small token-position and text-summary utilities.\"\"\"\n\nfrom collections import defaultdict\nfrom collections.abc import Iterable\n\n\nclass OccurrenceIndex:\n    \"\"\"Build an inverted index of exact token values.\"\"\"\n\n    def positions(self, words: Iterable[str], *, include_empty: bool = False) -> dict[str, list[int]]:\n        \"\"\"Return zero-based input positions; empty tokens are omitted by default.\"\"\"\n        result = defaultdict(list)\n        for position, word in enumerate(words):\n            if word or include_empty:\n                result[word].append(position)\n        return dict(result)\n\n\nclass TokenMetrics:\n    \"\"\"Describe token and character counts without constructing an index.\"\"\"\n\n    def measure(self, words: Iterable[str]) -> dict[str, int]:\n        values = list(words)\n        return {\"tokens\": len(values), \"characters\": sum(map(len, values))}\n"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-90a3a0bb9164002f",
+          "function": {
+            "arguments": "{\"path\": \"README.md\"}",
+            "name": "read_file"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-90a3a0bb9164002f",
+      "content": "# Token positions\n\n`drift_demo` provides small text utilities. Examples read a JSON array of strings\nfrom the `DOCDRIFT_INPUT` environment variable.\n\n## Occurrence index\n\nPrint a JSON object mapping every exact token to its zero-based input positions.\nPreserve empty strings, whitespace, case, and Unicode characters as distinct\nvalues. Repeated tokens have several positions; an empty input produces `{}`.\n\n```python\nimport json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex().build(words)\nprint(json.dumps(result, sort_keys=True))\n```\n\n## Text summary\n\nPrint the number of tokens and the total number of characters in the input:\n\n```python\nimport json\nimport os\n\nfrom drift_demo import TokenMetrics\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = TokenMetrics().measure(words)\nprint(json.dumps(result, sort_keys=True))\n```\n"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-9edab3840b85e946",
+          "function": {
+            "arguments": "{\"code\": \"import json, os\\nos.environ[\\\"DOCDRIFT_INPUT\\\"] = '[\\\"hello\\\", \\\"\\\", \\\"world\\\", \\\"hello\\\"]'\\nfrom drift_demo import OccurrenceIndex\\nwords = json.loads(os.environ[\\\"DOCDRIFT_INPUT\\\"])\\nresult = OccurrenceIndex().positions(words, include_empty=True)\\nprint(json.dumps(result, sort_keys=True))\"}",
+            "name": "run_python"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-9edab3840b85e946",
+      "content": "{\"exit_code\": 0, \"timed_out\": false, \"stdout\": \"{\\\"\\\": [1], \\\"hello\\\": [0, 3], \\\"world\\\": [2]}\\n\", \"stderr\": \"\"}"
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-bedc74e80cdcbcc2",
+          "function": {
+            "arguments": "{\"code\": \"import json\\nimport os\\n\\nfrom drift_demo import OccurrenceIndex\\n\\nwords = json.loads(os.environ[\\\"DOCDRIFT_INPUT\\\"])\\nresult = OccurrenceIndex().positions(words, include_empty=True)\\nprint(json.dumps(result, sort_keys=True))\"}",
+            "name": "submit_replacement"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-bedc74e80cdcbcc2",
+      "content": "Accepted for independent verification."
+    }
+  ]
+}

@@ -8,10 +8,10 @@ Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
 Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
-Sandboxes: user applied for access on Oct 15; provider response pending. Permission
-has never been checked. A read-only `GET whoami` uses the bearer key plus this
-project ID in the `Project` header; user approval is still required before the
-call. All execution so far is local Docker.
+Sandboxes: user applied for access on Oct 15 and reported on Oct 16 that access
+should now be available. Permission has not been checked. A read-only `GET whoami`
+uses the bearer key plus this project ID in the `Project` header; explicit approval
+for that single check has been requested. All execution so far is local Docker.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -21,7 +21,8 @@ call. All execution so far is local Docker.
   (initially described as $25). Exact balance, expiry, and grant/form route unverified.
   The own-spend restriction discussed on Oct 14 applies to cloud compute, not Token Factory.
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
-- [x] Sandbox access application submitted, per user Oct 15; provider response pending
+- [x] Sandbox access application submitted, per user Oct 15; user expects access Oct 16,
+  not yet verified
 - [ ] Sandbox permission (read-only `whoami`, needs user OK); offline execution, image reuse, result parsing, cancellation, artifact download checked live
 
 **Manual vertical slice (milestone 1)**
@@ -63,12 +64,14 @@ call. All execution so far is local Docker.
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
-- [ ] Package a sanitized, committed demo from saved real Nemotron/Docker evidence
-  (next independent task; resume details below)
+- [x] Package a sanitized demo from saved real Nemotron/Docker F6 evidence:
+  `docs/demo/f6/index.html`, both proposals, comparison, repair review, evidence ZIP,
+  original hashes/redaction disclosure, and deterministic offline packaging script
 - [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
-- [ ] Video under 3 minutes (script in `ARCHITECTURE_PLAN.md` → Competition and demonstration)
+- [ ] Record video under 3 minutes (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
 - [ ] Nebius/NVIDIA feedback log (template ready: `docs/FEEDBACK_LOG.md`)
-- [ ] Devpost write-up (draft: `docs/SUBMISSION_DRAFT.md`, numbers TBD) and submission
+- [ ] Finalize Devpost write-up and submit (`docs/SUBMISSION_DRAFT.md` now records
+  actual F4/F5/F6 results; held-out results and free live-agent access remain open)
 
 **Decision dates**
 - Oct 22: still no Sandbox access → user decides: submit with real Nemotron on Token Factory
@@ -77,16 +80,54 @@ call. All execution so far is local Docker.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next while Sandbox access is pending:** package the existing real demo evidence,
-then finish the submission draft and under-three-minute video script. The resume
-handoff below identifies the saved inputs; no additional model run is needed.
-In parallel, await the provider response and user OK for read-only `whoami`.
-After access/coverage are confirmed, validate live capabilities and design approved
-activation (the bridge currently permits HTTP mocks only). D8 and the free
-live-agent judge-access route remain unresolved. D9 and its single supplemental
-comparison are complete.
+**Next:** check reported Sandbox access after explicit approval for one read-only
+`whoami`; then resolve credit coverage and approved live capabilities/activation
+(the bridge currently permits HTTP mocks only). The real F6 demo bundle,
+submission draft, and 2:45 video script are ready for review without further
+inference. Record the video from saved evidence, keeping local Docker provenance
+visible. D8 and the free live-agent judge-access route remain unresolved. D9 and
+its single supplemental comparison are complete.
 
-## Resume handoff — October 15, 2026
+## Resume handoff — October 16, 2026
+
+The saved real F6 demo is packaged at `docs/demo/f6/index.html`. A fresh clone can
+browse its comparison, successful agent repair, failed one-shot proposal, and
+downloadable evidence ZIP without `.docdrift/`, credentials, Docker, or a server.
+README and the judge quickstart link it. The submission draft now uses actual
+F4/F5/F6 counts and usage, and `docs/DEMO_VIDEO_SCRIPT.md` is a concrete 2:45
+saved-evidence script linked from the architecture plan. The video is not recorded.
+
+The bundle contains 16 files (about 152 KB). Only two distinct private path values
+were redacted from report/ledger copies; the four JSON pointers and original
+value hashes are disclosed in `docs/demo/f6/provenance.json`. HTML and the unsigned
+ZIP manifest were regenerated; model proposals, comparison JSON/Markdown, source,
+checks, snippets, and logs retain their original bytes. All 50 saved input files
+remain unchanged. Both frozen inventories remain unchanged. No inference,
+snippet execution, live Sandbox call, deployment, or push occurred this session.
+
+Published ZIP SHA-256:
+`ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b`.
+The original ZIP hash remains the October 15 value below. Offline integrity
+verification checks all 39 manifested files. All 28 local HTML links/anchors
+resolve; repeated builds match byte-for-byte. These are unsigned integrity
+checks, not execution or origin attestations.
+
+Rebuild only when original saved inputs are available:
+`.venv/bin/python scripts/package_demo.py`. A fresh clone already contains the
+published bundle; it need not rebuild. The script pins the original input hashes
+and refuses different evidence. Verify the published archive with
+`.venv/bin/docdrift verify-evidence docs/demo/f6/agent/evidence.zip`.
+
+User reports Sandbox access should now be available. Approval for one read-only
+`GET whoami` has been requested but not received; no live call was made. The key
+file is present with mode 600 and the project ID is above. Access alone would
+not confirm credit coverage or authorize resource creation/execution. Live
+mutations remain disabled, and historical F6 execution stays local Docker.
+Next: resolve that access check and coverage, then approved live verification,
+D8, and free functional live-agent access through December 15. No new model
+evaluation is needed to browse the demo or record its video.
+
+## Previous resume handoff — October 15, 2026
 
 The user is waiting for agent usage limits to reset and requested this handoff.
 This turn prepares notes only. **Resume with the real demo bundle, not another
@@ -210,6 +251,13 @@ Who decided what, and when. Don't reverse one without the user.
 - D17 (user, Oct 15): Requested a persistent handoff while waiting for agent usage
   limits, so the next agent can continue demo preparation from existing evidence.
   This turn does not start the demo build or grant live Sandbox/hosting access.
+- D18 (user/agent, Oct 16): User requested packaging the real demo from saved F6
+  evidence with no new evaluation. Publish a sanitized offline bundle retaining
+  both the failed one-shot and successful agent outcomes, original input hashes,
+  and explicit redaction/rebuild provenance; preserve original saved artifacts
+  and frozen inventories. User expects Sandbox access but has not yet approved
+  the separately requested single read-only check. No deployment or standing
+  push authorization is inferred.
 
 ## Session log
 
@@ -289,6 +337,14 @@ Who decided what, and when. Don't reverse one without the user.
   acceptance criteria. Next agent should package saved F6 evidence, then prepare
   submission/video material. 644 tests rechecked and pass. No code changes,
   provider calls, or new model evaluation.
+- 2026-10-16: Packaged the saved real F6 comparison, both proposals, successful
+  repair review, and sanitized evidence ZIP with deterministic rebuild/provenance;
+  linked README/quickstart, reconciled submission F4/F5/F6 results, and wrote the
+  2:45 video script. All 39 ZIP members and 28 local HTML links checked; repeat
+  builds match; all 50 original saved files and both inventories preserved.
+  644 tests pass. No new inference, snippet execution, provider call, or push.
+  Next: approved Sandbox access check/coverage, real cloud verification, D8,
+  free live-agent judging route, and video recording.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

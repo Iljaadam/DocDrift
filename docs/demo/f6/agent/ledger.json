@@ -1,0 +1,325 @@
+{
+  "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+  "created_at": "2026-10-15T12:18:31.296908+00:00",
+  "metadata": {
+    "adapter": "local_docker",
+    "image": "python:3.12-slim",
+    "inference_usage": {
+      "completion_tokens": 741,
+      "malformed_responses": 0,
+      "model_calls": 5,
+      "prompt_tokens": 7100,
+      "snippet_runs": 1
+    },
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "paid_calls_enabled": true,
+    "profile_hashes": {
+      "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+      "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+    },
+    "provenance": {
+      "archive_sha256": "3d862091cb5570695e359209a0921347cfefbd093b458f7f8046533c1ff61842",
+      "commit": "3d016ba0fd68bf0417cb29d434808a41d017c25b",
+      "files": {
+        "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+        "README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+        "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+        "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+      },
+      "kind": "local_git",
+      "license_files": [
+        "LICENSE"
+      ],
+      "origin": "REDACTED_LOCAL_SOURCE_ORIGIN"
+    },
+    "repair_record_sha256": "011ae5729ca0365aef4cd506850bd0b781b86b3b3bc62460430bc10364f4afb7",
+    "repair_source": "model_agent",
+    "replacement_sha256": "9e7931d832359dbbbdda763dd27a40f477533e97c0ab4469dcd2fb24cb5e2f66"
+  },
+  "events": [
+    {
+      "sequence": 63,
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "phase": "frozen",
+      "created_at": "2026-10-15T12:18:31.304602+00:00",
+      "payload": {
+        "profile_hashes": {
+          "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+          "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+        },
+        "run_directory": "REDACTED_LOCAL_RUN_DIRECTORY"
+      }
+    },
+    {
+      "sequence": 64,
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "phase": "prepared",
+      "created_at": "2026-10-15T12:18:31.537456+00:00",
+      "payload": {
+        "image": "python:3.12-slim",
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "network": "none",
+        "python_version": "Python 3.12.15",
+        "trusted_local_only": true
+      }
+    }
+  ],
+  "phases": {
+    "frozen": {
+      "profile_hashes": {
+        "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+        "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+      },
+      "run_directory": "REDACTED_LOCAL_RUN_DIRECTORY"
+    },
+    "prepared": {
+      "image": "python:3.12-slim",
+      "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+      "network": "none",
+      "python_version": "Python 3.12.15",
+      "trusted_local_only": true
+    }
+  },
+  "operations": [
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "9e6f3ed68718f38bebd4c600518263639ec652b081bc27035bdb743f33dee5f0",
+      "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:31.596442+00:00",
+      "completed_at": "2026-10-15T12:18:32.015946+00:00",
+      "result": {
+        "elapsed_seconds": 0.08508091606199741,
+        "exit_code": 1,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "9e6f3ed68718f38bebd4c600518263639ec652b081bc27035bdb743f33dee5f0",
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "414948a94361672819598f1fec97bb66a5a0668820057fd6774b7ef8ba40f716",
+      "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:32.133420+00:00",
+      "completed_at": "2026-10-15T12:18:32.560952+00:00",
+      "result": {
+        "elapsed_seconds": 0.0845081489533186,
+        "exit_code": 1,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "414948a94361672819598f1fec97bb66a5a0668820057fd6774b7ef8ba40f716",
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "47fcd3198b06122bd0513425ad92e75f205e348da2b8ea1125dea2119bf9fd55",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:32.674879+00:00",
+      "completed_at": "2026-10-15T12:18:33.093660+00:00",
+      "result": {
+        "elapsed_seconds": 0.08336657611653209,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "47fcd3198b06122bd0513425ad92e75f205e348da2b8ea1125dea2119bf9fd55",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "313ddc200565cb4620c23aca9f2644fea05e0b3cbeade56e372a1c2b7a8a1d8b",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:33.202370+00:00",
+      "completed_at": "2026-10-15T12:18:33.621664+00:00",
+      "result": {
+        "elapsed_seconds": 0.08397262310609221,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "313ddc200565cb4620c23aca9f2644fea05e0b3cbeade56e372a1c2b7a8a1d8b",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "84814b87233a27d6abdcde778ed8e2925ee7a3ea0913b32fe1ba5726d5b8fe05",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:33.740404+00:00",
+      "completed_at": "2026-10-15T12:18:34.160026+00:00",
+      "result": {
+        "elapsed_seconds": 0.08318925416097045,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "84814b87233a27d6abdcde778ed8e2925ee7a3ea0913b32fe1ba5726d5b8fe05",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "65ccfdbdba5b50ba93d4c7c016e97b0e0f9d82081e9da7fa29e70474c2f205e0",
+      "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:34.284271+00:00",
+      "completed_at": "2026-10-15T12:18:34.704954+00:00",
+      "result": {
+        "elapsed_seconds": 0.08429678715765476,
+        "exit_code": 1,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "65ccfdbdba5b50ba93d4c7c016e97b0e0f9d82081e9da7fa29e70474c2f205e0",
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "53702a655d0e731c594e2823fde5abf7bc9e6f80193aa98f0a7921832aab788c",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:34.817186+00:00",
+      "completed_at": "2026-10-15T12:18:35.225124+00:00",
+      "result": {
+        "elapsed_seconds": 0.08525443822145462,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "53702a655d0e731c594e2823fde5abf7bc9e6f80193aa98f0a7921832aab788c",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "696f1e26d05f5c561089f95efadec41c235abbd6b9385f779215a62543286569",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:35.335900+00:00",
+      "completed_at": "2026-10-15T12:18:35.752388+00:00",
+      "result": {
+        "elapsed_seconds": 0.08228632295504212,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "696f1e26d05f5c561089f95efadec41c235abbd6b9385f779215a62543286569",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"blue\": [1], \"red\": [0, 2]}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "5325afbb830757cb5adcded9005a13fff16f325a237d6d9b9371a1c8f237eba0",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:35.871598+00:00",
+      "completed_at": "2026-10-15T12:18:36.283474+00:00",
+      "result": {
+        "elapsed_seconds": 0.0827416479587555,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "5325afbb830757cb5adcded9005a13fff16f325a237d6d9b9371a1c8f237eba0",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"\": [0, 6], \" \": [5], \"E\": [3], \"two words\": [4], \"\\u00e9\": [1, 2]}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "fcbe60216df1601515b255142744f59854dc8d8db63b8501b738d0733922baad",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:36.404093+00:00",
+      "completed_at": "2026-10-15T12:18:36.823822+00:00",
+      "result": {
+        "elapsed_seconds": 0.08214032184332609,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "fcbe60216df1601515b255142744f59854dc8d8db63b8501b738d0733922baad",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "127b5060c6903271596e678fc019382849f15d11fe75ff6fdb310cade531dab9",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:36.935180+00:00",
+      "completed_at": "2026-10-15T12:18:37.346163+00:00",
+      "result": {
+        "elapsed_seconds": 0.08224136335775256,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "127b5060c6903271596e678fc019382849f15d11fe75ff6fdb310cade531dab9",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "operation_id": "d095202e46fb7476990779a1237b11f167654acdf4c18eb60c46cd8cbed044c8",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-15T12:18:37.459157+00:00",
+      "completed_at": "2026-10-15T12:18:37.869672+00:00",
+      "result": {
+        "elapsed_seconds": 0.08216892229393125,
+        "exit_code": 0,
+        "image_id": "sha256:ce9a404c2c0138e747a43e6ea022d2f7e670ed868df35d627a663ba7fb940ea9",
+        "operation_id": "d095202e46fb7476990779a1237b11f167654acdf4c18eb60c46cd8cbed044c8",
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stdout_truncated": false,
+        "timed_out": false
+      }
+    }
+  ]
+}

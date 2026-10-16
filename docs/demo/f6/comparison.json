@@ -1,0 +1,157 @@
+{
+  "kind": "docdrift_evaluation",
+  "evidence": "live_inference",
+  "execution_backend": "LocalDockerAdapter",
+  "inventory_sha256": "24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c",
+  "inventory_name": "supplemental_source_only_development",
+  "inventory_case_count": 2,
+  "selected_case_ids": [
+    "source_only_broken",
+    "source_only_healthy"
+  ],
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "strategies": [
+    "execution_only",
+    "one_shot",
+    "agent"
+  ],
+  "include_held_out": false,
+  "budget": {
+    "max_model_calls": 6,
+    "max_candidates": 2,
+    "max_snippet_runs": 4,
+    "max_malformed": 2,
+    "max_completion_tokens": 2048,
+    "max_total_tokens": 60000
+  },
+  "rows": [
+    {
+      "case": "source_only_broken",
+      "kind": "broken",
+      "split": "development",
+      "label": "documentation_drift",
+      "strategy": "execution_only",
+      "scored": true,
+      "detected": true,
+      "outcome": "drift_reported"
+    },
+    {
+      "case": "source_only_broken",
+      "kind": "broken",
+      "split": "development",
+      "label": "documentation_drift",
+      "strategy": "one_shot",
+      "scored": true,
+      "detected": true,
+      "repair_status": "all_candidates_rejected",
+      "usage": {
+        "model_calls": 1,
+        "prompt_tokens": 520,
+        "completion_tokens": 420,
+        "snippet_runs": 0,
+        "malformed_responses": 0
+      },
+      "proposal_id": "34303fa5d21f4213bccec9827b0e28cf",
+      "proposal_sha256": "e3ccb688f7ce575f3b3c3ff19f3f59fe0ef78f3112740ef58786f3e71243dd05",
+      "outcome": "no_accepted_proposal"
+    },
+    {
+      "case": "source_only_broken",
+      "kind": "broken",
+      "split": "development",
+      "label": "documentation_drift",
+      "strategy": "agent",
+      "scored": true,
+      "detected": true,
+      "repair_status": "proposed",
+      "usage": {
+        "model_calls": 5,
+        "prompt_tokens": 7100,
+        "completion_tokens": 741,
+        "snippet_runs": 1,
+        "malformed_responses": 0
+      },
+      "proposal_id": "d718ad233d6a4bf2b393b2e45d591522",
+      "proposal_sha256": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+      "outcome": "behavior_verified",
+      "run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "run_status": "completed",
+      "verified": true
+    },
+    {
+      "case": "source_only_healthy",
+      "kind": "healthy",
+      "split": "development",
+      "label": "no_failure_found",
+      "strategy": "execution_only",
+      "scored": true,
+      "detected": false,
+      "outcome": "no_failure_found"
+    },
+    {
+      "case": "source_only_healthy",
+      "kind": "healthy",
+      "split": "development",
+      "label": "no_failure_found",
+      "strategy": "one_shot",
+      "scored": true,
+      "detected": false,
+      "outcome": "no_failure_found"
+    },
+    {
+      "case": "source_only_healthy",
+      "kind": "healthy",
+      "split": "development",
+      "label": "no_failure_found",
+      "strategy": "agent",
+      "scored": true,
+      "detected": false,
+      "outcome": "no_failure_found"
+    }
+  ],
+  "summary": {
+    "execution_only": {
+      "broken_cases": 1,
+      "drift_detected": 1,
+      "behavior_verified_repairs": 0,
+      "healthy_cases": 1,
+      "false_drift_reports": 0,
+      "unsupported_or_setup_cases": 0,
+      "correct_abstentions": 0,
+      "unsupported_incorrectly_verified": 0,
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "agent_snippet_runs": 0
+    },
+    "one_shot": {
+      "broken_cases": 1,
+      "drift_detected": 1,
+      "behavior_verified_repairs": 0,
+      "healthy_cases": 1,
+      "false_drift_reports": 0,
+      "unsupported_or_setup_cases": 0,
+      "correct_abstentions": 0,
+      "unsupported_incorrectly_verified": 0,
+      "model_calls": 1,
+      "prompt_tokens": 520,
+      "completion_tokens": 420,
+      "agent_snippet_runs": 0
+    },
+    "agent": {
+      "broken_cases": 1,
+      "drift_detected": 1,
+      "behavior_verified_repairs": 1,
+      "healthy_cases": 1,
+      "false_drift_reports": 0,
+      "unsupported_or_setup_cases": 0,
+      "correct_abstentions": 0,
+      "unsupported_incorrectly_verified": 0,
+      "model_calls": 5,
+      "prompt_tokens": 7100,
+      "completion_tokens": 741,
+      "agent_snippet_runs": 1
+    }
+  },
+  "compute_operations": 15
+}

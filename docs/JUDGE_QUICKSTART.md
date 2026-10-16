@@ -1,4 +1,27 @@
-# Judge quickstart: free local verification
+# Judge quickstart: saved model evidence and free local verification
+
+## Browse the real model repair
+
+Open [the saved F6 demo bundle](demo/f6/index.html) in a browser after cloning
+the repository. It works from disk without a web server, Docker, credentials,
+or model calls. Browse the strategy comparison, successful agent repair and
+evidence ZIP, and rejected one-shot proposal.
+
+This records one comparison on an owned supplemental development fixture:
+live NVIDIA Nemotron generation through Nebius Token Factory, with local Docker
+execution. Agent verified 1/1; one-shot verified 0/1 after static rejection.
+Both detected the broken example; all strategies reported no drift on the one
+unrelated healthy example. Total model usage was 6 calls / 8,781 tokens and
+execution used 15 local snippet operations. The case was added after earlier
+development results; it is not held out and establishes no general advantage.
+See [feedback log F6](FEEDBACK_LOG.md#f6--source-inspection-development-case-separates-strategies-once-2026-10-15).
+
+The bundle preserves both outcomes and explains its published-copy provenance.
+Its saved evidence can be inspected without rerunning the model. The integrity
+checker verifies archive contents and hashes; it does not attest their origin
+or execution. This route provides evidence browsing, not a live repair service.
+
+## Execute the free manual demo
 
 This route uses the packaged owned fixture, a supplied manual repair, and local
 Docker. It needs no Nebius account, provider key, or inference credits. It
@@ -85,6 +108,6 @@ directory; otherwise case outcomes remain visible without links. Synthetic
 replays are labelled separately from live model results.
 
 Live Nemotron generation uses `repair --live` or `evaluate --live` and consumes
-Token Factory credits. Do not supply a paid personal account to try this local
-demo. Actual Sandbox verification and free live judging access remain pending
-provider approval and confirmed credit coverage.
+Token Factory credits. No paid personal account is needed for the two routes
+above. The saved model runs use local Docker. Current Sandbox access and the
+free live-agent judging route are tracked in [STATUS.md](../STATUS.md).

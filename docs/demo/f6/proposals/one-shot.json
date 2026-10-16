@@ -1,0 +1,29 @@
+{
+  "strategy": "one_shot",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "live_inference": true,
+  "status": "all_candidates_rejected",
+  "replacement": null,
+  "candidates": [
+    {
+      "code_sha256": "ebfb1aff4b54ebbe6a3f697cd6231b5aee5270dad41a0bf80e437e02890166ce",
+      "code": "import json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex.build(words)\nprint(json.dumps(result, sort_keys=True))\n",
+      "static_verdict": "rejected",
+      "reason": "meaningful operations cannot be removed"
+    }
+  ],
+  "usage": {
+    "model_calls": 1,
+    "prompt_tokens": 520,
+    "completion_tokens": 420,
+    "snippet_runs": 0,
+    "malformed_responses": 0
+  },
+  "transcript": [
+    {
+      "role": "assistant",
+      "content": "\n\n```python\nimport json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex.build(words)\nprint(json.dumps(result, sort_keys=True))\n```",
+      "tool_calls": null
+    }
+  ]
+}
