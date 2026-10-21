@@ -1,7 +1,8 @@
 """Explicit, fixed-F6 Sandbox activation; no general live-execution switch.
 
 Only the pinned saved repair, twelve approved verifier phases, one private OCI
-import, and three capability probes can reach a provider transport. Merely
+import attempt, its explicitly recorded public-image recovery, and three
+capability probes can reach a provider transport. Merely
 constructing this adapter never makes a request. Billing coverage is either a
 separately recorded factual confirmation or explicitly unverified under the
 user's bounded authorization; API access never establishes coverage.
@@ -14,6 +15,7 @@ import json
 import os
 import re
 import sqlite3
+import stat
 import tempfile
 import time
 import fcntl
@@ -45,6 +47,9 @@ ARTIFACT_BYTES = b'DocDrift fixed F6 Sandbox artifact probe\n'
 _EMPTY_SHA256 = hashlib.sha256(b'').hexdigest()
 _IMPORT_PHASE = 'image_import'
 _IMPORT_TIMEOUT = 120
+RECOVERY_IMAGE_ID = '4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae'
+RECOVERY_FAILED_IMPORT_ID = '01a15f6f-2d46-71c6-a692-ede648b18661'
+_RECOVERY_TAG = 'python:3.12-slim'
 _SCOPED_LIMITS = MappingProxyType({
     'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12, 'inference_calls': 0,
 })
@@ -138,6 +143,56 @@ def _billing_facts(content: bytes) -> dict:
             'confirmed_at_utc': value['confirmed_at_utc']}
 
 
+def _existing_image_recovery(path: Path, state_root: Path) -> tuple[bytes, dict]:
+    """Validate the one concrete recovery and its saved read-only sources."""
+    try:
+        content = _read_regular(path, 16_384)
+        if stat.S_IMODE(path.stat().st_mode) != 0o600:
+            raise ValueError
+        value = strict_json(content)
+        keys = {'kind', 'project_id', 'source_run_id', 'image_id', 'inventory_path',
+                'inventory_sha256', 'failed_import_operation_id', 'failed_import_response_sha256'}
+        if (not isinstance(value, dict) or set(value) != keys
+                or value['kind'] != 'fixed_f6_existing_image_recovery'
+                or value['project_id'] != PROJECT_ID or value['source_run_id'] != F6_RUN_ID
+                or _image_uuid(value['image_id']) != RECOVERY_IMAGE_ID
+                or _image_uuid(value['failed_import_operation_id']) != RECOVERY_FAILED_IMPORT_ID
+                or any(not isinstance(value[key], str) or re.fullmatch(r'[0-9a-f]{64}', value[key]) is None
+                       for key in ('inventory_sha256', 'failed_import_response_sha256'))
+                or not isinstance(value['inventory_path'], str)
+                or not Path(value['inventory_path']).is_absolute()):
+            raise ValueError
+        inventory_bytes = _read_regular(Path(value['inventory_path']), 2 * 1024 * 1024)
+        inventory = strict_json(inventory_bytes)
+        if (_digest(inventory_bytes) != value['inventory_sha256']
+                or not isinstance(inventory, dict)
+                or inventory.get('kind') != 'sandbox_public_python_image_inventory'
+                or inventory.get('status') != 'read_only_images_listed'
+                or inventory.get('project_id') != PROJECT_ID
+                or not isinstance(inventory.get('query'), dict) or inventory['query'].get('tag') != 'python'
+                or not isinstance(inventory.get('images'), list)):
+            raise ValueError
+        selected = [row for row in inventory['images']
+                    if isinstance(row, dict) and row.get('uuid') == RECOVERY_IMAGE_ID]
+        if selected != [{'uuid': RECOVERY_IMAGE_ID, 'tag': _RECOVERY_TAG}]:
+            raise ValueError
+        operation_bytes = _read_regular(
+            state_root / 'operations' / (RECOVERY_FAILED_IMPORT_ID + '.json'), 2 * 1024 * 1024)
+        operation = strict_json(operation_bytes)
+        if (_digest(operation_bytes) != value['failed_import_response_sha256']
+                or not isinstance(operation, dict) or operation.get('uuid') != RECOVERY_FAILED_IMPORT_ID
+                or operation.get('kind') != 'image_import' or operation.get('status') != 'FAILED'
+                or operation.get('image_uuid') is not None
+                or operation.get('result_image_uuid') is not None
+                or operation.get('result_image_id') is not None
+                or not isinstance(operation.get('result'), (dict, type(None)))
+                or (operation.get('result') or {}).get('image') is not None):
+            raise ValueError
+    except (OSError, ValueError, TypeError, KeyError):
+        raise ValueError('Invalid fixed F6 existing-image recovery record or saved sources') from None
+    return content, value
+
+
 def _write(path: Path, content: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     descriptor, name = tempfile.mkstemp(prefix=path.name + '.', dir=path.parent)
@@ -161,7 +216,7 @@ class F6SandboxRemote(NebiusSandboxAdapter):
     """One durable, explicitly authorized activation of the saved F6 plan."""
 
     def __init__(self, api_key: str, project_id: str, plan_root: Path, state_root: Path,
-                 registry_image: str, coverage_path: Path):
+                 registry_image: str, coverage_path: Path, *, reuse_record_path: Path | None = None):
         if project_id != PROJECT_ID:
             raise ValueError('Fixed F6 verification is scoped to the approved project')
         if not isinstance(registry_image, str) or re.fullmatch(
@@ -173,6 +228,13 @@ class F6SandboxRemote(NebiusSandboxAdapter):
         self._billing_authorization = _encoded(_billing_facts(coverage))
         self.plan = validate_f6_plan(self.plan_root)
         self.state_root = Path(state_root).resolve()
+        self._reuse_record_path = Path(reuse_record_path).absolute() if reuse_record_path is not None else None
+        self._reuse_record_sha256 = None
+        if self._reuse_record_path is not None:
+            if not (self.state_root / 'session.json').is_file():
+                raise SubmissionConflict('Existing-image recovery requires the original failed-import F6 session')
+            content, _ = _existing_image_recovery(self._reuse_record_path, self.state_root)
+            self._reuse_record_sha256 = _digest(content)
         self.state_root.mkdir(parents=True, exist_ok=True, mode=0o700)
         self._lock = (self.state_root / 'session.lock').open('a+b')
         try:
@@ -200,7 +262,10 @@ class F6SandboxRemote(NebiusSandboxAdapter):
                 _write(self._session_path, _encoded(session))
             super().__init__(api_key, project_id, journal=SubmissionJournal(self.state_root))
             self._authorization_digest = _digest(self._client.headers['Authorization'].encode())
+            self._validate_image_recovery(session, activate=True)
         except BaseException:
+            if hasattr(self, '_client'):
+                self._client.close()
             fcntl.flock(self._lock.fileno(), fcntl.LOCK_UN)
             self._lock.close()
             self._lock = None
@@ -228,6 +293,60 @@ class F6SandboxRemote(NebiusSandboxAdapter):
             raise SubmissionConflict('F6 identity cannot be replaced')
         _write(self._session_path, _encoded(session))
 
+    def _validate_image_recovery(self, session: dict, *, activate: bool = False) -> dict | None:
+        saved = session.get('image_recovery')
+        if self._reuse_record_path is None:
+            if saved is not None:
+                raise SubmissionConflict('Saved F6 image recovery requires its original recovery record')
+            return None
+        try:
+            content, value = _existing_image_recovery(self._reuse_record_path, self.state_root)
+        except ValueError:
+            raise SubmissionConflict('F6 image recovery record or saved sources changed') from None
+        if _digest(content) != self._reuse_record_sha256:
+            raise SubmissionConflict('F6 image recovery record changed')
+        control = self.journal.for_run(self._control_run)
+        imports = [receipt for receipt in control if receipt['phase'] == _IMPORT_PHASE]
+        receipt = imports[0] if len(imports) == 1 else {}
+        metadata = receipt.get('result_metadata') or {}
+        import_payload = {'registry': {'url': self._identity['registry_image']}, 'timeout': _IMPORT_TIMEOUT}
+        if (receipt.get('state') != 'completed' or receipt.get('operation_id') != RECOVERY_FAILED_IMPORT_ID
+                or receipt.get('request_digest') != _digest(_encoded(import_payload))
+                or metadata.get('operation_id') != RECOVERY_FAILED_IMPORT_ID
+                or metadata.get('service_state') != 'FAILED' or metadata.get('state') != 'failed'
+                or metadata.get('result_image_id') is not None):
+            raise SubmissionConflict('Existing-image recovery differs from the completed failed import receipt')
+        expected = {
+            'recovery_record_sha256': self._reuse_record_sha256, 'image_id': value['image_id'],
+            'tag': _RECOVERY_TAG, 'inventory_sha256': value['inventory_sha256'],
+            'failed_import_operation_id': value['failed_import_operation_id'],
+            'failed_import_response_sha256': value['failed_import_response_sha256'],
+            'failed_import_receipt_sha256': _digest(_encoded(receipt)),
+        }
+        if saved is None:
+            with sqlite3.connect(self.journal.path) as connection:
+                attempts = connection.execute('SELECT count(*) FROM remote_submissions').fetchone()[0]
+                has_runs = connection.execute(
+                    "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type='table' AND name='runs')").fetchone()[0]
+                existing_runs = connection.execute('SELECT count(*) FROM runs').fetchone()[0] if has_runs else 0
+            if (not activate or len(control) != 1 or session['imported_image_id'] is not None
+                    or session['image_id'] is not None or session['run_id'] is not None
+                    or session['uploads'] or session['probes']
+                    or session.get('image_inspected_id') is not None or session.get('cancellation_requested')
+                    or attempts != 1 or existing_runs):
+                raise SubmissionConflict('Existing-image recovery must precede every probe, upload and verifier run')
+            saved = {**expected, 'selected_image_id': None}
+            session['image_recovery'] = saved
+            self._save(session)
+        if (not isinstance(saved, dict) or set(saved) != {*expected, 'selected_image_id'}
+                or any(saved.get(key) != item for key, item in expected.items())
+                or saved.get('selected_image_id') not in (None, RECOVERY_IMAGE_ID)
+                or session['imported_image_id'] is not None
+                or session['image_id'] not in (None, saved['selected_image_id'])
+                or session.get('image_inspected_id') != saved['selected_image_id']):
+            raise SubmissionConflict('Saved F6 existing image or failed import receipt changed')
+        return saved
+
     def _scope(self) -> dict:
         if self._lock is None:
             raise RemoteAdapterError('fixed_f6_session_closed')
@@ -244,6 +363,7 @@ class F6SandboxRemote(NebiusSandboxAdapter):
                        for transport in self._client._mounts.values())):
             raise RemoteAdapterError('fixed_f6_transport_changed')
         session = self._session()
+        recovery = self._validate_image_recovery(session)
         imported = session['imported_image_id']
         if imported is not None:
             receipt = self.journal.lookup(self._control_run, _IMPORT_PHASE)
@@ -251,7 +371,8 @@ class F6SandboxRemote(NebiusSandboxAdapter):
                     or (receipt.get('result_metadata') or {}).get('result_image_id') != imported
                     or receipt['result_metadata'].get('service_state') != 'SUCCESS'):
                 raise SubmissionConflict('Selected imported image differs from its durable receipt')
-        if session['image_id'] is not None and session['image_id'] != imported:
+        selected = recovery['selected_image_id'] if recovery is not None else imported
+        if session['image_id'] is not None and session['image_id'] != selected:
             raise SubmissionConflict('Selected F6 image differs from the single import')
         for name, result in session['probes'].items():
             receipt = self.journal.lookup(self._control_run, 'probe_' + name) if name in PROBES else None
@@ -322,10 +443,31 @@ class F6SandboxRemote(NebiusSandboxAdapter):
     def bind_image(self, image_uuid: str) -> None:
         session = self._scope()
         image_uuid = _image_uuid(image_uuid)
-        if session['imported_image_id'] != image_uuid or session['image_id'] not in {None, image_uuid}:
-            raise SubmissionConflict('F6 image must be the single successfully imported immutable image')
+        recovery = session.get('image_recovery')
+        source_image = recovery['selected_image_id'] if recovery is not None else session['imported_image_id']
+        if source_image != image_uuid or session['image_id'] not in {None, image_uuid}:
+            raise SubmissionConflict('F6 image must match its recorded immutable image source')
         session['image_id'] = image_uuid
         self._save(session)
+
+    def select_existing_image(self) -> str:
+        """Inspect only the recorded public image, without another import attempt."""
+        session = self._scope()
+        recovery = session.get('image_recovery')
+        if recovery is None:
+            raise SubmissionConflict('Existing-image selection requires the fixed F6 recovery record')
+        if recovery['selected_image_id'] is not None:
+            return recovery['selected_image_id']
+        image = recovery['image_id']
+        path = f'inspect/{image}/'
+        with self._authorize('GET', path, self._reuse_record_sha256):
+            _, inspected = self._request('GET', path)
+        if self._object(inspected).get('uuid') != image:
+            raise RemoteAdapterError('invalid_image_response')
+        recovery['selected_image_id'] = image
+        session['image_inspected_id'] = image
+        self._save(session)
+        return image
 
     def bind_run(self, run_id: str) -> None:
         session = self._scope()
@@ -360,6 +502,12 @@ class F6SandboxRemote(NebiusSandboxAdapter):
             allowed = path.startswith('operations/') and path.removeprefix('operations/') in self._owned() and not params
             if path == f"inspect/{session['image_id']}/" and session['image_id']:
                 allowed = not params
+            recovery = session.get('image_recovery')
+            if recovery is not None and path == f'operations/{RECOVERY_FAILED_IMPORT_ID}':
+                allowed = False
+            if (recovery is not None and path == f"inspect/{recovery['image_id']}/"
+                    and self._authorization == ('GET', path, self._reuse_record_sha256)):
+                allowed = not params and payload is None and content is None
             artifact = session['probes'].get('artifact', {})
             if artifact.get('result_image_id') and path == f"inspect/{artifact['result_image_id']}/download":
                 allowed = params == {'path': ARTIFACT_PATH}
@@ -391,6 +539,8 @@ class F6SandboxRemote(NebiusSandboxAdapter):
     def import_image(self) -> str:
         """Submit once, then only observe the same private import across restarts."""
         self._scope()
+        if self._reuse_record_path is not None:
+            raise SubmissionConflict('Existing-image recovery prohibits another import or import observation')
         receipt = self.journal.lookup(self._control_run, _IMPORT_PHASE)
         if receipt is None:
             payload = {'registry': {'url': self._identity['registry_image']}, 'timeout': _IMPORT_TIMEOUT}
@@ -577,6 +727,18 @@ class F6SandboxRemote(NebiusSandboxAdapter):
         return strict_json(self._billing_authorization)
 
     @property
+    def image_provenance(self) -> dict:
+        session = self._scope()
+        recovery = session.get('image_recovery')
+        if recovery is not None:
+            return {'source_kind': 'existing_public_image_after_failed_import',
+                    'image_id': recovery['image_id'], 'tag': recovery['tag'],
+                    'inventory_sha256': recovery['inventory_sha256'],
+                    'failed_import_operation_id': recovery['failed_import_operation_id'],
+                    'recovery_record_sha256': recovery['recovery_record_sha256']}
+        return {'source_kind': 'private_registry_import', 'image_id': session['imported_image_id']}
+
+    @property
     def runtime_capabilities(self) -> dict:
         session = self._scope()
         return {'python_capability_tested': self._capability_success(session),
@@ -589,6 +751,7 @@ class F6SandboxRemote(NebiusSandboxAdapter):
             raise RemoteAdapterError('fixed_f6_capability_not_confirmed')
         return {'image_id': image_id, 'synthetic': False, **self.billing_authorization,
                 'live_mutations_enabled': True,
+                'image_provenance': self.image_provenance,
                 'python_version': '3.12', 'network': 'disabled', **self.runtime_capabilities}
 
     def run_probe(self, name: str) -> RemoteResult:
@@ -674,7 +837,8 @@ class F6ExecutionAdapter(SandboxExecutionAdapter):
         contract = super().execution_contract
         contract.pop('code_executions', None)
         return {**contract, 'synthetic': False, 'network': 'disabled_and_capability_probed',
-                'scope': 'saved_f6_only', 'billing_authorization': self.remote.billing_authorization}
+                'scope': 'saved_f6_only', 'billing_authorization': self.remote.billing_authorization,
+                'image_provenance': self.remote.image_provenance}
 
     def preflight(self, image: str) -> dict:
         self._require_simulation()

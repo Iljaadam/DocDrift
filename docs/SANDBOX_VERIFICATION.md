@@ -5,6 +5,9 @@ while the provider importer fetched the pinned Python image (HTTP 404).
 **One import attempt is consumed; no image, runtime probe, verifier operation,
 or new inference resulted.** The [published F6 evidence](demo/f6/index.html)
 remains live Nemotron generation with local Docker verification.
+Read-only discovery subsequently found an existing `python:3.12-slim` image.
+Recovery is prepared below; no actual image inspection or runtime probe has
+been performed yet.
 
 ## Prepare offline
 
@@ -153,7 +156,7 @@ escalation because `sandbox_approval=false`. That local attempt received no
 provider response. Its diagnostic record is
 `.docdrift/access/sandbox-network-failure-2026-10-21.json`.
 
-### Next: discover an existing Python image without importing
+### Existing-image discovery and recovery
 
 In the same normal terminal with `NEBIUS_API_KEY` still loaded, run:
 
@@ -167,19 +170,74 @@ filtered to `python` tags, saves a mode-600 timestamped inventory under
 It creates no resource, chooses no image, and leaves the failed run untouched.
 Tags are discovery hints; Python 3.12 capability is not established by a tag.
 
-The next recovery option is an already available immutable Python image, if one
-is listed. Its selection/provenance and runtime capability still need a concrete
-recovery implementation; the current runner correctly requires a successful
-import receipt before binding an image. No public-image fallback or replacement
-import is enabled automatically. [Nebius documents existing-image references](https://docs.tokenfactory.nebius.com/sandboxes/guides/prepare-and-reuse-environments)
+The user ran discovery at **17:16:44 UTC on October 21**. It listed 15 public
+Python image references, including `python:3.12-slim` with immutable UUID:
+
+```text
+4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae
+```
+
+The saved inventory is
+`.docdrift/access/sandbox-python-images-20261021T171644648052Z.json`; SHA-256:
+`6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250`.
+This records a real read-only listing, not Python capability or execution.
+[Nebius documents existing-image references](https://docs.tokenfactory.nebius.com/sandboxes/guides/prepare-and-reuse-environments)
 as an alternative to OCI import without preparation compute.
 
-## Run the fixed verification
+Offline preparation has already written the mode-600 binding at
+`.docdrift/access/sandbox-f6-existing-image.json`. To reproduce that preparation
+before recovery activation, without a key or network:
 
-The original invocation below is retained for reference and completed/pending
-operation recovery. With the current terminal failed import, it returns that
-saved failure rather than submitting another import. Explicitly load the key
-from its existing private file outside the repository:
+```sh
+.venv/bin/python scripts/verify_saved_f6_sandbox.py prepare-reuse \
+  --authorization .docdrift/access/sandbox-authorization-2026-10-21.json \
+  --inventory .docdrift/access/sandbox-python-images-20261021T171644648052Z.json \
+  --image-id 4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae \
+  --reuse-record .docdrift/access/sandbox-f6-existing-image.json
+```
+
+The separate recovery record pins that exact image, the inventory bytes, and the
+saved failed import response. Activation requires the original completed failed
+receipt and no prior uploads, probes, or verifier runs. It keeps the original
+session identity and failed receipt, then binds the recovery record separately.
+It inspects only that UUID before selecting it, persists the selection, and
+reuses it across restarts. Changed records, image identities, inventory bytes,
+or failed receipts stop the run. Further imports and observations of the frozen
+failed import are blocked in recovery mode. The three probes and twelve
+verification operations retain their original scope and receipt handling.
+
+Current image provenance explicitly identifies an existing public image; it
+does not claim that its filesystem matches the failed Docker Hub digest.
+Python 3.12, nonroot execution, and network isolation still require the capability
+probe. Full recovery lifecycle/resume tests use synthetic HTTP responses and
+do not establish actual remote execution.
+
+Copies of the pre-recovery runtime report and session are preserved separately:
+`.docdrift/access/sandbox-f6-before-image-reuse-runtime-report.json` and
+`.docdrift/access/sandbox-f6-before-image-reuse-session.json`. The original raw
+failed operation response and completed journal receipt remain unchanged.
+
+## Continue with the existing image
+
+In the same normal terminal with the existing key loaded, run:
+
+```sh
+.venv/bin/python scripts/verify_saved_f6_sandbox.py run \
+  --authorization .docdrift/access/sandbox-authorization-2026-10-21.json \
+  --reuse-record .docdrift/access/sandbox-f6-existing-image.json
+```
+
+Use these same paths for resume. This reuses the existing session and attempts
+no new import or model call. Expected aggregate attempt counts after a successful
+run are one historical failed import, three runtime probes, and twelve verifier
+operations. Actual billing remains unverified under the existing D25 permission.
+
+## Original import invocation
+
+The original invocation below is retained for reference. Before existing-image
+recovery activation, it returns the saved terminal import failure. After
+activation, the saved `--reuse-record` is required to resume. Explicitly load the
+key from its existing private file outside the repository:
 
 ```sh
 chmod 600 .docdrift/access/sandbox-authorization-2026-10-21.json

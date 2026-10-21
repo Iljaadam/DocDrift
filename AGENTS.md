@@ -49,8 +49,10 @@ demo-able submission.
     adapters/CLI keep their live mutation blocks; there is no general
     live-execution switch. See `docs/SANDBOX_VERIFICATION.md` and D25.
     The Oct 21 import failed with registry HTTP 404 (F10); its single attempt is
-    consumed. Preserve `.docdrift/sandbox-f6/`. Next is read-only `images`
-    discovery, not another import or state reset; see D26.
+    consumed. Preserve `.docdrift/sandbox-f6/`. Read-only discovery found the
+    existing `python:3.12-slim` image; D27's prepared `--reuse-record` pins UUID
+    `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae` and continues the remaining probes/checks
+    without another import or state reset. Runtime capability is still unverified.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

@@ -243,3 +243,29 @@ running any snippet.
   and troubleshooting for registry fetch failures. Existing-image reuse remains
   a documented alternative, but its availability for Python 3.12 is unverified
   until discovery and actual capability testing.
+
+### F11 — Public Python image inventory succeeds; fixed recovery prepared (2026-10-21, listing live / recovery offline)
+
+- Product / API: one read-only `GET /sandboxes/v1/images` with `tag=python`,
+  `limit=1000`, and `offset=0`, run by the user in their normal terminal.
+- Actual: at **17:16:44 UTC**, the saved result lists 15 public Python image
+  UUID/tag pairs from 3.10 through 3.14, including `python:3.12-slim` UUID
+  `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`. A listing establishes discovery, not
+  Python/runtime capability or successful execution. The exact HTTP status was
+  not retained, so only a successful adapter read is claimed.
+- Usage: **1 listing request, 0 imports, 0 guest executions, 0 inference calls**.
+  The separate F10 failed import remains consumed and unchanged.
+- Evidence: saved inventory
+  `.docdrift/access/sandbox-python-images-20261021T171644648052Z.json`, SHA-256
+  `6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250`.
+- Effect on DocDrift: a fixed offline recovery record now pins this UUID, the
+  inventory bytes, and the F10 failed response. The runner can inspect that
+  exact existing image and continue the original remaining three probes/twelve
+  verifier operations without importing again or resetting state. Failed
+  receipt identity stays frozen; provenance explicitly changes to an existing
+  public image, without claiming equivalence to the failed Docker Hub digest.
+  Preparation and actual-record validation made no further provider request;
+  recovery lifecycle, resume, and rejection coverage use synthetic HTTP only.
+- Limits: no actual image inspection, runtime probe, or verifier result exists
+  yet. Billing stays unverified under D25. A mutable tag alone supplies no Python
+  version or safety assurance; the capability probe remains required.

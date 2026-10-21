@@ -4,26 +4,32 @@
 requires a credit-coverage or scoped user-authorization record, plus
 NEBIUS_API_KEY in the environment. Authorization does not establish billing terms.
 ``images`` makes one read-only public Python image-list request and selects no image.
+``prepare-reuse`` freezes the discovered existing image and failed import offline;
+``run --reuse-record`` continues the same session without another import.
 None of these commands performs inference or evaluates held-out examples.
 """
 
 from __future__ import annotations
 
 import argparse
+from contextlib import closing
 from dataclasses import asdict
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import sqlite3
 import sys
 from uuid import UUID
 
 from docdrift.engine import resume_run
 from docdrift.evidence import verify_evidence
 from docdrift.nebius import NebiusSandboxAdapter, RemoteAdapterError
+from docdrift.profile import strict_json
 from docdrift.sandbox_execution import _image_uuid
-from docdrift.sandbox_plan import initialize_f6_run, prepare_f6_plan, validate_f6_plan
+from docdrift.sandbox_plan import F6_RUN_ID, _read_regular, initialize_f6_run, prepare_f6_plan, validate_f6_plan
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -121,6 +127,91 @@ def discover_images(args) -> dict:
     return result
 
 
+def prepare_image_reuse(args) -> dict:
+    """Freeze the discovered fixed image and terminal failure without network use."""
+    from docdrift.sandbox_live import (
+        RECOVERY_FAILED_IMPORT_ID, RECOVERY_IMAGE_ID, _coverage, _encoded,
+    )
+
+    if args.project != PROJECT or args.image_id != RECOVERY_IMAGE_ID or args.inventory is None:
+        raise ValueError('Existing-image preparation requires the discovered fixed Python image and inventory')
+    plan = validate_f6_plan(args.plan_root)
+    plan_digest = hashlib.sha256(_encoded(plan)).hexdigest()
+    authorization_digest = hashlib.sha256(_coverage(args.coverage, args.project)).hexdigest()
+    session = strict_json(_read_regular(args.state_root / 'session.json'))
+    expected_identity = {
+        'kind': 'fixed_f6_sandbox_session', 'project_id': PROJECT,
+        'plan_sha256': plan_digest, 'registry_image': args.registry_image,
+        'coverage_sha256': authorization_digest,
+    }
+    if (not isinstance(session, dict) or session.get('identity') != expected_identity
+            or any(session.get(name) is not None for name in ('image_id', 'imported_image_id', 'run_id'))
+            or session.get('probes') != {} or session.get('uploads') != {}
+            or session.get('image_recovery') is not None):
+        raise ValueError('Image reuse preparation requires the unchanged failed-import session before execution')
+    journal_path = (args.state_root / 'state.sqlite3').resolve(strict=True)
+    try:
+        with closing(sqlite3.connect(journal_path.as_uri() + '?mode=ro', uri=True)) as connection:
+            connection.row_factory = sqlite3.Row
+            receipts = [dict(row) for row in connection.execute('SELECT * FROM remote_submissions')]
+            if (connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='runs'").fetchone()
+                    and connection.execute('SELECT 1 FROM runs LIMIT 1').fetchone()):
+                raise ValueError('Image reuse preparation must precede every verifier run, including orphan ledgers')
+    except sqlite3.Error:
+        raise ValueError('Saved failed-import journal is unavailable') from None
+    expected_request = {'registry': {'url': args.registry_image}, 'timeout': 120}
+    if len(receipts) != 1:
+        raise ValueError('Image reuse requires exactly the one failed import and no other submissions')
+    receipt = receipts[0]
+    metadata = strict_json(receipt['result_metadata_json']) if receipt['result_metadata_json'] else {}
+    if (receipt['run_id'] != 'f6_control_' + plan_digest[:16] or receipt['phase'] != 'image_import'
+            or receipt['state'] != 'completed' or receipt['operation_id'] != RECOVERY_FAILED_IMPORT_ID
+            or receipt['request_digest'] != hashlib.sha256(_encoded(expected_request)).hexdigest()
+            or not isinstance(metadata, dict) or metadata.get('service_state') != 'FAILED'
+            or metadata.get('operation_id') != RECOVERY_FAILED_IMPORT_ID):
+        raise ValueError('Saved import must be the recorded terminal failed preparation operation')
+    operation_bytes = _read_regular(
+        args.state_root / 'operations' / (RECOVERY_FAILED_IMPORT_ID + '.json'), 2 * 1024 * 1024)
+    operation = strict_json(operation_bytes)
+    result = operation.get('result') if isinstance(operation, dict) else None
+    if (not isinstance(operation, dict) or operation.get('uuid') != RECOVERY_FAILED_IMPORT_ID
+            or operation.get('kind') != 'image_import' or operation.get('status') != 'FAILED'
+            or operation.get('result_image_uuid') is not None
+            or not isinstance(result, dict) or result.get('image') is not None):
+        raise ValueError('Saved failed import response does not match the terminal receipt')
+    inventory_path = args.inventory.absolute()
+    inventory_bytes = _read_regular(inventory_path, 2 * 1024 * 1024)
+    inventory = strict_json(inventory_bytes)
+    if (not isinstance(inventory, dict) or inventory.get('kind') != 'sandbox_public_python_image_inventory'
+            or inventory.get('status') != 'read_only_images_listed' or inventory.get('project_id') != PROJECT
+            or not isinstance(inventory.get('query'), dict) or inventory['query'].get('tag') != 'python'
+            or not isinstance(inventory.get('images'), list)
+            or [row for row in inventory['images'] if isinstance(row, dict) and row.get('uuid') == RECOVERY_IMAGE_ID]
+               != [{'uuid': RECOVERY_IMAGE_ID, 'tag': 'python:3.12-slim'}]):
+        raise ValueError('Inventory must record the discovered immutable python:3.12-slim image')
+    record = {
+        'kind': 'fixed_f6_existing_image_recovery', 'project_id': PROJECT, 'source_run_id': F6_RUN_ID,
+        'image_id': RECOVERY_IMAGE_ID, 'inventory_path': str(inventory_path),
+        'inventory_sha256': hashlib.sha256(inventory_bytes).hexdigest(),
+        'failed_import_operation_id': RECOVERY_FAILED_IMPORT_ID,
+        'failed_import_response_sha256': hashlib.sha256(operation_bytes).hexdigest(),
+    }
+    output = args.reuse_record or ROOT / '.docdrift/access/sandbox-f6-existing-image.json'
+    if output.exists():
+        if (output.stat().st_mode & 0o777 != 0o600
+                or _read_regular(output) != (json.dumps(record, indent=2, allow_nan=False) + '\n').encode()):
+            raise ValueError('Existing recovery record differs; preserve the original binding')
+    else:
+        write_json(output, record)
+    return {
+        'status': 'prepared_image_reuse_offline', 'reuse_record': str(output),
+        'image_id': RECOVERY_IMAGE_ID, 'image_tag': 'python:3.12-slim',
+        'failed_import_operation_id': RECOVERY_FAILED_IMPORT_ID,
+        'provider_requests': 0, 'additional_imports': 0, 'guest_executions': 0, 'inference_calls': 0,
+        'note': 'Preparation only; existing-image inspection and runtime capability remain unverified.',
+    }
+
+
 def verification(args) -> dict:
     # Keep the ordinary CLI and Sandbox contract adapter unchanged. Import the
     # fixed-scope activation only when that separate operation is requested.
@@ -154,18 +245,23 @@ def verification(args) -> dict:
         'limits': {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12},
         'probes': {},
     }
+    if args.reuse_record is not None:
+        report['reuse_record'] = str(args.reuse_record)
+        report['failed_registry_image'] = report.pop('registry_image')
     with F6SandboxRemote(
         api_key=key, project_id=args.project, plan_root=args.plan_root,
         state_root=args.state_root, registry_image=args.registry_image,
         coverage_path=args.coverage,
+        reuse_record_path=args.reuse_record,
     ) as remote:
         report['billing_authorization'] = remote.billing_authorization
         write_json(report_path, report)
         failure = None
         try:
-            image = remote.import_image()
+            image = remote.select_existing_image() if args.reuse_record is not None else remote.import_image()
             remote.bind_image(image)
             report['image_id'] = image
+            report['image_provenance'] = remote.image_provenance
             write_json(report_path, report)
 
             for name in ('capability', 'artifact'):
@@ -241,13 +337,16 @@ def verification(args) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('prepare', 'images', 'run'))
+    parser.add_argument('command', choices=('prepare', 'images', 'prepare-reuse', 'run'))
     parser.add_argument('--plan-root', type=Path, default=ROOT / '.docdrift/sandbox-f6-plan')
     parser.add_argument('--state-root', type=Path, default=ROOT / '.docdrift/sandbox-f6')
     parser.add_argument('--coverage', '--authorization', dest='coverage', type=Path,
                         default=ROOT / '.docdrift/access/sandbox-coverage.json')
     parser.add_argument('--project', default=PROJECT)
     parser.add_argument('--registry-image', default=REGISTRY_IMAGE)
+    parser.add_argument('--inventory', type=Path)
+    parser.add_argument('--image-id')
+    parser.add_argument('--reuse-record', type=Path)
     args = parser.parse_args()
     os.umask(0o077)
     try:
@@ -255,6 +354,8 @@ def main() -> int:
             result = preparation(args)
         elif args.command == 'images':
             result = discover_images(args)
+        elif args.command == 'prepare-reuse':
+            result = prepare_image_reuse(args)
         else:
             result = verification(args)
     except (RemoteAdapterError, ValueError, OSError) as exc:
@@ -266,7 +367,9 @@ def main() -> int:
         print(message, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2))
-    return 0 if result['status'] in {'completed', 'prepared_offline', 'read_only_images_listed'} else 2
+    return 0 if result['status'] in {
+        'completed', 'prepared_offline', 'read_only_images_listed', 'prepared_image_reuse_offline',
+    } else 2
 
 
 if __name__ == '__main__':

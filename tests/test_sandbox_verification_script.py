@@ -1,9 +1,12 @@
 """The fixed saved-repair workflow must stop before unconfirmed provider use."""
 
 import json
+import hashlib
+from contextlib import closing
 from pathlib import Path
 import runpy
 import socket
+import sqlite3
 import subprocess
 import sys
 
@@ -11,7 +14,8 @@ import httpx
 import pytest
 
 from docdrift.nebius import RemoteAdapterError
-from docdrift.sandbox_plan import validate_f6_plan
+from docdrift.sandbox_plan import F6_RUN_ID, prepare_f6_plan, validate_f6_plan
+from docdrift.snapshot import file_hashes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,12 +30,13 @@ def deny_side_effects(monkeypatch):
     monkeypatch.setattr(httpx.Client, '__init__', forbidden)
 
 
-def command(monkeypatch, tmp_path, name):
+def command(monkeypatch, tmp_path, name, *extra):
     monkeypatch.setattr(sys, 'argv', [
         'verify_saved_f6_sandbox.py', name,
         '--plan-root', str(tmp_path / 'plan'),
         '--state-root', str(tmp_path / 'state'),
         '--coverage', str(tmp_path / 'coverage.json'),
+        *map(str, extra),
     ])
     return SCRIPT['main']()
 
@@ -253,3 +258,185 @@ def test_image_discovery_without_key_stops_before_client_or_state(tmp_path, monk
     assert command(monkeypatch, tmp_path, 'images') == 2
     assert 'NEBIUS_API_KEY is required' in capsys.readouterr().err
     assert not (tmp_path / 'access').exists() and not (tmp_path / 'state').exists()
+
+
+@pytest.fixture
+def reuse_inputs(tmp_path):
+    """Manufacture local records; the pinned IDs are synthetic values here."""
+    from docdrift.remote_journal import SubmissionJournal
+    from docdrift.sandbox_live import RECOVERY_FAILED_IMPORT_ID, RECOVERY_IMAGE_ID, _encoded
+
+    plan = prepare_f6_plan(tmp_path / 'plan', ROOT / 'docs/demo/f6/agent/evidence.zip',
+                           ROOT / 'docs/demo/f6/proposals/agent.json')
+    authorization = {
+        'kind': 'docdrift_sandbox_scoped_authorization', 'project_id': SCRIPT['PROJECT'],
+        'billing_coverage': 'unverified', 'source_run_id': F6_RUN_ID,
+        'limits': {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12, 'inference_calls': 0},
+        'authorization': 'Synthetic test only; not a live user authorization.',
+        'authorized_at_utc': '2026-10-21T00:00:00+00:00',
+    }
+    coverage = tmp_path / 'coverage.json'
+    coverage.write_text(json.dumps(authorization))
+    coverage.chmod(0o600)
+    plan_digest = hashlib.sha256(_encoded(plan)).hexdigest()
+    session = {
+        'identity': {'kind': 'fixed_f6_sandbox_session', 'project_id': SCRIPT['PROJECT'],
+                     'plan_sha256': plan_digest, 'registry_image': SCRIPT['REGISTRY_IMAGE'],
+                     'coverage_sha256': hashlib.sha256(coverage.read_bytes()).hexdigest()},
+        'image_id': None, 'imported_image_id': None, 'run_id': None, 'probes': {}, 'uploads': {},
+    }
+    state = tmp_path / 'state'
+    state.mkdir()
+    (state / 'session.json').write_text(json.dumps(session))
+    journal = SubmissionJournal(state)
+    payload = {'registry': {'url': SCRIPT['REGISTRY_IMAGE']}, 'timeout': 120}
+    receipt = journal.begin('f6_control_' + plan_digest[:16], 'image_import',
+                            hashlib.sha256(_encoded(payload)).hexdigest())
+    journal.accepted(receipt['attempt_id'], RECOVERY_FAILED_IMPORT_ID)
+    journal.completed(receipt['attempt_id'], {'operation_id': RECOVERY_FAILED_IMPORT_ID,
+                      'service_state': 'FAILED', 'state': 'failed'})
+    operations = state / 'operations'
+    operations.mkdir()
+    (operations / (RECOVERY_FAILED_IMPORT_ID + '.json')).write_text(json.dumps({
+        'uuid': RECOVERY_FAILED_IMPORT_ID, 'kind': 'image_import', 'status': 'FAILED',
+        'result_image_uuid': None, 'result': {'image': None},
+        'metadata': payload, 'error': 'Synthetic import failure; no provider call occurred.',
+    }))
+    inventory = tmp_path / 'inventory.json'
+    inventory.write_text(json.dumps({
+        'kind': 'sandbox_public_python_image_inventory', 'status': 'read_only_images_listed',
+        'project_id': SCRIPT['PROJECT'], 'query': {'tag': 'python', 'limit': 1000, 'offset': 0},
+        'images': [{'uuid': RECOVERY_IMAGE_ID, 'tag': 'python:3.12-slim'}],
+        'provider_requests': 1, 'image_imports': 0, 'guest_executions': 0, 'inference_calls': 0,
+        'note': 'Synthetic listing fixture only.',
+    }))
+    inventory.chmod(0o600)
+    return {'state': state, 'inventory': inventory, 'image_id': RECOVERY_IMAGE_ID,
+            'failed_id': RECOVERY_FAILED_IMPORT_ID, 'output': tmp_path / 'reuse.json'}
+
+
+def reuse_command(monkeypatch, tmp_path, fixture, *extra):
+    return command(monkeypatch, tmp_path, 'prepare-reuse',
+                   '--inventory', fixture['inventory'], '--image-id', fixture['image_id'],
+                   '--reuse-record', fixture['output'], *extra)
+
+
+def durable_state_hashes(state):
+    # A read-only SQLite connection may create/update transient WAL coordination
+    # files. Compare the durable database, session, and operation records.
+    return {name: digest for name, digest in file_hashes(state).items()
+            if name not in {'state.sqlite3-shm', 'state.sqlite3-wal'}}
+
+
+def test_prepare_reuse_freezes_inputs_offline_without_changing_live_state(
+        tmp_path, monkeypatch, capsys, reuse_inputs):
+    deny_side_effects(monkeypatch)
+    monkeypatch.delenv('NEBIUS_API_KEY', raising=False)
+    before = durable_state_hashes(reuse_inputs['state'])
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result['status'] == 'prepared_image_reuse_offline'
+    assert result['provider_requests'] == result['additional_imports'] == result['guest_executions'] == 0
+    record_bytes = reuse_inputs['output'].read_bytes()
+    record = json.loads(record_bytes)
+    assert record['image_id'] == reuse_inputs['image_id']
+    assert record['failed_import_operation_id'] == reuse_inputs['failed_id']
+    assert record['inventory_sha256'] == hashlib.sha256(reuse_inputs['inventory'].read_bytes()).hexdigest()
+    assert reuse_inputs['output'].stat().st_mode & 0o777 == 0o600
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 0
+    assert reuse_inputs['output'].read_bytes() == record_bytes
+    assert durable_state_hashes(reuse_inputs['state']) == before
+
+
+@pytest.mark.parametrize('change', [
+    'inventory', 'duplicate_image', 'bound_image', 'uncertain', 'result_image', 'authorization', 'orphan_run',
+])
+def test_prepare_reuse_rejects_changed_or_nonterminal_inputs_without_side_effects(
+        tmp_path, monkeypatch, capsys, reuse_inputs, change):
+    state = reuse_inputs['state']
+    if change in {'inventory', 'duplicate_image'}:
+        value = json.loads(reuse_inputs['inventory'].read_text())
+        if change == 'inventory':
+            value['images'] = []
+        else:
+            value['images'].append({'uuid': reuse_inputs['image_id'], 'tag': 'python:3.11'})
+        reuse_inputs['inventory'].write_text(json.dumps(value))
+    elif change == 'bound_image':
+        path = state / 'session.json'
+        value = json.loads(path.read_text())
+        value['image_id'] = reuse_inputs['image_id']
+        path.write_text(json.dumps(value))
+    elif change == 'uncertain':
+        with closing(sqlite3.connect(state / 'state.sqlite3')) as connection:
+            connection.execute("UPDATE remote_submissions SET state='uncertain'")
+            connection.commit()
+    elif change == 'result_image':
+        path = state / 'operations' / (reuse_inputs['failed_id'] + '.json')
+        value = json.loads(path.read_text())
+        value['result_image_uuid'] = reuse_inputs['image_id']
+        path.write_text(json.dumps(value))
+    elif change == 'authorization':
+        with (tmp_path / 'coverage.json').open('a') as stream:
+            stream.write('\n')
+    else:
+        from docdrift.store import StateStore
+        StateStore(state).create_run('a' * 32, {})
+    before = durable_state_hashes(state)
+    deny_side_effects(monkeypatch)
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 2
+    assert capsys.readouterr().err
+    assert not reuse_inputs['output'].exists() and durable_state_hashes(state) == before
+
+
+def test_prepare_reuse_does_not_accept_a_publicly_readable_existing_record(
+        tmp_path, monkeypatch, capsys, reuse_inputs):
+    deny_side_effects(monkeypatch)
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 0
+    capsys.readouterr()
+    content = reuse_inputs['output'].read_bytes()
+    reuse_inputs['output'].chmod(0o644)
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 2
+    assert capsys.readouterr().err
+    assert reuse_inputs['output'].read_bytes() == content
+
+
+def test_run_with_reuse_record_never_calls_the_import_path(tmp_path, monkeypatch, capsys, reuse_inputs):
+    import docdrift.sandbox_live as live
+
+    assert reuse_command(monkeypatch, tmp_path, reuse_inputs) == 0
+    capsys.readouterr()
+    calls = []
+    class StoppedInspection:
+        billing_authorization = {'billing_coverage': 'unverified', 'credit_coverage_confirmed': False,
+                                 'personal_spend_limit': None}
+
+        def __init__(self, **kwargs):
+            assert kwargs['reuse_record_path'] == reuse_inputs['output']
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def select_existing_image(self):
+            calls.append('inspect_existing')
+            raise RemoteAdapterError('synthetic_inspection_stopped')
+
+        def import_image(self):
+            raise AssertionError('Existing-image recovery must never invoke an import')
+
+        @property
+        def operation_counts(self):
+            return {'image_imports': 1, 'runtime_probes': 0, 'verifier_operations': 0}
+
+    deny_side_effects(monkeypatch)
+    monkeypatch.setenv('NEBIUS_API_KEY', 'synthetic-not-a-real-key')
+    monkeypatch.setattr(live, 'F6SandboxRemote', StoppedInspection)
+    assert command(monkeypatch, tmp_path, 'run', '--reuse-record', reuse_inputs['output']) == 2
+    assert calls == ['inspect_existing']
+    assert capsys.readouterr().err.strip() == 'synthetic_inspection_stopped'
+    report = json.loads((reuse_inputs['state'] / 'runtime-report.json').read_text())
+    assert report['failed_registry_image'] == SCRIPT['REGISTRY_IMAGE']
+    assert 'registry_image' not in report and 'image_id' not in report
+    assert report['operation_attempts']['image_imports'] == 1

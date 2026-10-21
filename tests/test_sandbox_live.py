@@ -29,7 +29,7 @@ from docdrift.remote_journal import SubmissionConflict, SubmissionJournal
 from docdrift.sandbox_execution import GUEST_EXAMPLE, GUEST_REPOSITORY, SandboxExecutionAdapter
 from docdrift.sandbox_live import (
     ARTIFACT_BYTES, ARTIFACT_PATH, F6ExecutionAdapter, F6SandboxRemote, PROJECT_ID, PROBES,
-    _coverage,
+    RECOVERY_IMAGE_ID, RECOVERY_FAILED_IMPORT_ID, _coverage,
 )
 from docdrift.sandbox_plan import F6_RUN_ID, initialize_f6_run, prepare_f6_plan
 from docdrift.snapshot import file_hashes
@@ -66,6 +66,7 @@ class SyntheticWire:
         self.fail_once = None
         self.reject_once = None
         self.before_request = None
+        self.image = IMAGE
         self.profile = json.loads((plan_root / 'profile/profile.json').read_text())
 
     def counts(self):
@@ -95,11 +96,11 @@ class SyntheticWire:
             operation = str(uuid4())
             self.operations[operation] = {
                 'uuid': operation, 'kind': 'image_import', 'status': 'SUCCESS',
-                'image_uuid': None, 'result_image_uuid': IMAGE, 'result': {'image': IMAGE},
+                'image_uuid': None, 'result_image_uuid': self.image, 'result': {'image': self.image},
             }
             return httpx.Response(201, json={'uuid': operation})
-        if (request.method, path) == ('GET', f'inspect/{IMAGE}/'):
-            return httpx.Response(200, json={'uuid': IMAGE})
+        if (request.method, path) == ('GET', f'inspect/{self.image}/'):
+            return httpx.Response(200, json={'uuid': self.image})
         if (request.method, path) == ('POST', 'files'):
             file_id = str(uuid4())
             self.files[file_id] = request.content
@@ -130,7 +131,7 @@ class SyntheticWire:
                     stdout = json.dumps(case['expected_json'], ensure_ascii=False) + '\n'
             self.operations[operation] = {
                 'uuid': operation, 'kind': 'instance', 'status': status,
-                'image_uuid': IMAGE, 'result_image_uuid': result_image, 'duration': 0.1,
+                'image_uuid': self.image, 'result_image_uuid': result_image, 'duration': 0.1,
                 'metadata': {**payload, 'result': {
                     'state': {'exit_code': exit_code, 'signal': -1, 'timed_out': False},
                     'stdout': self.stream(stdout), 'stderr': self.stream(stderr), 'resources': {},
@@ -613,6 +614,310 @@ def test_terminal_unsuccessful_import_resumes_without_requests_or_receipt_change
         assert remote.run_id is None
     assert prepared.wire.requests == requests
     assert operation_path.read_bytes() == operation_bytes
+
+
+def existing_image_recovery(prepared):
+    """Seed a manufactured failed receipt and inventory; no live data is replayed."""
+    original_response = prepared.wire.response
+
+    def failed_import(request, path, payload):
+        if (request.method, path) == ('POST', 'images/import'):
+            prepared.wire.operations[RECOVERY_FAILED_IMPORT_ID] = {
+                'uuid': RECOVERY_FAILED_IMPORT_ID, 'kind': 'image_import', 'status': 'FAILED',
+                'image_uuid': None, 'result_image_uuid': None, 'result': {'image': None},
+                'error': 'Synthetic registry HTTP 404 fixture; no actual provider request.',
+            }
+            return httpx.Response(201, json={'uuid': RECOVERY_FAILED_IMPORT_ID})
+        return original_response(request, path, payload)
+
+    prepared.wire.response = failed_import
+    try:
+        with F6SandboxRemote(**prepared.kwargs) as remote:
+            with pytest.raises(RemoteAdapterError, match='import_not_successful'):
+                remote.import_image()
+            receipt = remote.journal.for_run(remote._control_run)[0]
+    finally:
+        prepared.wire.response = original_response
+    prepared.wire.image = RECOVERY_IMAGE_ID
+    inventory = prepared.coverage.with_name('synthetic-public-image-inventory.json')
+    inventory.write_text(json.dumps({
+        'kind': 'sandbox_public_python_image_inventory', 'status': 'read_only_images_listed',
+        'project_id': PROJECT_ID, 'query': {'tag': 'python', 'limit': 1000, 'offset': 0},
+        'images': [{'uuid': RECOVERY_IMAGE_ID, 'tag': 'python:3.12-slim'}],
+        'note': 'Synthetic inventory fixture; no discovery or runtime claim.',
+    }))
+    operation = prepared.state / 'operations' / (RECOVERY_FAILED_IMPORT_ID + '.json')
+    record = prepared.coverage.with_name('synthetic-existing-image-recovery.json')
+    value = {
+        'kind': 'fixed_f6_existing_image_recovery', 'project_id': PROJECT_ID, 'source_run_id': F6_RUN_ID,
+        'image_id': RECOVERY_IMAGE_ID, 'inventory_path': str(inventory),
+        'inventory_sha256': hashlib.sha256(inventory.read_bytes()).hexdigest(),
+        'failed_import_operation_id': RECOVERY_FAILED_IMPORT_ID,
+        'failed_import_response_sha256': hashlib.sha256(operation.read_bytes()).hexdigest(),
+    }
+    record.write_text(json.dumps(value))
+    record.chmod(0o600)
+    return SimpleNamespace(record=record, inventory=inventory, operation=operation, receipt=receipt,
+                           value=value, kwargs={**prepared.kwargs, 'reuse_record_path': record})
+
+
+def test_existing_public_image_recovery_full_lifecycle_and_completed_resume(prepared):
+    scoped_authorization(prepared)
+    recovery = existing_image_recovery(prepared)
+    before_session = json.loads((prepared.state / 'session.json').read_text())
+    operation_bytes = recovery.operation.read_bytes()
+    with F6SandboxRemote(**recovery.kwargs) as remote:
+        assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 0, 'verifier_operations': 0}
+        before_requests = list(prepared.wire.requests)
+        with pytest.raises(SubmissionConflict, match='prohibits another import'):
+            remote.import_image()
+        with pytest.raises(SubmissionConflict):
+            remote.bind_image(RECOVERY_IMAGE_ID)
+        with pytest.raises(RemoteAdapterError, match='read_out_of_scope'):
+            remote._request('GET', f'inspect/{RECOVERY_IMAGE_ID}/')
+        with pytest.raises(RemoteAdapterError, match='read_out_of_scope'):
+            remote.observe(RECOVERY_FAILED_IMPORT_ID, timeout_seconds=0)
+        assert prepared.wire.requests == before_requests
+        assert remote.select_existing_image() == RECOVERY_IMAGE_ID
+        assert remote.image_id is None
+        remote.bind_image(RECOVERY_IMAGE_ID)
+        session = json.loads((prepared.state / 'session.json').read_text())
+        assert session['identity'] == before_session['identity']
+        assert session['imported_image_id'] is None
+        assert remote.journal.get(recovery.receipt['attempt_id']) == recovery.receipt
+        provenance = remote.image_provenance
+        assert provenance == {
+            'source_kind': 'existing_public_image_after_failed_import', 'image_id': RECOVERY_IMAGE_ID,
+            'tag': 'python:3.12-slim', 'inventory_sha256': recovery.value['inventory_sha256'],
+            'failed_import_operation_id': RECOVERY_FAILED_IMPORT_ID,
+            'recovery_record_sha256': hashlib.sha256(recovery.record.read_bytes()).hexdigest(),
+        }
+        changed = remote.image_provenance
+        changed['tag'] = 'changed'
+        assert remote.image_provenance == provenance
+        assert remote.run_probe('capability').execution_passed
+        assert remote.preflight(RECOVERY_IMAGE_ID)['image_provenance'] == provenance
+        assert remote.run_probe('artifact').execution_passed
+        assert remote.download_probe_artifact() == ARTIFACT_BYTES
+        assert remote.run_probe('cancellation').service_state == 'EXECUTING'
+        assert remote.cancel_probe().service_state == 'CANCELLED'
+        adapter = F6ExecutionAdapter(remote)
+        assert adapter.execution_contract['image_provenance'] == provenance
+        run_id = initialize_f6_run(prepared.plan_root, prepared.state, RECOVERY_IMAGE_ID, adapter.execution_contract)
+        remote.bind_run(run_id)
+        result = resume_run(run_id, prepared.state, adapter=adapter)
+        assert result['status'] == 'completed' and result['repair_verdict'] == 'behavior_verified'
+        assert result['usage']['compute_operations'] == 12
+        assert result['usage']['inference_calls'] == result['usage']['paid_calls'] == 0
+        assert result['environment']['image_provenance'] == provenance
+        assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12}
+    counts = prepared.wire.counts()
+    assert counts['POST', 'images/import'] == 1
+    assert counts['POST', 'instances'] == 15
+    assert counts['GET', f'inspect/{RECOVERY_IMAGE_ID}/'] == 1
+    with F6SandboxRemote(**recovery.kwargs) as remote:
+        assert remote.select_existing_image() == RECOVERY_IMAGE_ID
+        remote.bind_image(RECOVERY_IMAGE_ID)
+        for name in PROBES:
+            remote.run_probe(name)
+        assert remote.cancel_probe().service_state == 'CANCELLED'
+        assert resume_run(remote.run_id, prepared.state, adapter=F6ExecutionAdapter(remote)) == result
+        assert remote.image_provenance == provenance
+        assert remote.journal.get(recovery.receipt['attempt_id']) == recovery.receipt
+        assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12}
+    after = prepared.wire.counts()
+    assert after['GET', f'inspect/{RECOVERY_IMAGE_ID}/'] == 1
+    assert {key: count for key, count in after.items() if key[0] != 'GET'} == {
+        key: count for key, count in counts.items() if key[0] != 'GET'}
+    assert recovery.operation.read_bytes() == operation_bytes
+
+
+@pytest.mark.parametrize('field,value', [
+    ('kind', 'other'), ('project_id', 'other'), ('source_run_id', 'other'),
+    ('image_id', IMAGE), ('image_id', RECOVERY_IMAGE_ID.upper()),
+    ('failed_import_operation_id', IMAGE), ('failed_import_operation_id', None),
+    ('inventory_path', 'relative.json'), ('inventory_path', None),
+    ('inventory_sha256', 'A' * 64), ('failed_import_response_sha256', '0' * 64),
+    ('unexpected', True),
+])
+def test_malformed_existing_image_recovery_refuses_before_requests(prepared, field, value):
+    recovery = existing_image_recovery(prepared)
+    recovery.value[field] = value
+    recovery.record.write_text(json.dumps(recovery.value))
+    before = list(prepared.wire.requests)
+    with pytest.raises(ValueError):
+        F6SandboxRemote(**recovery.kwargs)
+    assert prepared.wire.requests == before
+
+
+@pytest.mark.parametrize('change', [
+    'record_missing', 'record_key_missing', 'record_permissions', 'record_symlink', 'inventory_tampered',
+    'inventory_kind', 'inventory_status', 'inventory_project', 'inventory_query', 'inventory_tag',
+    'inventory_row_metadata', 'inventory_duplicate', 'operation_tampered', 'operation_status',
+    'operation_uuid', 'operation_kind', 'operation_result', 'receipt_operation', 'receipt_metadata',
+    'receipt_digest', 'receipt_extra', 'probe', 'uploads', 'run', 'bound', 'imported',
+    'orphan_run', 'orphan_probe',
+])
+def test_invalid_saved_recovery_sources_and_late_activation_refuse_before_requests(prepared, change):
+    recovery = existing_image_recovery(prepared)
+    session_path = prepared.state / 'session.json'
+    session = json.loads(session_path.read_text())
+    if change == 'record_missing':
+        recovery.record.unlink()
+    elif change == 'record_key_missing':
+        del recovery.value['inventory_sha256']
+        recovery.record.write_text(json.dumps(recovery.value))
+    elif change == 'record_permissions':
+        recovery.record.chmod(0o644)
+    elif change == 'record_symlink':
+        target = recovery.record.with_suffix('.target')
+        recovery.record.rename(target)
+        recovery.record.symlink_to(target)
+    elif change == 'inventory_tampered':
+        recovery.inventory.write_bytes(recovery.inventory.read_bytes() + b'\n')
+    elif change.startswith('inventory_'):
+        inventory = json.loads(recovery.inventory.read_text())
+        if change in {'inventory_kind', 'inventory_status', 'inventory_project'}:
+            inventory[{'inventory_kind': 'kind', 'inventory_status': 'status', 'inventory_project': 'project_id'}[change]] = 'other'
+        elif change == 'inventory_query':
+            inventory['query']['tag'] = 'arbitrary'
+        elif change == 'inventory_tag':
+            inventory['images'][0]['tag'] = 'python:latest'
+        elif change == 'inventory_row_metadata':
+            inventory['images'][0]['python_version'] = '3.12'
+        else:
+            inventory['images'] *= 2
+        recovery.inventory.write_text(json.dumps(inventory))
+        recovery.value['inventory_sha256'] = hashlib.sha256(recovery.inventory.read_bytes()).hexdigest()
+        recovery.record.write_text(json.dumps(recovery.value))
+    elif change == 'operation_tampered':
+        recovery.operation.write_bytes(recovery.operation.read_bytes() + b'\n')
+    elif change.startswith('operation_'):
+        operation = json.loads(recovery.operation.read_text())
+        if change == 'operation_result':
+            operation['result'] = {'image': IMAGE}
+        else:
+            operation[change.removeprefix('operation_')] = 'SUCCESS' if change == 'operation_status' else IMAGE
+        recovery.operation.write_text(json.dumps(operation))
+        recovery.value['failed_import_response_sha256'] = hashlib.sha256(recovery.operation.read_bytes()).hexdigest()
+        recovery.record.write_text(json.dumps(recovery.value))
+    elif change == 'orphan_run':
+        initialize_f6_run(prepared.plan_root, prepared.state, RECOVERY_IMAGE_ID, {'synthetic': False})
+    elif change == 'orphan_probe':
+        SubmissionJournal(prepared.state).begin('orphan_control', 'probe_capability', 'b' * 64)
+    elif change.startswith('receipt_'):
+        import sqlite3
+        journal = SubmissionJournal(prepared.state)
+        with sqlite3.connect(journal.path) as connection:
+            if change == 'receipt_operation':
+                connection.execute('UPDATE remote_submissions SET operation_id=?', (IMAGE,))
+            elif change == 'receipt_metadata':
+                metadata = {**recovery.receipt['result_metadata'], 'service_state': 'SUCCESS'}
+                connection.execute('UPDATE remote_submissions SET result_metadata_json=?', (json.dumps(metadata),))
+            elif change == 'receipt_digest':
+                connection.execute('UPDATE remote_submissions SET request_digest=?', ('b' * 64,))
+        if change == 'receipt_extra':
+            journal.begin(recovery.receipt['run_id'], 'unexpected_control', 'b' * 64)
+    else:
+        if change == 'probe':
+            session['probes']['capability'] = {'operation_id': IMAGE}
+        elif change == 'uploads':
+            session['uploads']['b' * 64] = {'state': 'accepted'}
+        else:
+            session[{'run': 'run_id', 'bound': 'image_id', 'imported': 'imported_image_id'}[change]] = IMAGE
+        session_path.write_text(json.dumps(session))
+    before = list(prepared.wire.requests)
+    with pytest.raises(ValueError):
+        F6SandboxRemote(**recovery.kwargs)
+    assert prepared.wire.requests == before
+
+
+def test_recovery_rejects_a_new_or_empty_session(prepared):
+    recovery = existing_image_recovery(prepared)
+    before = list(prepared.wire.requests)
+    empty = prepared.state.with_name('new-empty-state')
+    with pytest.raises(SubmissionConflict, match='original failed-import'):
+        F6SandboxRemote(**{**recovery.kwargs, 'state_root': empty})
+    assert not empty.exists()
+    with F6SandboxRemote(**{**prepared.kwargs, 'state_root': empty}):
+        pass
+    with pytest.raises(ValueError):
+        F6SandboxRemote(**{**recovery.kwargs, 'state_root': empty})
+    assert prepared.wire.requests == before
+
+
+def test_normal_import_mode_cannot_select_an_existing_image(prepared):
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        with pytest.raises(SubmissionConflict, match='requires the fixed F6 recovery record'):
+            remote.select_existing_image()
+        assert prepared.wire.requests == []
+        assert remote.image_provenance == {'source_kind': 'private_registry_import', 'image_id': None}
+        remote.import_image()
+        assert remote.image_provenance == {'source_kind': 'private_registry_import', 'image_id': IMAGE}
+
+
+@pytest.mark.parametrize('change', ['argument_missing', 'record_missing', 'record_changed', 'inventory_changed', 'receipt_changed'])
+def test_activated_recovery_requires_unchanged_record_and_failed_receipt_on_resume(prepared, change):
+    recovery = existing_image_recovery(prepared)
+    with F6SandboxRemote(**recovery.kwargs) as remote:
+        remote.bind_image(remote.select_existing_image())
+    kwargs = dict(recovery.kwargs)
+    if change == 'argument_missing':
+        kwargs.pop('reuse_record_path')
+    elif change == 'record_missing':
+        recovery.record.unlink()
+    elif change == 'record_changed':
+        recovery.record.write_bytes(recovery.record.read_bytes() + b'\n')
+    elif change == 'inventory_changed':
+        recovery.inventory.write_bytes(recovery.inventory.read_bytes() + b'\n')
+    else:
+        import sqlite3
+        with sqlite3.connect(SubmissionJournal(prepared.state).path) as connection:
+            connection.execute("UPDATE remote_submissions SET reason_code='changed_receipt'")
+    before = list(prepared.wire.requests)
+    with pytest.raises(ValueError):
+        F6SandboxRemote(**kwargs)
+    assert prepared.wire.requests == before
+
+
+@pytest.mark.parametrize('change', ['record', 'inventory', 'operation', 'receipt'])
+def test_recovery_sources_are_rechecked_before_each_request(prepared, change):
+    recovery = existing_image_recovery(prepared)
+    with F6SandboxRemote(**recovery.kwargs) as remote:
+        if change == 'receipt':
+            import sqlite3
+            with sqlite3.connect(remote.journal.path) as connection:
+                connection.execute("UPDATE remote_submissions SET reason_code='changed_receipt'")
+        else:
+            path = getattr(recovery, change)
+            path.write_bytes(path.read_bytes() + b'\n')
+        before = list(prepared.wire.requests)
+        with pytest.raises(SubmissionConflict):
+            remote.select_existing_image()
+        assert prepared.wire.requests == before
+
+
+def test_existing_image_inspection_uuid_mismatch_cannot_bind_or_probe(prepared, monkeypatch):
+    recovery = existing_image_recovery(prepared)
+    original_response = prepared.wire.response
+
+    def mismatched_inspect(request, path, payload):
+        if (request.method, path) == ('GET', f'inspect/{RECOVERY_IMAGE_ID}/'):
+            return httpx.Response(200, json={'uuid': IMAGE})
+        return original_response(request, path, payload)
+
+    monkeypatch.setattr(prepared.wire, 'response', mismatched_inspect)
+    with F6SandboxRemote(**recovery.kwargs) as remote:
+        with pytest.raises(RemoteAdapterError, match='invalid_image_response'):
+            remote.select_existing_image()
+        before = list(prepared.wire.requests)
+        with pytest.raises(SubmissionConflict):
+            remote.bind_image(RECOVERY_IMAGE_ID)
+        with pytest.raises(RemoteAdapterError, match='probe_out_of_scope'):
+            remote.run_probe('capability')
+        assert remote.image_id is None
+        assert json.loads((prepared.state / 'session.json').read_text())['imported_image_id'] is None
+        assert prepared.wire.requests == before
 
 
 def test_foreign_operation_cannot_be_observed_or_cancelled(prepared):

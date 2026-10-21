@@ -167,8 +167,11 @@ accepted on Oct 21 but failed during the registry fetch with HTTP 404. No result
 image, runtime probe, verifier operation, or new inference followed. The failed
 receipt is preserved and the one import attempt is consumed. Read-only
 `scripts/verify_saved_f6_sandbox.py images` discovers existing public Python
-image references without selecting an image or changing that run. Runtime
-capability and actual Sandbox billing remain unverified; no confirmed-coverage
+image references without selecting an image or changing that run. Discovery
+found `python:3.12-slim`; a separate fixed recovery record now pins its immutable
+UUID and can continue the same session with `run --reuse-record` without another
+import. Recovery lifecycle tests are synthetic; actual image inspection, runtime
+capability, and Sandbox billing remain unverified. No confirmed-coverage
 record has been created. The $0 personal-spend default retains D25's narrow
 exception for the already authorized bounded run.
 

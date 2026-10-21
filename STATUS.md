@@ -27,8 +27,10 @@ The Oct 21 access-read attempt failed locally (`transport_error`); DNS resolutio
 returned `gaierror` / `EAI_AGAIN` and the workspace policy rejected a DNS-only
 sandbox escalation (`sandbox_approval=false`). No provider response, resource
 submission, or live session state was produced by that earlier agent attempt.
-The later normal-terminal run reached Nebius (F10); the current blocker is the
-failed image import, not another billing-permission gate.
+The later normal-terminal run reached Nebius (F10). Read-only discovery then
+listed existing `python:3.12-slim` UUID `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`
+(F11). Its fixed recovery is prepared under D27; no existing-image inspection or
+runtime operation has run yet, and no further billing-permission gate is needed.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -49,6 +51,8 @@ failed image import, not another billing-permission gate.
 - [x] Prepare dedicated bounded Sandbox re-verification of the saved F6 model
   output: frozen offline plan, pinned official Python OCI manifest, durable
   import/probe/verification receipts, and separate historical/current model usage
+- [x] Prepare fixed existing-image recovery after the first import failed:
+  pinned discovered UUID, preserved failed receipt, no additional import
 - [ ] Same slice on Nebius Sandbox: remote prep, original reproduction, pristine re-verification, operation reconciliation
 
 **Model repair (milestone 2)**
@@ -102,16 +106,15 @@ failed image import, not another billing-permission gate.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** in the same normal terminal, run
-`.venv/bin/python scripts/verify_saved_f6_sandbox.py images` for a read-only
-inventory of existing public Python images. The one allowed import was consumed
-by terminal failed operation `01a15f6f-2d46-71c6-a692-ede648b18661`. Preserve its
-state and do not submit a replacement import or change state directories to
-reset the allowance. Inspect the discovered immutable image IDs before
-implementing a concrete existing-image recovery contract; no automatic fallback
-is enabled. The three runtime probes and twelve verifier operations remain
-unexecuted. See `docs/SANDBOX_VERIFICATION.md`. Billing clarification remains
-pending; D25 already authorizes the original bounded run with unknown coverage.
+**Next:** in the same normal terminal, run the fixed verifier with both
+`--authorization .docdrift/access/sandbox-authorization-2026-10-21.json` and
+`--reuse-record .docdrift/access/sandbox-f6-existing-image.json`. The prepared
+record pins the discovered public `python:3.12-slim` UUID. It preserves the
+original failed import/session, performs one exact-image inspection, and uses
+the remaining three probes and twelve verifier operations with no new import
+or inference. Keep the same paths for resume. See
+`docs/SANDBOX_VERIFICATION.md` for the complete command. Billing clarification
+remains pending; D25 already authorizes this bounded work with unknown coverage.
 No new model evaluation is needed. The real F6 demo bundle,
 submission draft, and 2:45 video script are ready for review without further
 inference. Record the video from saved evidence, keeping local Docker provenance
@@ -159,13 +162,28 @@ The runner now returns saved terminal failed/cancelled imports immediately
 without another GET or POST, retaining operation/attempt IDs and unchanged
 receipts. New read-only `images` discovery makes one filtered public-image GET,
 saves sanitized UUID/tag pairs separately, and neither selects an image nor
-changes the live state. Existing-image recovery is not implemented yet; discovery
-comes first. The failed import and current image-binding guard remain intact.
+changes the live state. The user ran discovery at 17:16:44 UTC and supplied its
+15-image inventory (F11), including the immutable Python 3.12 slim reference.
+Inventory SHA-256:
+`6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250`.
 
-Validation: **761 tests pass**, including ten new synthetic terminal-import and
-image-discovery cases. The saved real failed receipt and operation response are
-unchanged; both frozen inventories and the original published F6 evidence remain
-unchanged.
+D27's recovery is now implemented and prepared. Its separate mode-600 record at
+`.docdrift/access/sandbox-f6-existing-image.json` pins the exact selected UUID,
+inventory bytes, failed operation ID, and failed response bytes. It requires the
+unchanged original terminal failed receipt/session before any upload, probe, or
+verifier ledger, then adds an immutable recovery binding without replacing that
+identity or receipt. A narrowed image inspection precedes selection; saved
+selection survives restarts without another inspection or import. Further
+imports and reads that would overwrite the frozen failed response are blocked.
+Provenance names the existing image separately from the failed OCI source;
+billing remains unverified. Actual inspection and runtime capability remain
+unestablished. The actual recovery record was validated offline, with no request
+or session change. Pre-recovery report/session copies were saved under
+`.docdrift/access/sandbox-f6-before-image-reuse-{runtime-report,session}.json`.
+
+Validation: **824 tests pass**, including synthetic recovery lifecycle, restart,
+source-binding, and receipt-preservation checks. These tests establish no new
+provider result.
 
 The attempted access read could not reach Nebius: local DNS failed and the
 workspace's granular policy refused sandbox escalation. No matching connector
@@ -175,10 +193,10 @@ codes and counts, not the key. The later normal-terminal run created
 `.docdrift/sandbox-f6/`; keep its failed receipt, session identity, runtime report,
 and raw operation response intact.
 
-Next: run the read-only `images` command from the same network-enabled terminal,
-inspect available immutable Python image references, then implement explicit
-image reuse if suitable. Do not retry by resetting state. No new inference is
-needed, and billing permission for the existing D25 scope need not be repeated.
+Next: run the existing-image recovery command in `docs/SANDBOX_VERIFICATION.md`
+from the same network-enabled terminal. Do not reset state or edit the bound
+inventory, authorization, or recovery record. No new inference is needed, and
+billing permission for the existing D25 scope need not be repeated.
 The held-out run (D8), funded free live-agent judge access through Dec 15,
 and video recording remain open. The live import failed before any snippet
 execution; no further provider request, resource submission, inference,
@@ -448,6 +466,15 @@ Who decided what, and when. Don't reverse one without the user.
   identity. Add read-only public Python image discovery to make a possible
   existing-image recovery concrete before changing the runtime contract. The
   discovery makes no resource mutation and does not authorize another import.
+- D27 (agent, Oct 21, continuing the user's supplied discovery result): Recover
+  the original session using only the discovered `python:3.12-slim` immutable UUID
+  `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`. Freeze the inventory and failed-import
+  response hashes in a separate recovery record; preserve the original identity,
+  failed receipt, and consumed import count. Keep D25's remaining three probes,
+  twelve verifier operations, and zero new inference. This changes the image
+  source to an existing public reference, not a second import or a claim that it
+  matches the failed OCI digest. No general image selection, new billing
+  approval, deployment, or extra resource operation is introduced.
 
 ## Session log
 
@@ -587,6 +614,15 @@ Who decided what, and when. Don't reverse one without the user.
   added a read-only public Python image inventory command. 761 tests pass. Next: run `images`
   in the same terminal, then inspect possible existing-image recovery; no
   automatic reimport, fallback, state reset, or new provider call was performed.
+- 2026-10-21 (existing-image recovery): User supplied the real read-only 15-image
+  inventory, including Python 3.12 slim UUID `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`
+  (F11). Implemented and prepared exact-record existing-image recovery that
+  retains the failed import/session and remaining D25 operation scope; saved
+  pre-recovery report/session copies. Actual record validation is offline, and
+  lifecycle/resume tests use synthetic responses. All 824 tests pass. No
+  additional provider request, image inspection, resource submission, session reset, inference, deployment,
+  external message, or push during implementation. Next: user runs the prepared
+  command with `--reuse-record` from the network-enabled normal terminal.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
