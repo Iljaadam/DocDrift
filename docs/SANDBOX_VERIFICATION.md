@@ -32,7 +32,14 @@ The original evidence and proposal remain unchanged. A new verification run
 retains the saved proposal transcript and separates its historical generation
 usage (5 calls / 7,841 tokens) from current inference usage (zero).
 
-## Record actual coverage before running
+## Authorization records
+
+On October 21 the user explicitly authorized the bounded run while awaiting the
+billing answer (D25). The runner accepts that scoped permission separately from
+confirmed credit coverage. Permission is not proof of free service, a dollar
+cap, or actual $0 charges. Ordinary live adapters and CLI commands remain guarded.
+
+### Confirmed credit coverage
 
 Sandbox execution, image import, and storage coverage are still unconfirmed.
 On October 21 the user supplied a Builder email promising $25 in Token Factory
@@ -90,20 +97,67 @@ schema; the blank factual fields below intentionally make it an invalid record:
 Fill `confirmation` with the actual nonempty coverage/no-personal-charges
 statement and `confirmed_at_utc` with its ISO timestamp in UTC. The template is
 not evidence, a provider billing control, or an enforceable spending cap. The
-runner refuses missing or unconfirmed coverage before making a network request.
-No coverage record has been created on the user's behalf.
+runner refuses missing or invalid authorization before making a network request.
+No confirmed-coverage record has been created on the user's behalf.
+
+### Scoped permission with unverified billing
+
+The user's instruction was: "We will wait for the answer but in the meantime
+let's use it, i give permission." Its mode-600 record is
+`.docdrift/access/sandbox-authorization-2026-10-21.json`, using this schema:
+
+```json
+{
+  "kind": "docdrift_sandbox_scoped_authorization",
+  "project_id": "aiproject-e00a0rb50jb0emajfv",
+  "billing_coverage": "unverified",
+  "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+  "limits": {
+    "image_imports": 1,
+    "runtime_probes": 3,
+    "verifier_operations": 12,
+    "inference_calls": 0
+  },
+  "authorization": "We will wait for the answer but in the meantime let's use it, i give permission",
+  "authorized_at_utc": "<actual UTC timestamp>"
+}
+```
+
+The session binds the exact authorization bytes. Do not edit that record after
+starting; resume the same state and accepted operation IDs. Reports and frozen
+execution contracts record `credit_coverage_confirmed: false`,
+`personal_spend_limit: null`, and `billing_coverage: unverified`. The billed
+amount remains unknown until supported by billing records. This does not
+authorize new model generation, held-out evaluation, additional imports/probes,
+hosting, or general live execution.
+
+## Current execution environment
+
+On October 21 an authorized read-only access attempt failed locally with
+`transport_error`; a credential-free DNS diagnostic returned `gaierror` /
+`EAI_AGAIN`. The workspace's granular approval policy rejected a DNS-only sandbox
+escalation because `sandbox_approval=false`. No provider response was received,
+and no image import, probe, verifier operation, or live session state was created.
+The safe local diagnostic record is
+`.docdrift/access/sandbox-network-failure-2026-10-21.json`.
+
+Use the already recorded permission and the command below from a network-enabled
+terminal or session. The scoped operation allowance is unconsumed; no further
+billing permission is required for that run. Keep the existing private credential
+and authorization record on the machine used for execution.
 
 ## Run the fixed verification
 
-After recording factual coverage, explicitly load the key from its existing
-private file outside the repository:
+For the currently authorized scoped run, explicitly load the key from its
+existing private file outside the repository:
 
 ```sh
-chmod 600 .docdrift/access/sandbox-coverage.json
+chmod 600 .docdrift/access/sandbox-authorization-2026-10-21.json
 set -a
 . ~/.config/docdrift/nebius.env
 set +a
-.venv/bin/python scripts/verify_saved_f6_sandbox.py run
+.venv/bin/python scripts/verify_saved_f6_sandbox.py run \
+  --authorization .docdrift/access/sandbox-authorization-2026-10-21.json
 ```
 
 The runner does not discover credentials automatically. Keep the key outside the

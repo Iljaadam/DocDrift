@@ -183,3 +183,27 @@ it created no resources and performed no execution or inference.
   credit coverage is claimed. See [the prepared workflow](SANDBOX_VERIFICATION.md).
 - Suggestion: keep stream encoding enums and no-signal semantics consistent
   between the runnable recipe and [operation reference](https://docs.tokenfactory.nebius.com/api-reference/sandboxes/operations/get-an-operation-status).
+
+### F9 — Authorized activation blocked by local network policy (2026-10-21, no provider response)
+
+- Scope: the user explicitly approved the saved-F6 verification while billing
+  clarification is pending (D25). A separate scoped authorization records that
+  permission without claiming free/grant coverage or a dollar spending cap.
+- Attempt: one `GET /sandboxes/v1/whoami` through the existing read-only adapter
+  before submitting any resource. It failed locally with `transport_error`;
+  no provider response or HTTP status was received. A credential-free DNS lookup
+  returned `gaierror` with errno `-3` (`EAI_AGAIN`).
+- Execution environment: a DNS-only sandbox escalation was rejected by the
+  workspace's granular policy because `sandbox_approval=false`. No matching
+  Nebius connector was found in the plugin search results. This is not evidence
+  of a Nebius outage, permission denial, API defect, or actual billed usage.
+- Usage: one authenticated request attempt, zero successful provider responses,
+  zero image imports/probes/verifier submissions, and zero new inference.
+  No live session state exists and the operation allowance is unconsumed.
+- Evidence: mode-600 local diagnostic record
+  `.docdrift/access/sandbox-network-failure-2026-10-21.json`; actual permission in
+  `.docdrift/access/sandbox-authorization-2026-10-21.json`. Neither contains the
+  API key. The key remains in its existing private file outside the repository.
+- Next: execute the prepared bounded command from a network-enabled environment
+  under the already recorded user authorization. No additional billing approval
+  is required for that fixed scope; actual coverage and charges remain unknown.

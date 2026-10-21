@@ -1,7 +1,8 @@
 """Prepare, then verify the saved F6 repair on a bounded Nebius Sandbox run.
 
 ``prepare`` is offline and needs only the committed demo bundle. ``run`` also
-requires an explicit credit-coverage record and NEBIUS_API_KEY in the environment.
+requires a credit-coverage or scoped user-authorization record, plus
+NEBIUS_API_KEY in the environment. Authorization does not establish billing terms.
 Neither command performs inference or evaluates held-out examples.
 """
 
@@ -71,7 +72,7 @@ def preparation(args) -> dict:
         'registry_image': args.registry_image,
         'current_inference_calls': 0,
         'provider_requests': 0,
-        'credit_coverage': 'A separate factual confirmation is required before run.',
+        'authorization': 'A credit-coverage or scoped user-authorization record is required before run.',
     }
 
 
@@ -83,8 +84,9 @@ def verification(args) -> dict:
     plan = validate_f6_plan(args.plan_root)
     if not args.coverage.is_file():
         raise ValueError(
-            'Sandbox credit coverage is unconfirmed. Supply the factual coverage '
-            'record described in docs/SANDBOX_VERIFICATION.md; no provider request was made.'
+            'Sandbox credit coverage is unconfirmed and no scoped user authorization is recorded. '
+            'Supply the authorization record described in docs/SANDBOX_VERIFICATION.md; '
+            'no provider request was made.'
         )
     key = os.environ.get('NEBIUS_API_KEY')
     if not key:
@@ -101,7 +103,9 @@ def verification(args) -> dict:
         'held_out_evaluation': False,
         'execution_backend': 'nebius_sandbox',
         'registry_image': args.registry_image,
-        'coverage_record': str(args.coverage),
+        'authorization_record': str(args.coverage),
+        'billed_amount': None,
+        'billed_amount_status': 'unverified',
         'limits': {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12},
         'probes': {},
     }
@@ -110,6 +114,7 @@ def verification(args) -> dict:
         state_root=args.state_root, registry_image=args.registry_image,
         coverage_path=args.coverage,
     ) as remote:
+        report['billing_authorization'] = remote.billing_authorization
         write_json(report_path, report)
         failure = None
         try:
@@ -194,7 +199,8 @@ def main() -> int:
     parser.add_argument('command', choices=('prepare', 'run'))
     parser.add_argument('--plan-root', type=Path, default=ROOT / '.docdrift/sandbox-f6-plan')
     parser.add_argument('--state-root', type=Path, default=ROOT / '.docdrift/sandbox-f6')
-    parser.add_argument('--coverage', type=Path, default=ROOT / '.docdrift/access/sandbox-coverage.json')
+    parser.add_argument('--coverage', '--authorization', dest='coverage', type=Path,
+                        default=ROOT / '.docdrift/access/sandbox-coverage.json')
     parser.add_argument('--project', default=PROJECT)
     parser.add_argument('--registry-image', default=REGISTRY_IMAGE)
     args = parser.parse_args()

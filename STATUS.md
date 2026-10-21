@@ -16,12 +16,16 @@ Sandboxes: access confirmed by one user-approved read-only `GET whoami` on
 Oct 16 (F7). The existing bearer key plus this project ID in the `Project` header
 returned import, spawn, disposable-spawn, list, cancel, and image-tag permissions.
 No resources were created; credit coverage and live execution remain unverified.
-All snippet execution so far is local Docker. User requested proceeding with
-planned verification (D20); its bounded runner is prepared, but no Sandbox
-resource call may run until actual coverage/no personal charges are confirmed.
-User is unsure of coverage (D24); current public sources do not settle whether
-the beta is free. Provider clarification is pending. Default adapters/CLI still
-block mutations.
+All snippet execution so far is local Docker. The user now explicitly authorizes
+the prepared fixed-F6 Sandbox run while billing clarification is pending (D25).
+This supersedes D20's coverage-before-run condition for that bounded run only;
+it does not confirm coverage or any dollar spending cap. Default adapters/CLI
+still block mutations.
+The Oct 21 access-read attempt failed locally (`transport_error`); DNS resolution
+returned `gaierror` / `EAI_AGAIN` and the workspace policy rejected a DNS-only
+sandbox escalation (`sandbox_approval=false`). No provider response, resource
+submission, or live session state was produced. This is an execution-environment
+blocker, not another permission/credit gate; see feedback F9.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -34,7 +38,7 @@ block mutations.
 - [x] Sandbox access application submitted Oct 15; permission confirmed Oct 16
   by one approved read-only `whoami` (F7)
 - [ ] Sandbox offline execution, image reuse, result parsing, cancellation, and
-  artifact download checked live after coverage confirmation and scoped approval
+  artifact download checked live under D25's scoped user authorization
 
 **Manual vertical slice (milestone 1)**
 - [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
@@ -95,11 +99,12 @@ block mutations.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** obtain the missing factual Sandbox coverage/no-personal-charges
-confirmation for execution, image import, and storage. The fixed-F6 runner is
-prepared and stops before network access without it; see
-`docs/SANDBOX_VERIFICATION.md`. After confirmation, run its one private image
-import, three capability probes, and twelve saved-repair verifier operations.
+**Next:** run the prepared fixed-F6 verification from a network-enabled execution
+environment under D25's already recorded user authorization despite unresolved
+billing: one private image import, three
+capability probes, and twelve saved-repair verifier operations. Record the
+permission separately from coverage and actual charges; see
+`docs/SANDBOX_VERIFICATION.md`. Provider billing clarification remains pending.
 No new model evaluation is needed. The real F6 demo bundle,
 submission draft, and 2:45 video script are ready for review without further
 inference. Record the video from saved evidence, keeping local Docker provenance
@@ -115,7 +120,13 @@ free (D24). Public research found an explicitly free February ConTree early-acce
 announcement, followed by a May migration into Token Factory without a current
 free-price commitment. Sources and an unsent provider question are saved in
 `docs/SANDBOX_VERIFICATION.md`; ask the provider rather than repeating the same
-coverage question to the user. Tavily and
+coverage question to the user. D25 now authorizes the fixed-F6 run while that
+answer is pending; its mode-600 scoped record is saved and validated at
+`.docdrift/access/sandbox-authorization-2026-10-21.json`. No confirmed-coverage
+record was invented. The runner now accepts this separate authorization schema
+and records billing as unverified in runtime reports, preflight, frozen execution
+contracts, and exported evidence.
+Tavily and
 LangChain credentials were supplied but have not been used or saved. No extra
 service integration is needed for the prepared F6 verification.
 
@@ -129,15 +140,26 @@ blocked; they are not new provider results. Default live-execution restrictions,
 the one-import/three-probe/twelve-verification scope, and both frozen inventories
 are unchanged.
 
-Validation: **719 tests pass**, including fourteen new synthetic recovery/error
-cases. Offline F6 preparation succeeds without provider requests or inference.
+Validation: **751 tests pass**, including thirty-two new synthetic authorization
+cases in this update. Offline F6 preparation and the actual scoped authorization
+validate without provider requests or inference. Both frozen inventories and
+the original saved evidence remain unchanged.
 
-Next: obtain the actual execution/import/storage coverage statement, record it
-as described in `docs/SANDBOX_VERIFICATION.md`, and run the prepared fixed-F6
-verification with the existing Nebius credential. No new inference is needed.
+The attempted access read could not reach Nebius: local DNS failed and the
+workspace's granular policy refused sandbox escalation. No matching connector
+was found in the plugin search results. The local failure record is
+`.docdrift/access/sandbox-network-failure-2026-10-21.json`; it contains safe error
+codes and counts, not the key. `.docdrift/sandbox-f6/` has not been created, so
+the one-import/three-probe/twelve-verification allowance is unconsumed.
+
+Next: run the command in `docs/SANDBOX_VERIFICATION.md` from a network-enabled
+terminal or session using the existing authorization record and Nebius
+credential. Do not ask for billing permission again for this bounded run.
+No new inference is needed.
 The held-out run (D8), funded free live-agent judge access through Dec 15,
-and video recording remain open. No authenticated Sandbox request, resource
-creation, inference, deployment, or push occurred this session.
+and video recording remain open. One authenticated access request was attempted
+but received no provider response; no resource submission, inference, deployment,
+or push occurred this session.
 
 ## Previous resume handoff — October 16, 2026
 
@@ -390,6 +412,14 @@ Who decided what, and when. Don't reverse one without the user.
   using the saved draft instead of asking the user to guess or treating a zero
   diagnostic `cost` field as billing proof. No provider message is authorized or
   sent, and no additional grant is assumed received.
+- D25 (user, Oct 21): "We will wait for the answer but in the meantime let's use
+  it, i give permission" explicitly authorizes the prepared fixed-F6 Sandbox
+  verification despite unverified billing. Supersede D20's prior-coverage gate
+  only for this one-import/three-probe/twelve-verification scope with no new
+  inference. Record a distinct scoped authorization; do not invent credit
+  coverage, free pricing, a monetary cap, or actual $0 charges. Default live
+  adapters/CLI remain guarded; no held-out inference, deployment, general
+  service activation, external messaging, or push is authorized.
 
 ## Session log
 
@@ -511,6 +541,16 @@ Who decided what, and when. Don't reverse one without the user.
   Sandbox request, inference, resource creation, coverage record, external
   message, deployment, or push. Next: provider confirmation of current terms;
   local development and saved-evidence review remain available meanwhile.
+- 2026-10-21 (scoped activation): User explicitly authorized the bounded F6 run
+  despite unresolved billing (D25). Added a distinct strictly bounded permission
+  schema and truthful unverified-billing evidence; saved the actual mode-600
+  authorization separately from credit coverage. 751 tests pass. Attempted
+  access read failed locally; DNS returned `EAI_AGAIN`, and workspace policy
+  rejected DNS-only sandbox escalation because `sandbox_approval=false`.
+  No matching connector was found. No successful provider response, resource
+  submission, live state, inference, external message, deployment, or push.
+  Next: execute the prepared command in a network-enabled environment under the
+  existing permission; no repeat billing confirmation is needed for this scope.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

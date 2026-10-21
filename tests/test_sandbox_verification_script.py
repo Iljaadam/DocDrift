@@ -109,20 +109,33 @@ def test_changed_source_is_rejected_before_missing_coverage_or_provider(tmp_path
     }),
 ])
 @pytest.mark.parametrize('report_write_fails', [False, True])
+@pytest.mark.parametrize('billing_mode', ['confirmed', 'scoped'])
 def test_known_acceptance_ids_survive_runner_errors_without_exposing_other_data(
-        tmp_path, monkeypatch, capsys, code, identities, report_write_fails):
+        tmp_path, monkeypatch, capsys, code, identities, report_write_fails, billing_mode):
     """Inject a local adapter failure; no acceptance or provider call occurs."""
     import docdrift.sandbox_live as live
 
     assert command(monkeypatch, tmp_path, 'prepare') == 0
     capsys.readouterr()
-    (tmp_path / 'coverage.json').write_text(json.dumps({
+    authorization = {
         'kind': 'docdrift_sandbox_credit_coverage', 'project_id': SCRIPT['PROJECT'],
         'personal_spend_limit': 0, 'execution': 'free_or_grant_covered',
         'image_import': 'free_or_grant_covered', 'storage': 'free_or_grant_covered',
         'confirmation': 'Synthetic test only; no actual coverage assertion.',
         'confirmed_at_utc': '2026-10-21T00:00:00+00:00',
-    }))
+    }
+    billing_facts = {'credit_coverage_confirmed': True, 'personal_spend_limit': 0}
+    if billing_mode == 'scoped':
+        authorization = {
+            'kind': 'docdrift_sandbox_scoped_authorization', 'project_id': SCRIPT['PROJECT'],
+            'billing_coverage': 'unverified', 'source_run_id': '4fd82cb8be7a449e8815d5366665f4ac',
+            'limits': {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12, 'inference_calls': 0},
+            'authorization': 'Synthetic test only; user permission is not credit coverage.',
+            'authorized_at_utc': '2026-10-21T00:00:00+00:00',
+        }
+        billing_facts = {'credit_coverage_confirmed': False, 'personal_spend_limit': None,
+                         'billing_coverage': 'unverified', 'user_authorized_scoped_run': True}
+    (tmp_path / 'coverage.json').write_text(json.dumps(authorization))
     (tmp_path / 'coverage.json').chmod(0o600)
     monkeypatch.setenv('NEBIUS_API_KEY', 'synthetic-not-a-real-provider-key')
     deny_side_effects(monkeypatch)
@@ -135,6 +148,8 @@ def test_known_acceptance_ids_survive_runner_errors_without_exposing_other_data(
         monkeypatch.setitem(SCRIPT['verification'].__globals__, 'write_json', failed_error_report)
 
     class FailingRemote:
+        billing_authorization = billing_facts
+
         def __init__(self, **kwargs):
             pass
 
@@ -158,6 +173,8 @@ def test_known_acceptance_ids_survive_runner_errors_without_exposing_other_data(
     report = json.loads(report_text)
     expected_ids = identities if code != 'synthetic_invalid_error_ids' else {}
     assert report['status'] == 'incomplete'
+    assert report['billing_authorization'] == billing_facts
+    assert report['billed_amount'] is None and report['billed_amount_status'] == 'unverified'
     if report_write_fails:
         assert 'error' not in report and 'error_context' not in report
     else:

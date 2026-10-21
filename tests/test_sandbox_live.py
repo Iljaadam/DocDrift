@@ -8,12 +8,14 @@ are never live execution evidence or coverage confirmations.
 import base64
 from collections import Counter
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
 import socket
 from types import SimpleNamespace
 from uuid import uuid4
+import zipfile
 
 import httpx
 import pytest
@@ -27,8 +29,9 @@ from docdrift.remote_journal import SubmissionConflict, SubmissionJournal
 from docdrift.sandbox_execution import GUEST_EXAMPLE, GUEST_REPOSITORY, SandboxExecutionAdapter
 from docdrift.sandbox_live import (
     ARTIFACT_BYTES, ARTIFACT_PATH, F6ExecutionAdapter, F6SandboxRemote, PROJECT_ID, PROBES,
+    _coverage,
 )
-from docdrift.sandbox_plan import initialize_f6_run, prepare_f6_plan
+from docdrift.sandbox_plan import F6_RUN_ID, initialize_f6_run, prepare_f6_plan
 from docdrift.snapshot import file_hashes
 
 
@@ -36,6 +39,19 @@ ROOT = Path(__file__).resolve().parents[1]
 IMAGE = '11111111-1111-4111-8111-111111111111'
 RETAINED = '22222222-2222-4222-8222-222222222222'
 REGISTRY = 'docker://docker.io/library/python@sha256:' + 'a' * 64
+SCOPED_LIMITS = {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12, 'inference_calls': 0}
+
+
+def scoped_authorization(prepared):
+    value = {
+        'kind': 'docdrift_sandbox_scoped_authorization', 'project_id': PROJECT_ID,
+        'billing_coverage': 'unverified', 'source_run_id': F6_RUN_ID,
+        'limits': dict(SCOPED_LIMITS),
+        'authorization': 'Synthetic scoped permission fixture only; no actual authorization or billing assertion.',
+        'authorized_at_utc': '2026-10-16T12:00:00Z',
+    }
+    prepared.coverage.write_text(json.dumps(value))
+    return value
 
 
 class SyntheticWire:
@@ -174,10 +190,24 @@ def bound_run(prepared, remote):
     return adapter, run_id, request, phase['phase']
 
 
-def test_full_isolated_lifecycle_and_completed_resume_do_not_repeat_mutations(prepared):
+@pytest.mark.parametrize('billing_mode', ['confirmed', 'scoped'])
+def test_full_isolated_lifecycle_and_completed_resume_do_not_repeat_mutations(prepared, billing_mode):
+    if billing_mode == 'scoped':
+        scoped_authorization(prepared)
     original_hashes = file_hashes(prepared.plan_root)
     with F6SandboxRemote(**prepared.kwargs) as remote:
         assert prepared.wire.requests == []
+        billing = remote.billing_authorization
+        assert billing['credit_coverage_confirmed'] is (billing_mode == 'confirmed')
+        assert billing['personal_spend_limit'] == (0 if billing_mode == 'confirmed' else None)
+        assert billing['user_authorized_scoped_run'] is (billing_mode == 'scoped')
+        assert billing['billing_coverage'] == ('free_or_grant_covered' if billing_mode == 'confirmed' else 'unverified')
+        assert 'confirmation' not in billing and 'authorization' not in billing
+        if billing_mode == 'scoped':
+            assert billing['source_run_id'] == F6_RUN_ID and billing['limits'] == SCOPED_LIMITS
+            changed_facts = remote.billing_authorization
+            changed_facts['limits']['inference_calls'] = 99
+            assert remote.billing_authorization == billing
         assert remote.import_image() == IMAGE
         assert remote.run_probe('capability').execution_passed
         assert remote.run_probe('artifact').execution_passed
@@ -187,6 +217,7 @@ def test_full_isolated_lifecycle_and_completed_resume_do_not_repeat_mutations(pr
         adapter = F6ExecutionAdapter(remote)
         assert adapter.execution_contract['synthetic'] is False
         assert 'code_executions' not in adapter.execution_contract
+        assert adapter.execution_contract['billing_authorization'] == billing
         run_id = initialize_f6_run(prepared.plan_root, prepared.state, IMAGE, adapter.execution_contract)
         remote.bind_run(run_id)
         result = resume_run(run_id, prepared.state, adapter=adapter)
@@ -194,8 +225,16 @@ def test_full_isolated_lifecycle_and_completed_resume_do_not_repeat_mutations(pr
         assert result['usage']['compute_operations'] == 12
         assert result['usage']['inference_calls'] == result['usage']['paid_calls'] == 0
         assert result['protected_hashes_preserved'] is True
+        assert {key: result['environment'][key] for key in billing} == billing
         assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12}
         assert verify_evidence(prepared.state / 'runs' / run_id / 'evidence.zip')['status'] == 'integrity_verified'
+        with zipfile.ZipFile(prepared.state / 'runs' / run_id / 'evidence.zip') as archive:
+            saved_report = json.loads(archive.read('report.json'))
+            ledger = json.loads(archive.read('ledger.json'))
+            commands = json.loads(archive.read('commands.json'))['operations']
+        assert {key: saved_report['environment'][key] for key in billing} == billing
+        assert ledger['metadata']['execution_contract']['billing_authorization'] == billing
+        assert all(command['billing_authorization'] == billing for command in commands)
     counts = prepared.wire.counts()
     assert counts['POST', 'images/import'] == 1
     assert counts['POST', 'instances'] == 15
@@ -212,6 +251,70 @@ def test_full_isolated_lifecycle_and_completed_resume_do_not_repeat_mutations(pr
     assert {key: value for key, value in after.items() if key[0] != 'GET'} == {
         key: value for key, value in counts.items() if key[0] != 'GET'}
     assert file_hashes(prepared.plan_root) == original_hashes
+
+
+def test_scoped_authorization_preserves_exact_record_bytes_and_coverage_hash_binding(prepared):
+    scoped_authorization(prepared)
+    content = prepared.coverage.read_bytes()
+    assert _coverage(prepared.coverage, PROJECT_ID) == content
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        identity = json.loads((prepared.state / 'session.json').read_text())['identity']
+        assert identity['coverage_sha256'] == hashlib.sha256(content).hexdigest()
+        assert set(identity) == {'kind', 'project_id', 'plan_sha256', 'registry_image', 'coverage_sha256'}
+        prepared.coverage.write_bytes(content + b'\n')
+        with pytest.raises(SubmissionConflict, match='coverage changed'):
+            remote.import_image()
+        assert prepared.wire.requests == []
+    with pytest.raises(SubmissionConflict, match='coverage changed'):
+        F6SandboxRemote(**prepared.kwargs)
+    assert prepared.wire.requests == []
+
+
+@pytest.mark.parametrize('field,replacement', [
+    ('kind', 'docdrift_sandbox_general_authorization'),
+    ('project_id', 'different-project'),
+    ('billing_coverage', 'free_or_grant_covered'),
+    ('source_run_id', 'different-run'),
+    ('authorization', ''),
+    ('authorization', '  '),
+    ('authorization', True),
+    ('authorized_at_utc', None),
+    ('authorized_at_utc', 'not-a-timestamp'),
+    ('authorized_at_utc', '2026-10-16T12:00:00'),
+    ('authorized_at_utc', '2026-10-16T12:00:00+01:00'),
+    ('limits', None),
+    ('limits', []),
+    ('limits', {key: value for key, value in SCOPED_LIMITS.items() if key != 'inference_calls'}),
+    ('limits', {**SCOPED_LIMITS, 'additional_operations': 1}),
+    ('personal_spend_limit', 0),
+    *[('limits', {**SCOPED_LIMITS, key: value + 1}) for key, value in SCOPED_LIMITS.items()],
+    ('limits', {**SCOPED_LIMITS, 'image_imports': True}),
+    ('limits', {**SCOPED_LIMITS, 'runtime_probes': 3.0}),
+    ('limits', {**SCOPED_LIMITS, 'inference_calls': False}),
+])
+def test_malformed_or_expanded_scoped_authorization_refuses_before_client_or_state(
+        prepared, monkeypatch, field, replacement):
+    value = scoped_authorization(prepared)
+    value[field] = replacement
+    prepared.coverage.write_text(json.dumps(value))
+    def no_client(*args, **kwargs):
+        raise AssertionError('Invalid scoped authorization must be checked before client construction')
+    monkeypatch.setattr(httpx.Client, '__init__', no_client)
+    with pytest.raises(ValueError):
+        F6SandboxRemote(**prepared.kwargs)
+    assert prepared.wire.requests == [] and not prepared.state.exists()
+
+
+def test_future_scoped_authorization_refuses_before_client_or_state(prepared, monkeypatch):
+    value = scoped_authorization(prepared)
+    value['authorized_at_utc'] = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+    prepared.coverage.write_text(json.dumps(value))
+    def no_client(*args, **kwargs):
+        raise AssertionError('Future authorization must be checked before client construction')
+    monkeypatch.setattr(httpx.Client, '__init__', no_client)
+    with pytest.raises(ValueError, match='UTC timestamp'):
+        F6SandboxRemote(**prepared.kwargs)
+    assert prepared.wire.requests == [] and not prepared.state.exists()
 
 
 @pytest.mark.parametrize('field', ['coverage_path', 'project_id'])

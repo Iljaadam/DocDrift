@@ -30,7 +30,8 @@ demo-able submission.
 
 ## Hard rules
 
-- **$0 personal spend.** Only granted free credits.
+- **$0 personal spend by default.** Only granted free credits, except the
+  explicitly authorized fixed Sandbox verification below (D25).
   - Inference: approved by the user on 2026-10-14 for the $1 Token Factory
     trial key (`--live` on `repair`/`evaluate`). On 2026-10-15 the user reported
     promotional credits already on the account, approximately $30 (exact balance
@@ -39,10 +40,14 @@ demo-able submission.
     succeeded (feedback log F7), then requested proceeding with the planned
     verification. The fixed-F6 runner is limited to one private image import,
     three runtime probes, and twelve verifier operations, with no new inference.
-    Do not run it until actual free/grant coverage and no personal charges are
-    confirmed for execution, import, and storage. That confirmation is still
-    missing. Default adapters/CLI keep their live mutation blocks; there is no
-    general live-execution switch. See `docs/SANDBOX_VERIFICATION.md` and D20.
+    On 2026-10-21 the user explicitly authorized using it while waiting for the
+    billing answer: "We will wait for the answer but in the meantime let's use
+    it, i give permission" (D25). This permits that one bounded run despite
+    unverified billing; it does not establish free coverage or a dollar cap.
+    Record this as scoped user authorization, never as confirmed credits or $0
+    actual charges. Retain the operation limits and durable receipts. Default
+    adapters/CLI keep their live mutation blocks; there is no general
+    live-execution switch. See `docs/SANDBOX_VERIFICATION.md` and D25.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

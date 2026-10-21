@@ -2,8 +2,9 @@
 
 Only the pinned saved repair, twelve approved verifier phases, one private OCI
 import, and three capability probes can reach a provider transport. Merely
-constructing this adapter never makes a request. Coverage is a separately
-recorded factual confirmation, not an assumption inferred from API access.
+constructing this adapter never makes a request. Billing coverage is either a
+separately recorded factual confirmation or explicitly unverified under the
+user's bounded authorization; API access never establishes coverage.
 """
 
 from __future__ import annotations
@@ -35,7 +36,7 @@ from .sandbox_execution import (
     GUEST_EXAMPLE, GUEST_RUNNER, PYTHON_EXECUTABLE, SandboxExecutionAdapter,
     _image_uuid,
 )
-from .sandbox_plan import _read_regular, validate_f6_plan
+from .sandbox_plan import F6_RUN_ID, _read_regular, validate_f6_plan
 
 
 PROJECT_ID = 'aiproject-e00a0rb50jb0emajfv'
@@ -44,6 +45,9 @@ ARTIFACT_BYTES = b'DocDrift fixed F6 Sandbox artifact probe\n'
 _EMPTY_SHA256 = hashlib.sha256(b'').hexdigest()
 _IMPORT_PHASE = 'image_import'
 _IMPORT_TIMEOUT = 120
+_SCOPED_LIMITS = MappingProxyType({
+    'image_imports': 1, 'runtime_probes': 3, 'verifier_operations': 12, 'inference_calls': 0,
+})
 PROBES = MappingProxyType({
     'capability': MappingProxyType({
         'code': (
@@ -81,25 +85,57 @@ def _coverage(path: Path, project_id: str) -> bytes:
         content = _read_regular(path, 16_384)
         value = strict_json(content)
     except (OSError, ValueError):
-        raise ValueError('Sandbox grant coverage confirmation is required before any provider request') from None
-    required = {
-        'kind': 'docdrift_sandbox_credit_coverage', 'project_id': project_id,
-        'execution': 'free_or_grant_covered', 'image_import': 'free_or_grant_covered',
-        'storage': 'free_or_grant_covered',
-    }
-    if (not isinstance(value, dict) or any(value.get(key) != expected for key, expected in required.items())
-            or type(value.get('personal_spend_limit')) is not int or value['personal_spend_limit'] != 0
-            or not isinstance(value.get('confirmation'), str) or not value['confirmation'].strip()
-            or not isinstance(value.get('confirmed_at_utc'), str)):
-        raise ValueError('Sandbox execution, import and storage coverage must all be explicitly confirmed')
+        raise ValueError('Sandbox coverage confirmation or scoped authorization is required before any provider request') from None
+    if isinstance(value, dict) and value.get('kind') == 'docdrift_sandbox_scoped_authorization':
+        required = {
+            'kind': 'docdrift_sandbox_scoped_authorization', 'project_id': PROJECT_ID,
+            'billing_coverage': 'unverified', 'source_run_id': F6_RUN_ID,
+        }
+        limits = value.get('limits')
+        if (project_id != PROJECT_ID
+                or set(value) != {*required, 'limits', 'authorization', 'authorized_at_utc'}
+                or any(value.get(key) != expected for key, expected in required.items())
+                or not isinstance(limits, dict) or set(limits) != set(_SCOPED_LIMITS)
+                or any(type(limits[key]) is not int or limits[key] != expected
+                       for key, expected in _SCOPED_LIMITS.items())
+                or not isinstance(value.get('authorization'), str) or not value['authorization'].strip()
+                or not isinstance(value.get('authorized_at_utc'), str)):
+            raise ValueError('Sandbox scoped authorization must match the fixed F6 project and limits')
+        timestamp_key, timestamp_label = 'authorized_at_utc', 'scoped authorization'
+    else:
+        required = {
+            'kind': 'docdrift_sandbox_credit_coverage', 'project_id': project_id,
+            'execution': 'free_or_grant_covered', 'image_import': 'free_or_grant_covered',
+            'storage': 'free_or_grant_covered',
+        }
+        if (not isinstance(value, dict) or any(value.get(key) != expected for key, expected in required.items())
+                or type(value.get('personal_spend_limit')) is not int or value['personal_spend_limit'] != 0
+                or not isinstance(value.get('confirmation'), str) or not value['confirmation'].strip()
+                or not isinstance(value.get('confirmed_at_utc'), str)):
+            raise ValueError('Sandbox execution, import and storage coverage must all be explicitly confirmed')
+        timestamp_key, timestamp_label = 'confirmed_at_utc', 'coverage confirmation'
     try:
-        confirmed = datetime.fromisoformat(value['confirmed_at_utc'].replace('Z', '+00:00'))
+        confirmed = datetime.fromisoformat(value[timestamp_key].replace('Z', '+00:00'))
         if (confirmed.tzinfo is None or confirmed.utcoffset() != timezone.utc.utcoffset(confirmed)
                 or confirmed > datetime.now(timezone.utc) + timedelta(minutes=5)):
             raise ValueError
     except ValueError:
-        raise ValueError('Sandbox coverage confirmation must have a UTC timestamp') from None
+        raise ValueError(f'Sandbox {timestamp_label} must have a UTC timestamp') from None
     return content
+
+
+def _billing_facts(content: bytes) -> dict:
+    """Publish validated billing facts without copying the authorization prose."""
+    value = strict_json(content)
+    facts = {'kind': value['kind'], 'project_id': value['project_id']}
+    if value['kind'] == 'docdrift_sandbox_scoped_authorization':
+        return {**facts, 'personal_spend_limit': None, 'credit_coverage_confirmed': False,
+                'billing_coverage': 'unverified', 'user_authorized_scoped_run': True,
+                'source_run_id': value['source_run_id'], 'limits': value['limits'],
+                'authorized_at_utc': value['authorized_at_utc']}
+    return {**facts, 'personal_spend_limit': 0, 'credit_coverage_confirmed': True,
+            'billing_coverage': 'free_or_grant_covered', 'user_authorized_scoped_run': False,
+            'confirmed_at_utc': value['confirmed_at_utc']}
 
 
 def _write(path: Path, content: bytes) -> None:
@@ -122,7 +158,7 @@ def _write(path: Path, content: bytes) -> None:
 
 
 class F6SandboxRemote(NebiusSandboxAdapter):
-    """One durable, credit-confirmed activation of the approved saved F6 plan."""
+    """One durable, explicitly authorized activation of the saved F6 plan."""
 
     def __init__(self, api_key: str, project_id: str, plan_root: Path, state_root: Path,
                  registry_image: str, coverage_path: Path):
@@ -134,6 +170,7 @@ class F6SandboxRemote(NebiusSandboxAdapter):
         self.plan_root = Path(plan_root).resolve()
         self.coverage_path = Path(coverage_path).absolute()
         coverage = _coverage(self.coverage_path, project_id)
+        self._billing_authorization = _encoded(_billing_facts(coverage))
         self.plan = validate_f6_plan(self.plan_root)
         self.state_root = Path(state_root).resolve()
         self.state_root.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -530,6 +567,11 @@ class F6SandboxRemote(NebiusSandboxAdapter):
                 and all(item == 'lo' for item in output['interfaces']))
 
     @property
+    def billing_authorization(self) -> dict:
+        self._scope()
+        return strict_json(self._billing_authorization)
+
+    @property
     def runtime_capabilities(self) -> dict:
         session = self._scope()
         return {'python_capability_tested': self._capability_success(session),
@@ -540,8 +582,8 @@ class F6SandboxRemote(NebiusSandboxAdapter):
         session = self._scope()
         if image_id != session['image_id'] or image_id is None or not self._capability_success(session):
             raise RemoteAdapterError('fixed_f6_capability_not_confirmed')
-        return {'image_id': image_id, 'synthetic': False, 'personal_spend_limit': 0,
-                'credit_coverage_confirmed': True, 'live_mutations_enabled': True,
+        return {'image_id': image_id, 'synthetic': False, **self.billing_authorization,
+                'live_mutations_enabled': True,
                 'python_version': '3.12', 'network': 'disabled', **self.runtime_capabilities}
 
     def run_probe(self, name: str) -> RemoteResult:
@@ -627,7 +669,7 @@ class F6ExecutionAdapter(SandboxExecutionAdapter):
         contract = super().execution_contract
         contract.pop('code_executions', None)
         return {**contract, 'synthetic': False, 'network': 'disabled_and_capability_probed',
-                'scope': 'saved_f6_only'}
+                'scope': 'saved_f6_only', 'billing_authorization': self.remote.billing_authorization}
 
     def preflight(self, image: str) -> dict:
         self._require_simulation()
