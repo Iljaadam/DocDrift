@@ -124,6 +124,11 @@ funded free live-agent judge-access route through Dec 15 remain unresolved;
 credential-free saved-evidence browsing does not fulfill the live-agent route.
 D9 and its single supplemental comparison are complete.
 
+The user has now selected a hosted fixed-case live demo for judge access. Its
+portable implementation brief and proposed separate allowance are in
+`docs/JUDGE_HOSTING_PLAN.md`. Hosting, funding, activation limits, credentials,
+and availability decisions are being collected together before new live work.
+
 ## Resume handoff — October 21, 2026
 
 Builder access is now user-confirmed (D22); actual Sandbox execution, import,
@@ -513,6 +518,12 @@ Who decided what, and when. Don't reverse one without the user.
   execution, and cannot resolve `github.com`. Prepare an isolated writable local
   checkout and portable commit bundle without modifying the protected metadata;
   do not claim a successful push without a remote result.
+- D30 (user, Oct 21): Selected the recommended hosted fixed-case judge demo and
+  requested all foreseeable questions together. Prepare a portable isolated
+  controller/worker using the existing repair engine; routine implementation
+  choices use the proposed defaults in `docs/JUDGE_HOSTING_PLAN.md`. Hosting,
+  fresh inference/Sandbox allowances, funding coverage, and deployment activation
+  still need the answers being collected. The completed F6 scope is not reused.
 
 ## Session log
 
@@ -690,6 +701,14 @@ Who decided what, and when. Don't reverse one without the user.
   GitHub was found as an available but unconnected plugin; a connection was
   suggested, not assumed. No new cloud execution or inference. Next: push the
   prepared isolated checkout from the network-enabled normal terminal.
+- 2026-10-21 (hosted judge route selected): User reports the prepared push done
+  and selected a hosted fixed-case demo. The isolated delivery checkout's local
+  `main` now matches its `origin/main`; the protected original checkout remains
+  at its old metadata with matching saved worktree bytes. Inspected engine and
+  adapter boundaries, prepared `docs/JUDGE_HOSTING_PLAN.md`, and collected the
+  remaining hosting/funding/access/allowance decisions in one questionnaire.
+  This is planning documentation; no new inference, provider execution,
+  deployment, or held-out evaluation. Existing 824-test validation is unchanged.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
