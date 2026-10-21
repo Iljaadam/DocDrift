@@ -218,9 +218,23 @@ class F6SandboxRemote(NebiusSandboxAdapter):
             raise SubmissionConflict('Selected F6 image differs from the single import')
         for name, result in session['probes'].items():
             receipt = self.journal.lookup(self._control_run, 'probe_' + name) if name in PROBES else None
+            recorded = (receipt or {}).get('result_metadata') or {}
+            # Cancellation can finish before an instance has an assigned image.
+            # Accept that outcome only for our requested cancellation probe and
+            # its matching terminal receipt; it is never execution evidence.
+            cancelled_before_assignment = (
+                name == 'cancellation' and session.get('cancellation_requested') is True
+                and isinstance(result, dict) and result.get('image_id') is None
+                and result.get('service_state') == 'CANCELLED'
+                and receipt is not None and receipt['state'] == 'completed'
+                and recorded.get('operation_id') == result.get('operation_id')
+                and recorded.get('service_state') == 'CANCELLED'
+                and 'image_id' in recorded and recorded['image_id'] is None
+            )
             image_matches = isinstance(result, dict) and (
                 result.get('image_id') == session['image_id']
-                or result.get('image_id') is None and result.get('service_state') in {'PENDING', 'ASSIGNED', 'EXECUTING'})
+                or result.get('image_id') is None and result.get('service_state') in {'PENDING', 'ASSIGNED', 'EXECUTING'}
+                or cancelled_before_assignment)
             if (not isinstance(result, dict) or not receipt or receipt['operation_id'] != result.get('operation_id')
                     or not image_matches):
                 raise SubmissionConflict('Saved capability probe differs from its durable receipt')

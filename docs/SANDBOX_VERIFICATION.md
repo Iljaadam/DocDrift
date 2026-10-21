@@ -101,9 +101,19 @@ local Docker image. The bounded scope is:
 
 Durable receipts are saved before submissions and accepted operation IDs before
 observation. Interrupted runs reuse known IDs; uncertain submissions are never
-retried. Preserve the state directory when a step is incomplete. Runtime
+retried. If a receipt cannot be saved after acceptance, the runner prints any
+known operation and attempt UUIDs beside the error code for manual reconciliation
+and saves them in `runtime-report.json` under `error_context` when the report is
+writable. Preserve the state directory when a step is incomplete. Runtime
 capabilities and the repair's new behavior verdict remain unestablished until
 the corresponding recorded checks actually pass.
+
+The cancellation probe can finish as `CANCELLED` before an instance image is
+assigned. A matching saved terminal receipt lets the runner resume that outcome
+without repeating the cancellation or creating another instance. This recovery
+case is covered by synthetic documented-shape tests; it has not been observed
+live. Successful execution probes and verifier phases still require the pinned
+image identity.
 
 The default state directory is `.docdrift/sandbox-f6/`. Inspect
 `runtime-report.json` for probe outcomes and the new verification run ID; that

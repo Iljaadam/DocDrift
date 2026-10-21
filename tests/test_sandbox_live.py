@@ -333,6 +333,87 @@ def test_uncertain_cancellation_reconciles_known_id_without_second_delete(prepar
     assert prepared.wire.counts()['DELETE', f'operations/{result.operation_id}'] == 1
 
 
+def unassigned_probe_response(prepared, monkeypatch, name, status):
+    """Use the documented nullable image shape; no live result is replayed."""
+    original = prepared.wire.response
+    def response(request, path, payload):
+        returned = original(request, path, payload)
+        if (request.method == 'POST' and path == 'instances'
+                and payload['args'] == ['-B', '-c', PROBES[name]['code']]):
+            operation = prepared.wire.operations[returned.json()['uuid']]
+            operation.update(status=status, image_uuid=None, result_image_uuid=None)
+        return returned
+    monkeypatch.setattr(prepared.wire, 'response', response)
+
+
+@pytest.mark.parametrize('lost_cancellation_response', [False, True])
+def test_cancellation_before_image_assignment_recovers_without_repeat_mutations(
+        prepared, monkeypatch, lost_cancellation_response):
+    unassigned_probe_response(prepared, monkeypatch, 'cancellation', 'PENDING')
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        remote.import_image()
+        remote.run_probe('capability')
+        queued = remote.run_probe('cancellation')
+        assert queued.service_state == 'PENDING' and queued.image_id is None
+        if lost_cancellation_response:
+            prepared.wire.fail_once = ('DELETE', f'operations/{queued.operation_id}')
+            with pytest.raises(RemoteAdapterError):
+                remote.cancel_probe()
+        else:
+            cancelled = remote.cancel_probe()
+            assert cancelled.service_state == 'CANCELLED' and cancelled.image_id is None
+            assert F6ExecutionAdapter(remote).preflight(IMAGE)['python_capability_tested']
+    before = prepared.wire.counts()
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        assert remote.import_image() == IMAGE
+        cancelled = remote.cancel_probe()
+        assert cancelled.service_state == 'CANCELLED' and cancelled.image_id is None
+        assert remote.run_probe('cancellation').service_state == 'CANCELLED'
+        assert F6ExecutionAdapter(remote).preflight(IMAGE)['python_capability_tested']
+    after = prepared.wire.counts()
+    assert after['DELETE', f'operations/{queued.operation_id}'] == 1
+    assert {key: count for key, count in after.items() if key[0] != 'GET'} == {
+        key: count for key, count in before.items() if key[0] != 'GET'}
+
+
+@pytest.mark.parametrize('name,status', [
+    ('capability', 'CANCELLED'), ('artifact', 'CANCELLED'),
+    ('cancellation', 'SUCCESS'), ('cancellation', 'FAILED'), ('cancellation', 'CANCELLED'),
+])
+def test_unrelated_terminal_probes_without_images_remain_rejected(prepared, monkeypatch, name, status):
+    unassigned_probe_response(prepared, monkeypatch, name, status)
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        remote.import_image()
+        if name == 'capability':
+            with pytest.raises(RemoteAdapterError, match='capability_not_confirmed'):
+                remote.run_probe(name)
+        else:
+            remote.run_probe(name)
+        before = list(prepared.wire.requests)
+        with pytest.raises(SubmissionConflict, match='differs from its durable receipt'):
+            remote.import_image()
+        assert prepared.wire.requests == before
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        with pytest.raises(SubmissionConflict, match='differs from its durable receipt'):
+            remote.import_image()
+    assert prepared.wire.requests == before
+
+
+def test_cancelled_probe_cannot_drop_an_image_recorded_in_its_terminal_receipt(prepared):
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        remote.import_image()
+        remote.run_probe('cancellation')
+        assert remote.cancel_probe().image_id == IMAGE
+        session_path = prepared.state / 'session.json'
+        session = json.loads(session_path.read_text())
+        session['probes']['cancellation']['image_id'] = None
+        session_path.write_text(json.dumps(session))
+        before = list(prepared.wire.requests)
+        with pytest.raises(SubmissionConflict, match='differs from its durable receipt'):
+            remote.import_image()
+        assert prepared.wire.requests == before
+
+
 def test_accepted_verifier_callback_interruption_resumes_same_operation(prepared):
     with F6SandboxRemote(**prepared.kwargs) as remote:
         adapter, run_id, request, phase = bound_run(prepared, remote)

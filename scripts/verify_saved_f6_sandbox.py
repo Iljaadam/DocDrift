@@ -14,6 +14,7 @@ import json
 import os
 from pathlib import Path
 import sys
+from uuid import UUID
 
 from docdrift.engine import resume_run
 from docdrift.evidence import verify_evidence
@@ -37,6 +38,22 @@ def write_json(path: Path, value: dict) -> None:
     temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
     temporary.chmod(0o600)
     temporary.replace(path)
+
+
+def remote_error_ids(error: RemoteAdapterError) -> dict[str, str]:
+    """Retain known receipt identities without logging arbitrary error data."""
+    result = {}
+    for name in ('operation_id', 'attempt_id'):
+        value = getattr(error, name, None)
+        if not isinstance(value, str):
+            continue
+        try:
+            parsed = UUID(value)
+        except ValueError:
+            continue
+        if str(parsed) == value and parsed.int != 0:
+            result[name] = value
+    return result
 
 
 def preparation(args) -> dict:
@@ -94,6 +111,7 @@ def verification(args) -> dict:
         coverage_path=args.coverage,
     ) as remote:
         write_json(report_path, report)
+        failure = None
         try:
             image = remote.import_image()
             remote.bind_image(image)
@@ -149,17 +167,25 @@ def verification(args) -> dict:
                     and 'archive_integrity' in report):
                 report['status'] = 'completed'
         except (RemoteAdapterError, ValueError, OSError) as exc:
+            failure = exc
             # Adapter errors contain machine codes, never request/header objects.
             report['error'] = exc.code if isinstance(exc, RemoteAdapterError) else str(exc)
-            write_json(report_path, report)
+            if isinstance(exc, RemoteAdapterError):
+                report['error_context'] = remote_error_ids(exc)
             raise
         finally:
             try:
-                report['operation_attempts'] = remote.operation_counts
-            except (ValueError, OSError):
-                report['operation_attempts_unavailable'] = True
-            report['updated_at_utc'] = datetime.now(timezone.utc).isoformat()
-            write_json(report_path, report)
+                try:
+                    report['operation_attempts'] = remote.operation_counts
+                except (ValueError, OSError):
+                    report['operation_attempts_unavailable'] = True
+                report['updated_at_utc'] = datetime.now(timezone.utc).isoformat()
+                write_json(report_path, report)
+            except Exception:
+                # A local reporting failure must not hide the original error's
+                # accepted remote IDs; main still prints them for reconciliation.
+                if failure is None:
+                    raise
     return report
 
 
@@ -176,7 +202,12 @@ def main() -> int:
     try:
         result = preparation(args) if args.command == 'prepare' else verification(args)
     except (RemoteAdapterError, ValueError, OSError) as exc:
-        print(exc.code if isinstance(exc, RemoteAdapterError) else str(exc), file=sys.stderr)
+        message = exc.code if isinstance(exc, RemoteAdapterError) else str(exc)
+        if isinstance(exc, RemoteAdapterError):
+            identities = remote_error_ids(exc)
+            if identities:
+                message += ' ' + ' '.join(f'{name}={value}' for name, value in identities.items())
+        print(message, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2))
     return 0 if result['status'] in {'completed', 'prepared_offline'} else 2

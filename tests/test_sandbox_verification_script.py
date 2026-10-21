@@ -8,7 +8,9 @@ import subprocess
 import sys
 
 import httpx
+import pytest
 
+from docdrift.nebius import RemoteAdapterError
 from docdrift.sandbox_plan import validate_f6_plan
 
 
@@ -90,3 +92,78 @@ def test_changed_source_is_rejected_before_missing_coverage_or_provider(tmp_path
     assert command(monkeypatch, tmp_path, 'run') == 2
     assert 'pinned published bytes' in capsys.readouterr().err
     assert not (tmp_path / 'state').exists()
+
+
+@pytest.mark.parametrize('code,identities', [
+    ('import_acceptance_persistence_failed', {
+        'operation_id': '11111111-1111-4111-8111-111111111111',
+        'attempt_id': '22222222-2222-4222-8222-222222222222',
+    }),
+    ('acceptance_persistence_failed', {
+        'operation_id': '33333333-3333-4333-8333-333333333333',
+        'attempt_id': '44444444-4444-4444-8444-444444444444',
+    }),
+    ('synthetic_invalid_error_ids', {
+        'operation_id': 'synthetic-private-value\nAuthorization: synthetic-secret',
+        'attempt_id': '00000000-0000-0000-0000-000000000000',
+    }),
+])
+@pytest.mark.parametrize('report_write_fails', [False, True])
+def test_known_acceptance_ids_survive_runner_errors_without_exposing_other_data(
+        tmp_path, monkeypatch, capsys, code, identities, report_write_fails):
+    """Inject a local adapter failure; no acceptance or provider call occurs."""
+    import docdrift.sandbox_live as live
+
+    assert command(monkeypatch, tmp_path, 'prepare') == 0
+    capsys.readouterr()
+    (tmp_path / 'coverage.json').write_text(json.dumps({
+        'kind': 'docdrift_sandbox_credit_coverage', 'project_id': SCRIPT['PROJECT'],
+        'personal_spend_limit': 0, 'execution': 'free_or_grant_covered',
+        'image_import': 'free_or_grant_covered', 'storage': 'free_or_grant_covered',
+        'confirmation': 'Synthetic test only; no actual coverage assertion.',
+        'confirmed_at_utc': '2026-10-21T00:00:00+00:00',
+    }))
+    (tmp_path / 'coverage.json').chmod(0o600)
+    monkeypatch.setenv('NEBIUS_API_KEY', 'synthetic-not-a-real-provider-key')
+    deny_side_effects(monkeypatch)
+    if report_write_fails:
+        original_write = SCRIPT['verification'].__globals__['write_json']
+        def failed_error_report(path, value):
+            if 'error' in value:
+                raise OSError('Synthetic error-report storage failure')
+            original_write(path, value)
+        monkeypatch.setitem(SCRIPT['verification'].__globals__, 'write_json', failed_error_report)
+
+    class FailingRemote:
+        def __init__(self, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def import_image(self):
+            raise RemoteAdapterError(code, **identities)
+
+        @property
+        def operation_counts(self):
+            return {'image_imports': 0, 'runtime_probes': 0, 'verifier_operations': 0}
+
+    monkeypatch.setattr(live, 'F6SandboxRemote', FailingRemote)
+    assert command(monkeypatch, tmp_path, 'run') == 2
+    output = capsys.readouterr()
+    report_text = (tmp_path / 'state/runtime-report.json').read_text()
+    report = json.loads(report_text)
+    expected_ids = identities if code != 'synthetic_invalid_error_ids' else {}
+    assert report['status'] == 'incomplete'
+    if report_write_fails:
+        assert 'error' not in report and 'error_context' not in report
+    else:
+        assert report['error'] == code and report['error_context'] == expected_ids
+    assert output.out == ''
+    assert output.err.strip() == code + ''.join(f' {name}={value}' for name, value in expected_ids.items())
+    assert 'synthetic-not-a-real-provider-key' not in output.err + report_text
+    assert 'synthetic-private-value' not in output.err + report_text
+    assert 'Authorization' not in output.err + report_text

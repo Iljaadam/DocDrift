@@ -5,6 +5,8 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 ## Checklist
 
 Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
+Builder Program approval received, per user Oct 21 (D22). This confirms access;
+the approval's grant amount, expiry, and Sandbox billing terms remain unverified.
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
 Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
@@ -19,7 +21,7 @@ The coverage question is pending. Default adapters/CLI still block mutations.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
-- [ ] Builder Program approval (pending since before Oct 14)
+- [x] Builder Program approval received, per user Oct 21 (D22)
 - [x] Token Factory $1 trial key received; live inference approved by user (D5)
 - [x] Token Factory promotional credits received, per user Oct 15: approximately $30
   (initially described as $25). Exact balance, expiry, and grant/form route unverified.
@@ -100,7 +102,34 @@ inference. Record the video from saved evidence, keeping local Docker provenance
 visible. D8 and the free live-agent judge-access route remain unresolved. D9 and
 its single supplemental comparison are complete.
 
-## Resume handoff — October 16, 2026
+## Resume handoff — October 21, 2026
+
+Builder access is now user-confirmed (D22); actual Sandbox execution, import,
+and storage coverage with no personal charges is still unanswered. Tavily and
+LangChain credentials were supplied but have not been used or saved. No extra
+service integration is needed for the prepared F6 verification.
+
+The offline plan was revalidated against the unchanged published evidence.
+Fixed two recovery gaps before activation: a requested cancellation that finishes
+before image assignment now resumes from its matching completed receipt, and
+known operation/attempt UUIDs survive acceptance-persistence failures in both
+the runtime report and stderr. Stderr keeps those IDs even when the report cannot
+be written. Regression cases use synthetic responses/failures with networking
+blocked; they are not new provider results. Default live-execution restrictions,
+the one-import/three-probe/twelve-verification scope, and both frozen inventories
+are unchanged.
+
+Validation: **719 tests pass**, including fourteen new synthetic recovery/error
+cases. Offline F6 preparation succeeds without provider requests or inference.
+
+Next: obtain the actual execution/import/storage coverage statement, record it
+as described in `docs/SANDBOX_VERIFICATION.md`, and run the prepared fixed-F6
+verification with the existing Nebius credential. No new inference is needed.
+The held-out run (D8), funded free live-agent judge access through Dec 15,
+and video recording remain open. No authenticated Sandbox request, resource
+creation, inference, deployment, or push occurred this session.
+
+## Previous resume handoff — October 16, 2026
 
 The saved real F6 demo is packaged at `docs/demo/f6/index.html`. A fresh clone can
 browse its comparison, successful agent repair, failed one-shot proposal, and
@@ -329,6 +358,18 @@ Who decided what, and when. Don't reverse one without the user.
   allowed inputs. Reuse the saved proposal unchanged, reporting zero current
   inference and historical generation separately. Accept documented no-signal
   and UTF-8 wire representations without weakening behavior checks.
+- D22 (user, Oct 21): Builder access acquired. User also supplied Tavily and
+  LangChain service credentials and offered Toloka/Tendem credentials if needed.
+  Availability does not require adding those services: the planned next step is
+  still saved-F6 Sandbox verification. No new grant amount, expiry, or factual
+  execution/import/storage coverage statement was supplied. The D20 scope and
+  $0 personal-spend requirement remain in force; credentials stay out of tracked
+  files and evidence.
+- D23 (agent, Oct 21): Allow a terminal missing source image only for the explicitly
+  requested cancellation probe's matching completed `CANCELLED` receipt. Keep
+  execution image checks strict. Preserve validated operation/attempt UUIDs
+  in diagnostics for manual reconciliation, including stderr when report storage
+  fails; this does not authorize resubmitting uncertain operations.
 
 ## Session log
 
@@ -432,6 +473,15 @@ Who decided what, and when. Don't reverse one without the user.
   API call, model evaluation, resource creation, deployment, or push. Next:
   answer the pending coverage question, then run the prepared Sandbox step;
   D8 and free live-agent judging access remain unresolved.
+- 2026-10-21: Recorded user-confirmed Builder access and availability of optional
+  service credentials (unused, not saved). Revalidated the offline F6 plan;
+  fixed cancellation-before-image-assignment recovery and retained known
+  operation/attempt UUIDs after acceptance-persistence failures, including when
+  the error report cannot be written. Added fourteen synthetic regression cases;
+  719 tests pass. No authenticated Sandbox request, inference, resource creation,
+  deployment, or push. Next: actual Sandbox execution/import/storage coverage
+  confirmation, then the prepared bounded live verification; D8 and funded free
+  live-agent judging access remain open.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
