@@ -23,8 +23,9 @@ well as successes. One entry per finding. Never paste API keys.
 - [x] `tools` / `tool_choice` support and tool-call response shape (F2).
 - [x] Usage fields in responses (F2); how credits are drawn still unchecked in the console.
 - [x] Sandbox: one approved read-only `whoami` confirmed permission flags and effective limits (F7).
-- [ ] Sandbox: credit coverage/billed units, image/Python capability, network isolation,
-  execution, image reuse, cancellation timing, and artifact download.
+- [x] Sandbox: image/Python capability, guest interfaces with networking disabled,
+  execution, existing-image reuse, terminal cancellation, and artifact download (F12).
+- [ ] Sandbox: credit coverage/billed units and measured cancellation latency/race.
 
 ## Entries
 
@@ -35,7 +36,8 @@ being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execu
 F3–F6 is local Docker. F7 is one separately approved live Sandbox access read;
 it created no resources and performed no execution or inference. F10 records
 the first actual import attempt, which failed before producing an image or
-running any snippet.
+running any snippet. F12 separately records successful live re-verification of
+the saved F6 agent proposal using an existing public image, with no new inference.
 
 ### F1 — Model listing works; four Nemotron models (2026-10-14)
 
@@ -267,5 +269,45 @@ running any snippet.
   Preparation and actual-record validation made no further provider request;
   recovery lifecycle, resume, and rejection coverage use synthetic HTTP only.
 - Limits: no actual image inspection, runtime probe, or verifier result exists
-  yet. Billing stays unverified under D25. A mutable tag alone supplies no Python
+  at this preparation stage; F12 records the later completed run. Billing stays
+  unverified under D25. A mutable tag alone supplies no Python
   version or safety assurance; the capability probe remains required.
+
+### F12 — Saved Nemotron repair verified on live Sandboxes (2026-10-21)
+
+- Product / API: fixed-F6 runner, existing public image
+  `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`, networking disabled, run by the user
+  in their normal terminal under D25/D27. No additional image import.
+- Actual runtime: capability operation `01a15f8f-a8c8-7145-9bf6-2eb5756bc9eb`
+  returned `SUCCESS`, exit 0, Python `[3,12]`, effective UID 65534, and interfaces
+  `["lo"]`. Artifact operation `01a15f8f-ae34-735e-b5a8-1d485fb4476e` returned
+  `SUCCESS`; downloading its retained result image matched the expected bytes.
+  Cancellation operation `01a15f8f-b548-767a-8aff-8ef0e50520e3` is terminal
+  `CANCELLED`. The resumed report is not evidence of first-request race timing
+  or measured cancellation latency; its cancelled streams are incomplete.
+- Actual verification: run `cb10f48b57264526ada5e04d12bb7641` completed with
+  `behavior_verified`. All twelve provider operations returned `SUCCESS`:
+  three original-failure reproductions exited 1 as expected; three repaired
+  target inputs plus three healthy baseline and three healthy regression inputs
+  exited 0 and passed their declared checks. Protected source/check hashes and
+  the healthy example were preserved.
+- Usage: **1 historical failed import, 3 runtime probes, 12 verifier operations,
+  0 new inference calls**. Historical agent generation remains five calls /
+  7,841 tokens. The original six-call / 8,781-token local F6 strategy comparison
+  is unchanged. Resource `cost` fields are diagnostic, not invoice amounts;
+  billing and credit coverage remain unverified.
+- Timing: durable execution receipts span approximately 17:43:32–17:43:55 UTC.
+  The supplied report's 17:53:11–17:53:12 timestamps belong to a completed resume;
+  do not report that interval as original execution duration.
+- Evidence: `.docdrift/sandbox-f6/runtime-report.json`, frozen sources, durable
+  receipts, and the run's report/logs/review/evidence ZIP. Original archive
+  SHA-256 `f94b30506afc437476c2a74784c7c71187ffb8e8951d76fb8a330d18042be275`;
+  offline integrity verification checked 39 members. A separate
+  [sanitized presentation bundle](demo/f6-sandbox/index.html) records redactions
+  and rebuilt unsigned hashes. Internal hashes establish neither authenticity
+  nor execution attestation.
+- Effect on DocDrift: the saved real Nemotron proposal now has separately
+  recorded actual Nebius Sandbox verification. This closes the bounded runtime
+  milestone without a new model call or changed F6 comparison. The original
+  registry 404 remains unresolved; this is not a successful OCI import, held-out
+  result, formal qualification decision, or free live-agent service.

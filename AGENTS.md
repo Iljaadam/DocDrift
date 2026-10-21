@@ -52,7 +52,10 @@ demo-able submission.
     consumed. Preserve `.docdrift/sandbox-f6/`. Read-only discovery found the
     existing `python:3.12-slim` image; D27's prepared `--reuse-record` pins UUID
     `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae` and continues the remaining probes/checks
-    without another import or state reset. Runtime capability is still unverified.
+    without another import or state reset. The user completed that recovery on
+    Oct 21 (F12): three probes and twelve verifier operations, saved repair
+    `behavior_verified`, no new inference. This bounded allowance is consumed;
+    use saved evidence next. Billing remains unverified.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

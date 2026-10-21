@@ -17,13 +17,16 @@ it includes a live Nemotron agent repair, the rejected one-shot proposal, a
 strategy comparison, and downloadable evidence. No credentials, inference,
 Docker, or web server are needed to browse it. This is one exploratory owned
 development fixture, generated with live Token Factory calls and verified in
-local Docker; it is neither a held-out result nor a live repair service.
+local Docker. A [separate Oct 21 Sandbox verification](docs/demo/f6-sandbox/index.html)
+reuses the saved agent proposal and verifies its behavior on Nebius Sandboxes
+with no new inference. Neither result is held out or a live repair service.
 For a free local test with no provider credentials, follow the
 [judge quickstart](docs/JUDGE_QUICKSTART.md).
 The Nebius REST contract and durable submission journal can now be exercised
 offline with synthetic responses. Live Nemotron inference is connected to repair
-and evaluation. The published model-repair evidence uses local Docker; current
-Sandbox readiness is tracked in [STATUS.md](STATUS.md).
+and evaluation. The historical model comparison uses local Docker; the separate
+Sandbox run verifies the unchanged saved repair. Remaining delivery work is
+tracked in [STATUS.md](STATUS.md).
 
 ## Run from a checkout
 
@@ -106,7 +109,7 @@ source-inspection case and an unrelated healthy neighbor. Select it explicitly
 with `evaluate --index fixtures/development/index.json`; its results must be
 reported separately. New reports identify the inventory by its index SHA-256.
 
-## Offline contracts and bounded Sandbox preparation
+## Offline contracts and recorded Sandbox verification
 
 Inspect a public GitHub snapshot without authentication or code execution:
 
@@ -155,25 +158,26 @@ backend. Unresolved uploads and submissions are not retried.
 
 The default Sandbox adapter rejects live mutations; its synthetic mutation path
 requires an explicitly selected `httpx.MockTransport`. A separate
-[fixed-F6 verification runner](docs/SANDBOX_VERIFICATION.md) prepares reuse of
+[fixed-F6 verification runner](docs/SANDBOX_VERIFICATION.md) supports reuse of
 the saved live model proposal with zero current inference: one private image
 import, three runtime probes, and 12 verifier operations. It leaves the ordinary
 CLI and mocked bridge restrictions unchanged and requires explicitly supplied
 credentials plus confirmed coverage or a distinct scoped user authorization.
 The user authorized the bounded run while billing is unverified (D25).
 
-The access check succeeded. The first private image-import operation was then
-accepted on Oct 21 but failed during the registry fetch with HTTP 404. No result
-image, runtime probe, verifier operation, or new inference followed. The failed
-receipt is preserved and the one import attempt is consumed. Read-only
-`scripts/verify_saved_f6_sandbox.py images` discovers existing public Python
-image references without selecting an image or changing that run. Discovery
-found `python:3.12-slim`; a separate fixed recovery record now pins its immutable
-UUID and can continue the same session with `run --reuse-record` without another
-import. Recovery lifecycle tests are synthetic; actual image inspection, runtime
-capability, and Sandbox billing remain unverified. No confirmed-coverage
-record has been created. The $0 personal-spend default retains D25's narrow
-exception for the already authorized bounded run.
+The Oct 21 run completed with `behavior_verified`. Its first image import failed
+with registry HTTP 404; recovery preserved that receipt and used the existing
+`python:3.12-slim` UUID without another import. Three runtime probes checked
+Python 3.12 under a nonroot user with only the loopback interface, artifact-byte
+retrieval, and terminal cancellation. Twelve verifier operations reproduced the
+original failure, checked all three repaired inputs, and preserved all three
+healthy checks and protected hashes. Current inference calls: zero.
+
+The [saved Sandbox supplement](docs/demo/f6-sandbox/index.html) is separate from
+the historical F6 model comparison and its local Docker metrics. It verifies
+only that owned fixture's frozen contracts. Sandbox billing remains unverified;
+no confirmed-coverage record has been created. The $0 personal-spend default
+retains D25's narrow exception for this bounded run.
 
 Check deliberately constructed bad patches without executing them:
 

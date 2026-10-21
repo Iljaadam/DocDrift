@@ -1,0 +1,593 @@
+{
+  "schema_version": 1,
+  "run_id": "cb10f48b57264526ada5e04d12bb7641",
+  "status": "completed",
+  "diagnosis": "documentation_drift",
+  "repair_verdict": "behavior_verified",
+  "adapter": "nebius_sandbox",
+  "synthetic_execution": false,
+  "execution_evidence": "recorded_execution",
+  "repair_source": "saved_model_agent",
+  "provider_qualification": "unconfirmed",
+  "provenance": {
+    "archive_sha256": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+    "files": {
+      "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+      "README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+      "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+      "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+    },
+    "historical_provenance": {
+      "archive_sha256": "3d862091cb5570695e359209a0921347cfefbd093b458f7f8046533c1ff61842",
+      "commit": "3d016ba0fd68bf0417cb29d434808a41d017c25b",
+      "files": {
+        "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+        "README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+        "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+        "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+      },
+      "kind": "local_git",
+      "license_files": [
+        "LICENSE"
+      ],
+      "origin": "REDACTED_LOCAL_SOURCE_ORIGIN"
+    },
+    "kind": "saved_f6_evidence",
+    "license_files": [
+      "LICENSE"
+    ],
+    "origin": "docs/demo/f6/agent/evidence.zip",
+    "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac"
+  },
+  "frozen_profile_hashes": {
+    "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+    "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+  },
+  "examples": [
+    {
+      "id": "ex_67a84a7505e8ce0d2b61",
+      "path": "README.md",
+      "language": "python",
+      "start_line": 12,
+      "end_line": 21,
+      "content_start": 418,
+      "content_end": 612,
+      "source_hash": "158fca3206b8480c37ed96068a0e2e90d6fb33029f68c869243e9600f1f2c609",
+      "code": "import json\nimport os\n\nfrom drift_demo import OccurrenceIndex\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = OccurrenceIndex().build(words)\nprint(json.dumps(result, sort_keys=True))\n",
+      "status": "candidate",
+      "reason": null,
+      "ordinal": 0,
+      "profiled": true,
+      "verified": true
+    },
+    {
+      "id": "ex_e491531653032a5fe83e",
+      "path": "README.md",
+      "language": "python",
+      "start_line": 27,
+      "end_line": 36,
+      "content_start": 721,
+      "content_end": 911,
+      "source_hash": "1f4e5a85e4b6fe3d309a3b4d693866b0ee14ddf65bb8d349299dc1129e1b8efb",
+      "code": "import json\nimport os\n\nfrom drift_demo import TokenMetrics\n\nwords = json.loads(os.environ[\"DOCDRIFT_INPUT\"])\nresult = TokenMetrics().measure(words)\nprint(json.dumps(result, sort_keys=True))\n",
+      "status": "candidate",
+      "reason": null,
+      "ordinal": 1,
+      "profiled": true,
+      "verified": true
+    }
+  ],
+  "results": [
+    {
+      "phase": "baseline_target",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "operation_id": "01a15f8f-bccf-73ad-83d9-0ae7842d074d",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.917,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": false,
+        "observable_passed": false,
+        "observable_errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value"
+        ],
+        "behavior_passed": false,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": false,
+        "errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value",
+          "Required API operation is absent from the example AST"
+        ]
+      }
+    },
+    {
+      "phase": "confirm_original",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "operation_id": "01a15f8f-c3a5-7248-91ec-fc8eb9efe01e",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.747,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": false,
+        "observable_passed": false,
+        "observable_errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value"
+        ],
+        "behavior_passed": false,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": false,
+        "errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value",
+          "Required API operation is absent from the example AST"
+        ]
+      }
+    },
+    {
+      "phase": "healthy_baseline",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-c9f6-760e-8d1a-38665244d6d3",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.697,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "healthy_baseline",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "repeated",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-cf83-747b-8ab7-935454c84366",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.686,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "healthy_baseline",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "exact-strings",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-d3c9-74f0-af1b-3bfed703a9a6",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 1.03,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "final_original",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "operation_id": "01a15f8f-dbed-737f-81b0-9a254081e53b",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.864,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": false,
+        "observable_passed": false,
+        "observable_errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value"
+        ],
+        "behavior_passed": false,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": false,
+        "errors": [
+          "Execution did not complete with exit zero",
+          "Stdout is not a single JSON value",
+          "Required API operation is absent from the example AST"
+        ]
+      }
+    },
+    {
+      "phase": "final_repaired",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-e301-73fb-906a-7ed7a74495f4",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.931,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "final_repaired",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "repeated",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"blue\": [1], \"red\": [0, 2]}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-e88e-7169-8114-68f26321f2a8",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.835,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "final_repaired",
+      "example_id": "ex_67a84a7505e8ce0d2b61",
+      "case_id": "exact-strings",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"\": [0, 6], \" \": [5], \"E\": [3], \"two words\": [4], \"\\u00e9\": [1, 2]}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-ee9b-70e7-82d3-825c959b3918",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.869,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "healthy_regression",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "empty",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-f424-73c8-828a-48836c225b4d",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.967,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "healthy_regression",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "repeated",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-faff-77a5-b9f6-6722253f469d",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.697,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    },
+    {
+      "phase": "healthy_regression",
+      "example_id": "ex_e491531653032a5fe83e",
+      "case_id": "exact-strings",
+      "result": {
+        "state": "completed",
+        "exit_code": 0,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stderr": "",
+        "operation_id": "01a15f8f-ff2a-71bb-b21a-2912830fe9c9",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "elapsed_seconds": 0.707,
+        "timed_out": false,
+        "stdout_truncated": false,
+        "stderr_truncated": false,
+        "service_state": "SUCCESS",
+        "signal": null,
+        "observation_timed_out": false,
+        "evidence_complete": true,
+        "synthetic": false,
+        "error_code": null
+      },
+      "checks": {
+        "execution_passed": true,
+        "observable_passed": true,
+        "observable_errors": [],
+        "behavior_passed": true,
+        "coverage": [
+          "exact_json_output",
+          "required_api_call_ast",
+          "api_result_reaches_output"
+        ],
+        "known_repair_ast_match": true,
+        "errors": []
+      }
+    }
+  ],
+  "usage": {
+    "inference_calls": 0,
+    "paid_calls": 0,
+    "compute_operations": 12,
+    "simulated_operations": 0,
+    "operation_count_scope": "Verifier snippet operations; image import and runtime capability probes are recorded separately"
+  },
+  "coverage_note": "Only the frozen JSON outputs across declared inputs, the required API call, and that call result reaching the printed output (static must-flow check) are checked. This owned-fixture result alone does not establish competition eligibility.",
+  "environment": {
+    "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+    "synthetic": false,
+    "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+    "billing_coverage": "unverified",
+    "credit_coverage_confirmed": false,
+    "kind": "docdrift_sandbox_scoped_authorization",
+    "limits": {
+      "image_imports": 1,
+      "inference_calls": 0,
+      "runtime_probes": 3,
+      "verifier_operations": 12
+    },
+    "personal_spend_limit": null,
+    "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+    "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+    "user_authorized_scoped_run": true,
+    "live_mutations_enabled": true,
+    "image_provenance": {
+      "source_kind": "existing_public_image_after_failed_import",
+      "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+      "tag": "python:3.12-slim",
+      "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+      "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+      "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7"
+    },
+    "python_version": "3.12",
+    "network": "disabled",
+    "python_capability_tested": true,
+    "network_isolation_tested": true,
+    "capability_operation_id": "01a15f8f-a8c8-7145-9bf6-2eb5756bc9eb",
+    "image": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+    "adapter": "nebius_sandbox",
+    "python_executable_contract": "/usr/local/bin/python3.12"
+  },
+  "original_failure_kind": "process_exit",
+  "patched_file_hashes": {
+    "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+    "README.md": "e6df65830130728d477940b54c9c3295ca358624a195f126fc362ac510ccb674",
+    "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+    "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+  },
+  "healthy_preservation": {
+    "required_examples": 1,
+    "required_cases": 3,
+    "all_passed": true
+  },
+  "protected_hashes_preserved": true,
+  "evidence_exported": true,
+  "behavior_verified": true
+}

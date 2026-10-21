@@ -1,0 +1,690 @@
+{
+  "run_id": "cb10f48b57264526ada5e04d12bb7641",
+  "created_at": "2026-10-21T17:43:36.543968+00:00",
+  "metadata": {
+    "adapter": "nebius_sandbox",
+    "execution_contract": {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false
+    },
+    "historical_generation": {
+      "live_inference": true,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "note": "Saved October 15 model generation; no new inference in this verification.",
+      "proposal_sha256": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+      "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "strategy": "agent",
+      "usage": {
+        "completion_tokens": 741,
+        "malformed_responses": 0,
+        "model_calls": 5,
+        "prompt_tokens": 7100,
+        "snippet_runs": 1
+      }
+    },
+    "image": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+    "inference_usage": {
+      "completion_tokens": 0,
+      "malformed_responses": 0,
+      "model_calls": 0,
+      "prompt_tokens": 0,
+      "snippet_runs": 0
+    },
+    "model": "nvidia/nemotron-3-super-120b-a12b",
+    "paid_calls_enabled": false,
+    "profile_hashes": {
+      "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+      "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+    },
+    "provenance": {
+      "archive_sha256": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+      "files": {
+        "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+        "README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+        "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+        "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+      },
+      "historical_provenance": {
+        "archive_sha256": "3d862091cb5570695e359209a0921347cfefbd093b458f7f8046533c1ff61842",
+        "commit": "3d016ba0fd68bf0417cb29d434808a41d017c25b",
+        "files": {
+          "LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+          "README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+          "drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+          "pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04"
+        },
+        "kind": "local_git",
+        "license_files": [
+          "LICENSE"
+        ],
+        "origin": "REDACTED_LOCAL_SOURCE_ORIGIN"
+      },
+      "kind": "saved_f6_evidence",
+      "license_files": [
+        "LICENSE"
+      ],
+      "origin": "docs/demo/f6/agent/evidence.zip",
+      "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac"
+    },
+    "repair_record_sha256": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+    "repair_source": "saved_model_agent",
+    "replacement_sha256": "9e7931d832359dbbbdda763dd27a40f477533e97c0ab4469dcd2fb24cb5e2f66",
+    "sandbox_plan_sha256": "8b44f1a490d8b5a3486391ab51cac728d9a0cb95b822a04ba6e8065ba1543757",
+    "synthetic_execution": false
+  },
+  "events": [
+    {
+      "sequence": 1,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "frozen",
+      "created_at": "2026-10-21T17:43:36.550074+00:00",
+      "payload": {
+        "profile_hashes": {
+          "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+          "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+        },
+        "sandbox_plan_sha256": "8b44f1a490d8b5a3486391ab51cac728d9a0cb95b822a04ba6e8065ba1543757",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac"
+      }
+    },
+    {
+      "sequence": 2,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "prepared",
+      "created_at": "2026-10-21T17:43:36.639948+00:00",
+      "payload": {
+        "adapter": "nebius_sandbox",
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "capability_operation_id": "01a15f8f-a8c8-7145-9bf6-2eb5756bc9eb",
+        "credit_coverage_confirmed": false,
+        "image": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "image_provenance": {
+          "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+          "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+          "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+          "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+          "source_kind": "existing_public_image_after_failed_import",
+          "tag": "python:3.12-slim"
+        },
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "live_mutations_enabled": true,
+        "network": "disabled",
+        "network_isolation_tested": true,
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "python_capability_tested": true,
+        "python_executable_contract": "/usr/local/bin/python3.12",
+        "python_version": "3.12",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "synthetic": false,
+        "user_authorized_scoped_run": true
+      }
+    },
+    {
+      "sequence": 3,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/f97edcbe69c1266fbd91a760b7ea972a735bbdfba851cdaaecaecf3342f62e9f",
+      "created_at": "2026-10-21T17:43:36.646485+00:00",
+      "payload": {
+        "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+        "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+      }
+    },
+    {
+      "sequence": 4,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/29f525b88df66bbf355781648c017cb0a0ffa6abc82db95fd8716f1c45c55d20",
+      "created_at": "2026-10-21T17:43:39.457907+00:00",
+      "payload": {
+        "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+        "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+      }
+    },
+    {
+      "sequence": 5,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/c20b27b653485ca33ed1cad1eb0f762839a98c07409a303c051eb164ccf96f80",
+      "created_at": "2026-10-21T17:43:40.888386+00:00",
+      "payload": {
+        "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+        "sha256": "91381905b2ef6358078778ff68f985153726525edf9ff2b8bb4c4c1c5c4bfe1f"
+      }
+    },
+    {
+      "sequence": 6,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/c8430d1f84b82187a0463a379f8a960f53e06c9c9882f882d710261473636d30",
+      "created_at": "2026-10-21T17:43:42.491546+00:00",
+      "payload": {
+        "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+        "sha256": "bd8f5f393b7f8334fcc7de1d9981bd69a3294803a3686ff0de5030b3d5f61087"
+      }
+    },
+    {
+      "sequence": 7,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/59c486b2417449de06f5840dcc174442aa304fc46657acc8e1a6ffe5847784c3",
+      "created_at": "2026-10-21T17:43:43.587029+00:00",
+      "payload": {
+        "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+        "sha256": "7faef95eb0e8ed730131045037ec3975831956a53e9c82c31eb9f9f4e8d59a19"
+      }
+    },
+    {
+      "sequence": 8,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/4873c49b4de302ad903eb4e02dc81a641ec5e4280803e8ae00250c21725cf52b",
+      "created_at": "2026-10-21T17:43:45.679724+00:00",
+      "payload": {
+        "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+        "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+      }
+    },
+    {
+      "sequence": 9,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/bd2d3858d82eb7bdb242f2de2774dcdceeb9dfd9546074bf440b791de1597189",
+      "created_at": "2026-10-21T17:43:47.092460+00:00",
+      "payload": {
+        "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+        "sha256": "70512ffa67fdb8ba4b8db7e71b87bc734e30b8e82f1764f5e1084e249f875cee"
+      }
+    },
+    {
+      "sequence": 10,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/c961e2139a57f052409879e16a8c3431b727b227332b66624c0b274b5f09d6e4",
+      "created_at": "2026-10-21T17:43:48.904802+00:00",
+      "payload": {
+        "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+        "sha256": "76dc145572338a19d62ded26f30bc537b902f26391295d8c5185bb264237cb6e"
+      }
+    },
+    {
+      "sequence": 11,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/51fc135f7d3f508a4b5badfff5614e9c1b2942d55f82f8033d8ab021e915c3e1",
+      "created_at": "2026-10-21T17:43:50.452701+00:00",
+      "payload": {
+        "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+        "sha256": "ecb81c4a094909ff240e23590c1712138307ad1b625a86424228a0c6d4017d9a"
+      }
+    },
+    {
+      "sequence": 12,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/bf85fa506a4f98eac8fd7d38606687540c4248152d1e114b2c3ef9b732e0f816",
+      "created_at": "2026-10-21T17:43:51.873275+00:00",
+      "payload": {
+        "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+        "sha256": "5653c634eb38d684b37e0314b331f4e55213c3a8a9f303e3c35e9dad7a7b4ebf"
+      }
+    },
+    {
+      "sequence": 13,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/d12c251b50f3f6ad0e0d9e9b58a3dedcbfd2d02d4de10c41c95720373a1f1246",
+      "created_at": "2026-10-21T17:43:53.631973+00:00",
+      "payload": {
+        "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+        "sha256": "01728bd1702dca8b72160053b7053173dca43c8517dee9d06a9014b51aadda36"
+      }
+    },
+    {
+      "sequence": 14,
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "phase": "execution_request/32b9d6758091fe782c1c35bc928c08d7da46a00ae6b5c21a41c0b35bbad6b604",
+      "created_at": "2026-10-21T17:43:54.697794+00:00",
+      "payload": {
+        "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+        "sha256": "55174890a715da8c247e97fd8e086501f2afd100e47dc4e4b23e3a551f14661a"
+      }
+    }
+  ],
+  "phases": {
+    "frozen": {
+      "profile_hashes": {
+        "checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+        "profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2"
+      },
+      "sandbox_plan_sha256": "8b44f1a490d8b5a3486391ab51cac728d9a0cb95b822a04ba6e8065ba1543757",
+      "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac"
+    },
+    "prepared": {
+      "adapter": "nebius_sandbox",
+      "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+      "billing_coverage": "unverified",
+      "capability_operation_id": "01a15f8f-a8c8-7145-9bf6-2eb5756bc9eb",
+      "credit_coverage_confirmed": false,
+      "image": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+      "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "kind": "docdrift_sandbox_scoped_authorization",
+      "limits": {
+        "image_imports": 1,
+        "inference_calls": 0,
+        "runtime_probes": 3,
+        "verifier_operations": 12
+      },
+      "live_mutations_enabled": true,
+      "network": "disabled",
+      "network_isolation_tested": true,
+      "personal_spend_limit": null,
+      "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+      "python_capability_tested": true,
+      "python_executable_contract": "/usr/local/bin/python3.12",
+      "python_version": "3.12",
+      "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+      "synthetic": false,
+      "user_authorized_scoped_run": true
+    },
+    "execution_request/f97edcbe69c1266fbd91a760b7ea972a735bbdfba851cdaaecaecf3342f62e9f": {
+      "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+      "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+    },
+    "execution_request/29f525b88df66bbf355781648c017cb0a0ffa6abc82db95fd8716f1c45c55d20": {
+      "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+      "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+    },
+    "execution_request/c20b27b653485ca33ed1cad1eb0f762839a98c07409a303c051eb164ccf96f80": {
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+      "sha256": "91381905b2ef6358078778ff68f985153726525edf9ff2b8bb4c4c1c5c4bfe1f"
+    },
+    "execution_request/c8430d1f84b82187a0463a379f8a960f53e06c9c9882f882d710261473636d30": {
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+      "sha256": "bd8f5f393b7f8334fcc7de1d9981bd69a3294803a3686ff0de5030b3d5f61087"
+    },
+    "execution_request/59c486b2417449de06f5840dcc174442aa304fc46657acc8e1a6ffe5847784c3": {
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+      "sha256": "7faef95eb0e8ed730131045037ec3975831956a53e9c82c31eb9f9f4e8d59a19"
+    },
+    "execution_request/4873c49b4de302ad903eb4e02dc81a641ec5e4280803e8ae00250c21725cf52b": {
+      "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+      "sha256": "fbf8502586fac7a5308599104d1245c032d5f0862e8667824f8bb075dcc4df78"
+    },
+    "execution_request/bd2d3858d82eb7bdb242f2de2774dcdceeb9dfd9546074bf440b791de1597189": {
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+      "sha256": "70512ffa67fdb8ba4b8db7e71b87bc734e30b8e82f1764f5e1084e249f875cee"
+    },
+    "execution_request/c961e2139a57f052409879e16a8c3431b727b227332b66624c0b274b5f09d6e4": {
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+      "sha256": "76dc145572338a19d62ded26f30bc537b902f26391295d8c5185bb264237cb6e"
+    },
+    "execution_request/51fc135f7d3f508a4b5badfff5614e9c1b2942d55f82f8033d8ab021e915c3e1": {
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+      "sha256": "ecb81c4a094909ff240e23590c1712138307ad1b625a86424228a0c6d4017d9a"
+    },
+    "execution_request/bf85fa506a4f98eac8fd7d38606687540c4248152d1e114b2c3ef9b732e0f816": {
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+      "sha256": "5653c634eb38d684b37e0314b331f4e55213c3a8a9f303e3c35e9dad7a7b4ebf"
+    },
+    "execution_request/d12c251b50f3f6ad0e0d9e9b58a3dedcbfd2d02d4de10c41c95720373a1f1246": {
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+      "sha256": "01728bd1702dca8b72160053b7053173dca43c8517dee9d06a9014b51aadda36"
+    },
+    "execution_request/32b9d6758091fe782c1c35bc928c08d7da46a00ae6b5c21a41c0b35bbad6b604": {
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+      "sha256": "55174890a715da8c247e97fd8e086501f2afd100e47dc4e4b23e3a551f14661a"
+    }
+  },
+  "operations": [
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-bccf-73ad-83d9-0ae7842d074d",
+      "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:37.985812+00:00",
+      "completed_at": "2026-10-21T17:43:39.441357+00:00",
+      "result": {
+        "elapsed_seconds": 0.917,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 1,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-bccf-73ad-83d9-0ae7842d074d",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-c3a5-7248-91ec-fc8eb9efe01e",
+      "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:39.749424+00:00",
+      "completed_at": "2026-10-21T17:43:40.868223+00:00",
+      "result": {
+        "elapsed_seconds": 0.747,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 1,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-c3a5-7248-91ec-fc8eb9efe01e",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-c9f6-760e-8d1a-38665244d6d3",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:41.349610+00:00",
+      "completed_at": "2026-10-21T17:43:42.475228+00:00",
+      "result": {
+        "elapsed_seconds": 0.697,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-c9f6-760e-8d1a-38665244d6d3",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-cf83-747b-8ab7-935454c84366",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:42.775042+00:00",
+      "completed_at": "2026-10-21T17:43:43.566034+00:00",
+      "result": {
+        "elapsed_seconds": 0.686,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-cf83-747b-8ab7-935454c84366",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-d3c9-74f0-af1b-3bfed703a9a6",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:43.865334+00:00",
+      "completed_at": "2026-10-21T17:43:45.655783+00:00",
+      "result": {
+        "elapsed_seconds": 1.03,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-d3c9-74f0-af1b-3bfed703a9a6",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-dbed-737f-81b0-9a254081e53b",
+      "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:45.952888+00:00",
+      "completed_at": "2026-10-21T17:43:47.071884+00:00",
+      "result": {
+        "elapsed_seconds": 0.864,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 1,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-dbed-737f-81b0-9a254081e53b",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "Traceback (most recent call last):\n  File \"/work/docdrift/runner.py\", line 4, in <module>\n    runpy.run_path('/work/docdrift/example.py', run_name=\"__main__\")\n  File \"<frozen runpy>\", line 287, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/work/docdrift/example.py\", line 7, in <module>\n    result = OccurrenceIndex().build(words)\n             ^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'OccurrenceIndex' object has no attribute 'build'\n",
+        "stderr_truncated": false,
+        "stdout": "",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-e301-73fb-906a-7ed7a74495f4",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:47.762391+00:00",
+      "completed_at": "2026-10-21T17:43:48.887787+00:00",
+      "result": {
+        "elapsed_seconds": 0.931,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-e301-73fb-906a-7ed7a74495f4",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-e88e-7169-8114-68f26321f2a8",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:49.197309+00:00",
+      "completed_at": "2026-10-21T17:43:50.432219+00:00",
+      "result": {
+        "elapsed_seconds": 0.835,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-e88e-7169-8114-68f26321f2a8",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"blue\": [1], \"red\": [0, 2]}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-ee9b-70e7-82d3-825c959b3918",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:50.734467+00:00",
+      "completed_at": "2026-10-21T17:43:51.856140+00:00",
+      "result": {
+        "elapsed_seconds": 0.869,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-ee9b-70e7-82d3-825c959b3918",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"\": [0, 6], \" \": [5], \"E\": [3], \"two words\": [4], \"\\u00e9\": [1, 2]}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-f424-73c8-828a-48836c225b4d",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:52.159929+00:00",
+      "completed_at": "2026-10-21T17:43:53.615222+00:00",
+      "result": {
+        "elapsed_seconds": 0.967,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-f424-73c8-828a-48836c225b4d",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 0, \"tokens\": 0}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-faff-77a5-b9f6-6722253f469d",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:53.904945+00:00",
+      "completed_at": "2026-10-21T17:43:54.680543+00:00",
+      "result": {
+        "elapsed_seconds": 0.697,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-faff-77a5-b9f6-6722253f469d",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 10, \"tokens\": 3}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    },
+    {
+      "run_id": "cb10f48b57264526ada5e04d12bb7641",
+      "operation_id": "01a15f8f-ff2a-71bb-b21a-2912830fe9c9",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+      "state": "completed",
+      "accepted_at": "2026-10-21T17:43:54.970609+00:00",
+      "completed_at": "2026-10-21T17:43:55.752254+00:00",
+      "result": {
+        "elapsed_seconds": 0.707,
+        "error_code": null,
+        "evidence_complete": true,
+        "exit_code": 0,
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "observation_timed_out": false,
+        "operation_id": "01a15f8f-ff2a-71bb-b21a-2912830fe9c9",
+        "service_state": "SUCCESS",
+        "signal": null,
+        "state": "completed",
+        "stderr": "",
+        "stderr_truncated": false,
+        "stdout": "{\"characters\": 13, \"tokens\": 7}\n",
+        "stdout_truncated": false,
+        "synthetic": false,
+        "timed_out": false
+      }
+    }
+  ]
+}

@@ -21,6 +21,20 @@ Its saved evidence can be inspected without rerunning the model. The integrity
 checker verifies archive contents and hashes; it does not attest their origin
 or execution. This route provides evidence browsing, not a live repair service.
 
+## Browse the separate Sandbox verification
+
+Open the [Oct 21 Sandbox supplement](demo/f6-sandbox/index.html) without keys or
+new execution. The unchanged saved F6 agent proposal passed actual Nebius
+Sandbox verification: twelve verifier operations reproduced the original failure,
+passed three repaired inputs and three healthy regressions, and preserved
+protected hashes. Three separate runtime probes checked Python capability,
+artifact-byte retrieval, and terminal cancellation. No new inference was performed.
+
+The original failed image-import receipt was preserved; recovery used an
+existing Python 3.12 slim image without another import. Billing remains
+unverified. This saved-proposal verification is separate from the historical
+Docker strategy comparison; it is not a new model evaluation or live service.
+
 ## Execute the free manual demo
 
 This route uses the packaged owned fixture, a supplied manual repair, and local
@@ -108,6 +122,7 @@ directory; otherwise case outcomes remain visible without links. Synthetic
 replays are labelled separately from live model results.
 
 Live Nemotron generation uses `repair --live` or `evaluate --live` and consumes
-Token Factory credits. No paid personal account is needed for the two routes
-above. The saved model runs use local Docker. Current Sandbox access and the
-free live-agent judging route are tracked in [STATUS.md](../STATUS.md).
+Token Factory credits. No paid personal account is needed for the routes
+above. The original model comparison uses local Docker; the separate saved
+proposal verification uses Nebius Sandboxes. The free live-agent judging route
+is tracked in [STATUS.md](../STATUS.md).

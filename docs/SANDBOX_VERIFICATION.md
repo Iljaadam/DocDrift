@@ -1,13 +1,44 @@
 # Verify the saved F6 repair on Sandboxes
 
-The first real image-import operation was accepted on October 21, then failed
-while the provider importer fetched the pinned Python image (HTTP 404).
-**One import attempt is consumed; no image, runtime probe, verifier operation,
-or new inference resulted.** The [published F6 evidence](demo/f6/index.html)
-remains live Nemotron generation with local Docker verification.
-Read-only discovery subsequently found an existing `python:3.12-slim` image.
-Recovery is prepared below; no actual image inspection or runtime probe has
-been performed yet.
+**Completed on October 21:** the unchanged saved F6 agent repair was verified
+on Nebius Sandboxes using an existing `python:3.12-slim` image. The result is
+`behavior_verified`: original failure reproduced, three repaired target cases
+and three healthy regression cases passed, with protected hashes preserved.
+Three runtime probes confirmed Python 3.12/nonroot execution with only `lo`,
+exact-byte artifact retrieval, and a terminal cancellation outcome. No new
+inference was used. See the [saved cloud-verification bundle](demo/f6-sandbox/index.html).
+
+The first image import failed during registry fetching (HTTP 404), so recovery
+used a separately recorded existing public image rather than importing again.
+Aggregate attempts are **one failed import, three runtime probes, twelve
+verifier operations**. The original [F6 comparison](demo/f6/index.html) retains
+its October 15 Nemotron generation and local Docker provenance. Billing remains
+unverified; the commands below document the completed bounded run.
+
+## Recorded live result
+
+Verification run: `cb10f48b57264526ada5e04d12bb7641`. Its twelve provider
+operations returned `SUCCESS`; the three original-failure reproductions
+intentionally exited 1, and the nine repaired/healthy checks exited 0.
+All three repaired target cases and all three healthy regression cases passed
+their declared contracts. Source, checks, and healthy example hashes were
+preserved. Current verifier inference was zero; historical generation was five
+calls / 7,841 tokens and is not new usage.
+
+Durable execution receipts span approximately **17:43:32–17:43:55 UTC**. The
+provided runtime report's 17:53:11–17:53:12 timestamps describe a completed resume,
+not the original cloud execution duration. Its cancellation observations both
+show the saved `CANCELLED` result; they do not measure the first cancellation
+race or latency.
+
+Private originals remain under `.docdrift/sandbox-f6/`; the original evidence
+ZIP SHA-256 is
+`f94b30506afc437476c2a74784c7c71187ffb8e8951d76fb8a330d18042be275`.
+Offline integrity verification checked 39 members. The public supplement
+discloses presentation redactions and rebuilt unsigned hashes; neither archive
+attests origin or execution. Raw resource fields remain diagnostic and are not
+converted into a billed charge. This is one owned development fixture, not a
+held-out evaluation or a new strategy comparison.
 
 ## Prepare offline
 
@@ -143,11 +174,11 @@ registry pull. The response identifies no exact registry request URL or reason
 for the 404. No result image was returned. This confirms an accepted provider
 request, not runtime capability or billing coverage. See feedback F10.
 
-The failed receipt, raw operation response, authorization binding, and runtime
-report remain in `.docdrift/sandbox-f6/`. A rerun now returns the saved terminal
-failure immediately without another provider request. Do not delete state,
-change the registry binding, or select a different state directory to bypass
-the consumed import allowance.
+The failed receipt, raw operation response, authorization binding, and current
+runtime report remain in `.docdrift/sandbox-f6/`; pre-recovery report/session
+copies are saved separately. Recovery below subsequently completed using an
+existing public image. Do not delete state, change source bindings, or select a
+different state directory to bypass the consumed allowance.
 
 Earlier in this agent session, an authorized read-only access attempt failed locally with
 `transport_error`; a credential-free DNS diagnostic returned `gaierror` /
@@ -158,7 +189,8 @@ provider response. Its diagnostic record is
 
 ### Existing-image discovery and recovery
 
-In the same normal terminal with `NEBIUS_API_KEY` still loaded, run:
+The completed discovery used this command in the user's normal terminal with
+`NEBIUS_API_KEY` loaded:
 
 ```sh
 .venv/bin/python scripts/verify_saved_f6_sandbox.py images
@@ -208,18 +240,19 @@ verification operations retain their original scope and receipt handling.
 
 Current image provenance explicitly identifies an existing public image; it
 does not claim that its filesystem matches the failed Docker Hub digest.
-Python 3.12, nonroot execution, and network isolation still require the capability
-probe. Full recovery lifecycle/resume tests use synthetic HTTP responses and
-do not establish actual remote execution.
+Python 3.12, nonroot execution, and the absence of guest interfaces beyond `lo`
+were subsequently observed by the capability probe (F12). Recovery
+lifecycle/resume tests separately use synthetic HTTP responses; the recorded
+F12 results above supply the actual remote evidence.
 
 Copies of the pre-recovery runtime report and session are preserved separately:
 `.docdrift/access/sandbox-f6-before-image-reuse-runtime-report.json` and
 `.docdrift/access/sandbox-f6-before-image-reuse-session.json`. The original raw
 failed operation response and completed journal receipt remain unchanged.
 
-## Continue with the existing image
+## Completed existing-image invocation
 
-In the same normal terminal with the existing key loaded, run:
+The user completed verification with this command in the same normal terminal:
 
 ```sh
 .venv/bin/python scripts/verify_saved_f6_sandbox.py run \
@@ -227,10 +260,11 @@ In the same normal terminal with the existing key loaded, run:
   --reuse-record .docdrift/access/sandbox-f6-existing-image.json
 ```
 
-Use these same paths for resume. This reuses the existing session and attempts
-no new import or model call. Expected aggregate attempt counts after a successful
-run are one historical failed import, three runtime probes, and twelve verifier
-operations. Actual billing remains unverified under the existing D25 permission.
+No further live run is needed. Preserve these paths for recovery if necessary;
+the command reuses the existing session and attempts no new import or model
+call. Recorded aggregate counts are one historical failed import, three runtime
+probes, and twelve verifier operations. Actual billing remains unverified under
+the existing D25 permission.
 
 ## Original import invocation
 
@@ -258,8 +292,8 @@ Docker Hub metadata on October 16, 2026:
 docker://docker.io/library/python@sha256:2b4f19dae3a777dfc3b76730bda1e82e1f66ab2a2686fa93ca78edbfb4f04ffe
 ```
 
-This is a registry pin for the remote run, separate from this aarch64 host's
-local Docker image. The bounded scope is:
+This was the failed registry-import pin, separate from both the recovered public
+image and this aarch64 host's local Docker image. The completed bounded scope is:
 
 - One private image import, with a 120-second limit.
 - Three fixed runtime probes: Python 3.12/nonroot execution with no guest
@@ -273,16 +307,16 @@ observation. Interrupted runs reuse known IDs; uncertain submissions are never
 retried. If a receipt cannot be saved after acceptance, the runner prints any
 known operation and attempt UUIDs beside the error code for manual reconciliation
 and saves them in `runtime-report.json` under `error_context` when the report is
-writable. Preserve the state directory when a step is incomplete. Runtime
-capabilities and the repair's new behavior verdict remain unestablished until
-the corresponding recorded checks actually pass.
+writable. Preserve the state directory when a step is incomplete. F12 records
+the actual capability checks and completed repair verification.
 
 The cancellation probe can finish as `CANCELLED` before an instance image is
 assigned. A matching saved terminal receipt lets the runner resume that outcome
 without repeating the cancellation or creating another instance. This recovery
-case is covered by synthetic documented-shape tests; it has not been observed
-live. Successful execution probes and verifier phases still require the pinned
-image identity.
+case is covered by synthetic documented-shape tests. F12 records terminal
+cancellation, but its resumed observations do not establish when cancellation
+first completed relative to the request. Successful execution probes and
+verifier phases still require the pinned image identity.
 
 The default state directory is `.docdrift/sandbox-f6/`. Inspect
 `runtime-report.json` for probe outcomes and the new verification run ID; that

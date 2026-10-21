@@ -1,11 +1,12 @@
 # Submission draft (Devpost)
 
-Draft based on recorded development runs. All execution in the published model
-evidence is local Docker; it does not establish Nebius Sandbox runtime use.
-Current Sandbox readiness, scored held-out evaluation, and free live-agent
-access through December 15 remain submission gates in [STATUS.md](../STATUS.md).
-The [saved demo bundle](demo/f6/index.html) and [2:45 video script](DEMO_VIDEO_SCRIPT.md)
-can be reviewed without new inference.
+Draft based on recorded development runs. The historical model comparisons use
+local Docker. A separate Oct 21 run verifies the saved F6 agent repair on Nebius
+Sandboxes without new inference. Scored held-out evaluation, track eligibility,
+and free live-agent access through December 15 remain open in
+[STATUS.md](../STATUS.md). The [original demo](demo/f6/index.html),
+[Sandbox supplement](demo/f6-sandbox/index.html), and
+[2:45 video script](DEMO_VIDEO_SCRIPT.md) can be reviewed without new inference.
 
 ## Tagline
 
@@ -28,9 +29,10 @@ whether it works, preserves healthy examples, and changes only documentation.
    accepts a replacement for one Markdown code span.
 4. Rejects patches that remove meaningful operations, swallow exceptions,
    hardcode output, or touch protected source, tests, profiles, and checks.
-5. Verifies the candidate in fresh offline Docker containers with varied inputs,
+5. Verifies the candidate in fresh offline environments with varied inputs,
    checks that the required API result reaches the printed output, and rechecks
-   healthy examples.
+   healthy examples. Model comparisons used local Docker; the saved F6 agent
+   proposal also passed a separate bounded Nebius Sandbox verification.
 6. Exports a Markdown diff, self-contained HTML review, model proposal transcript,
    logs, source/check snapshots, and a manifest-covered evidence ZIP.
 
@@ -44,10 +46,11 @@ Python 3.12 CLI, live Nebius Token Factory chat completions using
 a SQLite run ledger, and SHA-256 manifests. Durable operation records support
 interruption recovery. An offline Nebius Sandbox adapter exercises synthetic
 HTTP request/recovery contracts; those responses execute no guest code and are
-explicitly unscored. They are separate from the real local execution evidence.
-The first private live Sandbox image import was accepted on October 21 but
-failed during the registry fetch with HTTP 404 (feedback F10); no image or
-snippet-execution evidence resulted. Runtime acceptance remains outstanding.
+explicitly unscored. A separate fixed runner performed actual Sandbox execution
+on October 21. The private image import failed with registry HTTP 404 (F10);
+recovery preserved its receipt and selected an existing Python 3.12 slim image
+without another import. Three runtime probes and twelve verifier operations
+completed with zero new inference. Sandbox billing remains unverified.
 
 An offline test suite and installed-wheel smoke checks cover the CLI, verifier,
 evidence integrity, recovery, and synthetic provider contracts. The archive
@@ -101,6 +104,16 @@ after the original development results. It shows one instance of source tools
 helping; it is not held out and supports no general superiority claim.
 See [feedback entries F4–F6](FEEDBACK_LOG.md).
 
+On Oct 21, the unchanged saved F6 agent proposal was separately re-verified on
+Nebius Sandboxes. Run `cb10f48b57264526ada5e04d12bb7641` reproduced the original
+failure and returned `behavior_verified` after all three target inputs and all
+three healthy regressions passed; protected hashes were preserved. Its twelve
+verifier operations and three runtime probes are additional cloud execution,
+with **zero new model calls**. This is verification of one saved proposal, not
+a new strategy comparison or held-out evaluation. Browse the
+[Sandbox supplement](demo/f6-sandbox/index.html). The historical F6 counts and
+Docker provenance above remain unchanged; no billed dollar amount is confirmed.
+
 Separately, a deliberately constructed bad-patch challenge rejected 16/16
 patches with static gates. Those patches are constructed, not model output,
 and the challenge does not establish behavioral verification.
@@ -113,15 +126,18 @@ static policy; it does not establish arbitrary semantic equivalence. Public
 repository downloads support inspection only, and arbitrary public execution
 and remote dependency installation remain outside this slice.
 
-The published real demo uses live Nemotron inference and local Docker execution.
-Synthetic Sandbox contracts are labelled separately. Sandbox access alone would
-not turn those historical runs into live cloud execution evidence.
+The original demo uses live Nemotron inference and local Docker execution.
+The Sandbox supplement records actual execution of the saved agent repair and
+keeps its provenance separate. Synthetic Sandbox contracts are labelled
+separately. Neither saved evidence bundle is a functional live-agent service.
 
 ## Testing instructions for judges
 
 Open the [saved demo bundle](demo/f6/index.html) from the checkout without keys,
 Docker, inference, or a web server. It includes both model outcomes and the
 successful repair's downloadable evidence.
+The [Sandbox supplement](demo/f6-sandbox/index.html) separately shows the saved
+repair's cloud verification without a provider account or new execution.
 
 Follow the [judge quickstart](JUDGE_QUICKSTART.md) to execute a supplied manual
 repair locally with no provider account or inference credits. This exercises
@@ -129,9 +145,9 @@ failure reproduction, frozen checks, healthy preservation, and evidence export.
 It is a separate route from the recorded model repair.
 
 **Unresolved before submission:** a free functional live-agent route maintained
-through December 15, and confirmation of the runtime evidence needed for the
-chosen track. Saved evidence browsing and the manual local demo do not resolve
-that delivery dependency.
+through December 15, and confirmation that the recorded owned-fixture evidence
+meets the chosen track's requirements. Saved evidence browsing and the manual
+local demo do not resolve that delivery dependency.
 
 ## Feedback for Nebius / NVIDIA
 

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>DocDrift · saved F6 Sandbox verification</title><style>
+body{margin:0;background:#f3f5f4;color:#162b38;font:16px/1.6 system-ui,sans-serif}main{max-width:900px;margin:auto;padding:40px 24px}h1{font-size:clamp(28px,5vw,44px);line-height:1.15}h2{font-size:21px}a{color:#17674b;text-underline-offset:4px}section{background:#fff;border:1px solid #dbe3e5;border-radius:10px;margin:22px 0;padding:22px}code{font-size:.85em;overflow-wrap:anywhere}p{color:#586d77}.tag{font-size:13px;color:#17674b;font-weight:700}.notice{padding:14px;background:#fff9ed;border-left:3px solid #d3a342}li{margin:12px 0}.button{display:inline-block;background:#162b38;color:white;border-radius:6px;padding:12px 18px;text-decoration:none}table{border-collapse:collapse;width:100%;text-align:left}th,td{padding:10px;border-bottom:1px solid #dbe3e5}footer{font-size:13px;color:#586d77}</style></head><body><main>
+<p class="tag">Owned development fixture · saved Nemotron repair · live Nebius Sandboxes</p>
+<h1>The same saved repair, verified on Sandboxes</h1>
+<p>The October 15 agent proposal was re-verified on October 21 without new inference. Browse the saved original failure, patch, frozen checks and recorded operation receipts.</p>
+<p><a class="button" href="review.html">Open saved verification review</a></p>
+<section><h2>What the saved run records</h2><table><tbody>
+<tr><th>Original failure</th><td><code>OccurrenceIndex().build(words)</code> reproduced</td></tr>
+<tr><th>Accepted repair</th><td><code>OccurrenceIndex().positions(words, include_empty=True)</code></td></tr>
+<tr><th>Final behavior checks</th><td>3 target inputs + 3 healthy regression inputs passed</td></tr>
+<tr><th>Protected source/checks</th><td>Hashes preserved</td></tr>
+<tr><th>Current inference</th><td>0 calls</td></tr>
+<tr><th>Historical generation</th><td>5 Nemotron calls · 7,841 tokens</td></tr>
+<tr><th>Operation attempts</th><td>1 failed import · 3 runtime probes · 12 verifier operations</td></tr>
+</tbody></table><p>The failed import was preserved. Recovery used an existing public Python 3.12 image without another import. The probes recorded effective UID 65534, only the loopback interface, matching downloaded artifact bytes, and terminal cancellation handling.</p>
+<p class="notice">This is one DocDrift-owned development case, not held out. It does not establish general model advantage, exhaustive behavior coverage, or competition eligibility. Cancellation captures are incomplete. Billing remains unverified; raw resource cost fields are diagnostic values, not charges.</p></section>
+<section><h2>Follow the evidence</h2><ol>
+<li><a href="../f6/index.html">Read the original Nemotron/Docker comparison</a>, including the <a href="../f6/proposals/agent.json">exact saved model proposal</a>.</li>
+<li><a href="review.html">Inspect the Sandbox original failure and final checks</a>, or download the <a href="evidence.zip" download>sanitized evidence ZIP</a>.</li>
+<li><a href="runtime-report.json">Inspect the runtime/probe summary</a>. This is the final completed resume observation; its timestamps do not measure the original run duration.</li>
+<li><a href="provenance.json">Check original hashes, exact source linkage, presentation hashes and disclosed redactions</a>.</li>
+</ol><p>Verifier <a href="report.json">report</a> · <a href="ledger.json">ledger</a> · <a href="repair.json">proposal</a> · <a href="repair.patch">patch</a>.</p></section>
+<section><h2>Saved evidence and integrity</h2><p class="notice">Presentation copies redact project and authorization metadata and private report paths. HTML and unsigned ZIP hashes were rebuilt; recorded outcomes, source, frozen checks, proposal and patch remain unchanged. Hashes establish internal integrity, not authenticity or signed execution attestation.</p>
+<p><a href="README.md">Read the exact qualifications and offline rebuild/check instructions</a>. Packaging made no provider calls, new inference, or example executions. Original private artifacts were preserved.</p></section>
+<footer>Open these files directly from a fresh clone. No credentials, inference, Docker, web server, or network connection is required.</footer>
+</main></body></html>

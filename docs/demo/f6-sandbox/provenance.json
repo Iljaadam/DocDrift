@@ -1,0 +1,225 @@
+{
+  "kind": "docdrift_saved_sandbox_demo_presentation",
+  "case": "F6",
+  "run_id": "cb10f48b57264526ada5e04d12bb7641",
+  "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+  "original_input_sha256": {
+    ".docdrift/sandbox-f6/runtime-report.json": "8dbeb9059b20c3a7e2c6711fe987cc14b606c5332289c08b54c7d4f048ced14b",
+    ".docdrift/sandbox-f6/runs/cb10f48b57264526ada5e04d12bb7641/evidence.zip": "f94b30506afc437476c2a74784c7c71187ffb8e8951d76fb8a330d18042be275",
+    "docs/demo/f6/agent/evidence.zip": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+    "docs/demo/f6/proposals/agent.json": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370"
+  },
+  "source_linkage": {
+    "source_evidence": "../f6/agent/evidence.zip",
+    "source_evidence_sha256": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+    "source_proposal": "../f6/proposals/agent.json",
+    "source_proposal_sha256": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+    "repair_json_is_byte_identical_to_source_proposal": true,
+    "byte_identical_source_archive_members": [
+      "original.py",
+      "original/LICENSE",
+      "original/README.md",
+      "original/drift_demo/__init__.py",
+      "original/pyproject.toml",
+      "profile/checks.py",
+      "profile/profile.json",
+      "repair.patch",
+      "repaired.py",
+      "replacement.py"
+    ]
+  },
+  "original_archive_member_sha256": {
+    "commands.json": "fd006d0343addade036038c36796ea88f8805be7fa4e9f7bf700c9ac4f4578ed",
+    "ledger.json": "59beb924b1e54a3ea8843b89a9088895ec41585608d68092fd51a3085dbbc46a",
+    "logs/01a15f8f-bccf-73ad-83d9-0ae7842d074d.stderr.txt": "93906faada9004873c68b0f90d1b54286893fee9d63e6a1747bbe62e1cb2d7a5",
+    "logs/01a15f8f-bccf-73ad-83d9-0ae7842d074d.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-c3a5-7248-91ec-fc8eb9efe01e.stderr.txt": "93906faada9004873c68b0f90d1b54286893fee9d63e6a1747bbe62e1cb2d7a5",
+    "logs/01a15f8f-c3a5-7248-91ec-fc8eb9efe01e.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-c9f6-760e-8d1a-38665244d6d3.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-c9f6-760e-8d1a-38665244d6d3.stdout.txt": "e7538a1d800261f0dd3bd7a8002217f6511bdf8fcc59c1fc40fbf92ae24b4034",
+    "logs/01a15f8f-cf83-747b-8ab7-935454c84366.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-cf83-747b-8ab7-935454c84366.stdout.txt": "11daeed899af0b7efb9ba234f0377e4bffca29d5ca53fde5fdcefbeff3df097e",
+    "logs/01a15f8f-d3c9-74f0-af1b-3bfed703a9a6.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-d3c9-74f0-af1b-3bfed703a9a6.stdout.txt": "f436e8c5539a76913affdd8407a94ae1cf62a6af684427e64999b1b8537b96dd",
+    "logs/01a15f8f-dbed-737f-81b0-9a254081e53b.stderr.txt": "93906faada9004873c68b0f90d1b54286893fee9d63e6a1747bbe62e1cb2d7a5",
+    "logs/01a15f8f-dbed-737f-81b0-9a254081e53b.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-e301-73fb-906a-7ed7a74495f4.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-e301-73fb-906a-7ed7a74495f4.stdout.txt": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "logs/01a15f8f-e88e-7169-8114-68f26321f2a8.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-e88e-7169-8114-68f26321f2a8.stdout.txt": "7c6b9beafb93dc6761c14f68f96e590de3182a2bf479350370ad36a279f5eb64",
+    "logs/01a15f8f-ee9b-70e7-82d3-825c959b3918.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-ee9b-70e7-82d3-825c959b3918.stdout.txt": "7948b9b5bcec522940b8a21dd9547b8b86384678041451626f11f76c4455aff5",
+    "logs/01a15f8f-f424-73c8-828a-48836c225b4d.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-f424-73c8-828a-48836c225b4d.stdout.txt": "e7538a1d800261f0dd3bd7a8002217f6511bdf8fcc59c1fc40fbf92ae24b4034",
+    "logs/01a15f8f-faff-77a5-b9f6-6722253f469d.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-faff-77a5-b9f6-6722253f469d.stdout.txt": "11daeed899af0b7efb9ba234f0377e4bffca29d5ca53fde5fdcefbeff3df097e",
+    "logs/01a15f8f-ff2a-71bb-b21a-2912830fe9c9.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/01a15f8f-ff2a-71bb-b21a-2912830fe9c9.stdout.txt": "f436e8c5539a76913affdd8407a94ae1cf62a6af684427e64999b1b8537b96dd",
+    "manifest.json": "64bbbec3cb677f8c979c7e644dbec123510eeef51bf3a42095116ce3639e2697",
+    "original.py": "158fca3206b8480c37ed96068a0e2e90d6fb33029f68c869243e9600f1f2c609",
+    "original/LICENSE": "bc7417ddec752e01427a3870ed5a4de61bd2961c30d603470d16c9ed40403c30",
+    "original/README.md": "2a8cbd301bd4cea315b91fc68a97cf796feb86908ed33a4ac834f2c1cf68e9f2",
+    "original/drift_demo/__init__.py": "f28dc9c30fe883195db44e8979f6d7b914a62ae30dee0071a8240692ce860ce8",
+    "original/pyproject.toml": "d48b46a439f062826b19dce8ee6dd41a1cffec9560597f172a3cb754f91fbc04",
+    "profile/checks.py": "47af70a0f9cdd12e92615cff3594db629c8a93f33858d7220dc9dba5ebb09462",
+    "profile/profile.json": "3ed2b6fe4fa05739f508e380407bb94ee7d5af8ea4a065ca21e32d66ef6979b2",
+    "repair.json": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+    "repair.patch": "3d71274b5a86e1eca5d77c3a8b92b4dfc123d16048531d2c4f77d6e64e03601a",
+    "repaired.py": "d25a2ab22bf909830e32935660a3017d0423296327005469f4cfcc67acb43920",
+    "replacement.py": "9e7931d832359dbbbdda763dd27a40f477533e97c0ab4469dcd2fb24cb5e2f66",
+    "report.json": "34c37e5fd35f59c33decf1e4e2eb26bcc7e9f16841955e41f0134bf0870e5327",
+    "review.html": "76786db105e755e358e67d3836b75eb98ea77d5a18e8118a6bab541b9b11e1ce"
+  },
+  "original_archive_integrity": {
+    "kind": "docdrift_evidence_integrity",
+    "status": "integrity_verified",
+    "files_checked": 39,
+    "archive_sha256": "f94b30506afc437476c2a74784c7c71187ffb8e8951d76fb8a330d18042be275",
+    "uncompressed_bytes": 124477,
+    "execution_attested": false,
+    "authenticity_attested": false,
+    "coverage_note": "Checks member bytes against the bundled unsigned SHA-256 manifest. Anyone can replace both content and hashes. This is not proof of origin, an execution attestation, or fresh behavior verification; saved claims are not endorsed."
+  },
+  "source_archive_integrity": {
+    "kind": "docdrift_evidence_integrity",
+    "status": "integrity_verified",
+    "files_checked": 39,
+    "archive_sha256": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+    "uncompressed_bytes": 88686,
+    "execution_attested": false,
+    "authenticity_attested": false,
+    "coverage_note": "Checks member bytes against the bundled unsigned SHA-256 manifest. Anyone can replace both content and hashes. This is not proof of origin, an execution attestation, or fresh behavior verification; saved claims are not endorsed."
+  },
+  "redactions": [
+    {
+      "replacement": "REDACTED_NEBIUS_PROJECT_ID",
+      "original_value_sha256": "95d699975ac71c10837799570d37e9366af9052408f314a3e1ad85e3fd344728",
+      "json_pointers": {
+        "report.json": [
+          "/environment/project_id"
+        ],
+        "ledger.json": [
+          "/metadata/execution_contract/billing_authorization/project_id",
+          "/events/1/payload/project_id",
+          "/phases/prepared/project_id"
+        ],
+        "commands.json": [
+          "/operations/0/billing_authorization/project_id",
+          "/operations/1/billing_authorization/project_id",
+          "/operations/2/billing_authorization/project_id",
+          "/operations/3/billing_authorization/project_id",
+          "/operations/4/billing_authorization/project_id",
+          "/operations/5/billing_authorization/project_id",
+          "/operations/6/billing_authorization/project_id",
+          "/operations/7/billing_authorization/project_id",
+          "/operations/8/billing_authorization/project_id",
+          "/operations/9/billing_authorization/project_id",
+          "/operations/10/billing_authorization/project_id",
+          "/operations/11/billing_authorization/project_id"
+        ],
+        "runtime-report.json": [
+          "/billing_authorization/project_id"
+        ]
+      }
+    },
+    {
+      "replacement": "REDACTED_AUTHORIZATION_TIMESTAMP",
+      "original_value_sha256": "56d42e99944d0d87c4150269e5aa9a19b0198043b1aece9becf25684ab53bebb",
+      "json_pointers": {
+        "report.json": [
+          "/environment/authorized_at_utc"
+        ],
+        "ledger.json": [
+          "/metadata/execution_contract/billing_authorization/authorized_at_utc",
+          "/events/1/payload/authorized_at_utc",
+          "/phases/prepared/authorized_at_utc"
+        ],
+        "commands.json": [
+          "/operations/0/billing_authorization/authorized_at_utc",
+          "/operations/1/billing_authorization/authorized_at_utc",
+          "/operations/2/billing_authorization/authorized_at_utc",
+          "/operations/3/billing_authorization/authorized_at_utc",
+          "/operations/4/billing_authorization/authorized_at_utc",
+          "/operations/5/billing_authorization/authorized_at_utc",
+          "/operations/6/billing_authorization/authorized_at_utc",
+          "/operations/7/billing_authorization/authorized_at_utc",
+          "/operations/8/billing_authorization/authorized_at_utc",
+          "/operations/9/billing_authorization/authorized_at_utc",
+          "/operations/10/billing_authorization/authorized_at_utc",
+          "/operations/11/billing_authorization/authorized_at_utc"
+        ],
+        "runtime-report.json": [
+          "/billing_authorization/authorized_at_utc"
+        ]
+      }
+    },
+    {
+      "replacement": "REDACTED_AUTHORIZATION_RECORD",
+      "original_value_sha256": "3d1e304e817f7e0578a907c8b4bc64a13bf5bbe8a2bbdf5b0d72fcbaa78b0ae3",
+      "json_pointers": {
+        "runtime-report.json": [
+          "/authorization_record"
+        ]
+      }
+    },
+    {
+      "replacement": "REDACTED_IMAGE_REUSE_RECORD",
+      "original_value_sha256": "1d1eb9456b90dc09f952c59b56f0fe0ac86ab5b03f512e562af6272b82d764e7",
+      "json_pointers": {
+        "runtime-report.json": [
+          "/reuse_record"
+        ]
+      }
+    },
+    {
+      "replacement": "report.json",
+      "original_value_sha256": "e882ee310bf1c78994ab371b01326a2a2e1bd72191a7db14a069a8c16bc03984",
+      "json_pointers": {
+        "runtime-report.json": [
+          "/verification_report"
+        ]
+      }
+    },
+    {
+      "replacement": "review.html",
+      "original_value_sha256": "12709bb93d240eaf922fbc8d0de5b46fb40b440d5e71bbd6597f6f132e8ee52c",
+      "json_pointers": {
+        "runtime-report.json": [
+          "/review_path"
+        ]
+      }
+    }
+  ],
+  "transformations": [
+    "Replaced only disclosed complete JSON string values in report, ledger, commands, and runtime-report presentation copies; reserialized those JSON files.",
+    "Regenerated review.html with an explicit saved-evidence notice.",
+    "Rebuilt the unsigned manifest and deterministic ZIP; all other original archive member bytes are unchanged.",
+    "Published the sanitized runtime-report separately from the original 39-member evidence payload; raw provider responses, account records and private state are omitted.",
+    "Added an index and README describing source linkage, current versus historical usage, and limitations."
+  ],
+  "credential_scan": "Input/output text and all ZIP members checked for common key/token/private-key patterns; no matches. No credential file loaded.",
+  "published_archive_integrity": {
+    "kind": "docdrift_evidence_integrity",
+    "status": "integrity_verified",
+    "files_checked": 39,
+    "archive_sha256": "ec8d789ded0c343dae4c9197893002389613cf42566ac4b80bb72d66062dd97c",
+    "uncompressed_bytes": 124866,
+    "execution_attested": false,
+    "authenticity_attested": false,
+    "coverage_note": "Checks member bytes against the bundled unsigned SHA-256 manifest. Anyone can replace both content and hashes. This is not proof of origin, an execution attestation, or fresh behavior verification; saved claims are not endorsed."
+  },
+  "published_file_sha256": {
+    "README.md": "812f97c68f19ae8d86ab49411fb597444db5c943e285cc770028990526825439",
+    "commands.json": "57787855bd34f52d741a84ccadd61a5493e95baacc239cbf72eb4c3dbcb841c8",
+    "evidence.zip": "ec8d789ded0c343dae4c9197893002389613cf42566ac4b80bb72d66062dd97c",
+    "index.html": "2276d01c4ded357a58c299c9441725103e7f7b565649a1d42df8f513b7ea13d4",
+    "ledger.json": "66c1faa7f85a4f2c36d83b84b4369fefc25f5d2088c12373efaa13a4b9b3515b",
+    "manifest.json": "89d8ff49e4de15d82b167c291a7dce0961fc1d110c3d532ee8c74fb0809cb817",
+    "repair.json": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
+    "repair.patch": "3d71274b5a86e1eca5d77c3a8b92b4dfc123d16048531d2c4f77d6e64e03601a",
+    "report.json": "e4afe797ae0e79d7b2ca67c63dcf19ea653ae054c1b447eb6dc27165fde1ab0f",
+    "review.html": "f2442fd52ff8a27fff43b0564121e1a8bbc81173e422bb8a06ee29473d8c1702",
+    "runtime-report.json": "f2896ab9ea355396e6390a7407953a751a7c8a6d7a5c28e253179a8ac69212f7"
+  },
+  "limits": "Unsigned hashes establish internal consistency only, not origin or signed execution attestation. Packaging made no provider calls or new execution. One owned development case, not held out; billing remains unverified."
+}

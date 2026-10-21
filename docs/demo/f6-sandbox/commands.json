@@ -1,0 +1,460 @@
+{
+  "operations": [
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-bccf-73ad-83d9-0ae7842d074d",
+      "phase": "baseline_target/ex_67a84a7505e8ce0d2b61/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-c3a5-7248-91ec-fc8eb9efe01e",
+      "phase": "confirm_original/ex_67a84a7505e8ce0d2b61/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-c9f6-760e-8d1a-38665244d6d3",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-cf83-747b-8ab7-935454c84366",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/repeated",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-d3c9-74f0-af1b-3bfed703a9a6",
+      "phase": "healthy_baseline/ex_e491531653032a5fe83e/exact-strings",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-dbed-737f-81b0-9a254081e53b",
+      "phase": "final_original/ex_67a84a7505e8ce0d2b61/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-e301-73fb-906a-7ed7a74495f4",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-e88e-7169-8114-68f26321f2a8",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/repeated",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-ee9b-70e7-82d3-825c959b3918",
+      "phase": "final_repaired/ex_67a84a7505e8ce0d2b61/exact-strings",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-f424-73c8-828a-48836c225b4d",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/empty",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-faff-77a5-b9f6-6722253f469d",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/repeated",
+      "timeout_seconds": 30
+    },
+    {
+      "arguments": [
+        "-B",
+        "/work/docdrift/runner.py"
+      ],
+      "billing_authorization": {
+        "authorized_at_utc": "REDACTED_AUTHORIZATION_TIMESTAMP",
+        "billing_coverage": "unverified",
+        "credit_coverage_confirmed": false,
+        "kind": "docdrift_sandbox_scoped_authorization",
+        "limits": {
+          "image_imports": 1,
+          "inference_calls": 0,
+          "runtime_probes": 3,
+          "verifier_operations": 12
+        },
+        "personal_spend_limit": null,
+        "project_id": "REDACTED_NEBIUS_PROJECT_ID",
+        "source_run_id": "4fd82cb8be7a449e8815d5366665f4ac",
+        "user_authorized_scoped_run": true
+      },
+      "executable": "/usr/local/bin/python3.12",
+      "image_provenance": {
+        "failed_import_operation_id": "01a15f6f-2d46-71c6-a692-ede648b18661",
+        "image_id": "4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae",
+        "inventory_sha256": "6cf75fc2ca61dab5732d4016586f0296218dd154923ef0f7c5fbbc094c116250",
+        "recovery_record_sha256": "d684d939bb4b48333fda65355d3eefbb85a2e008ee6746175bc5a530b818d9d7",
+        "source_kind": "existing_public_image_after_failed_import",
+        "tag": "python:3.12-slim"
+      },
+      "network": "disabled_and_capability_probed",
+      "repository_path": "/work/docdrift/repository",
+      "scope": "saved_f6_only",
+      "synthetic": false,
+      "operation_id": "01a15f8f-ff2a-71bb-b21a-2912830fe9c9",
+      "phase": "healthy_regression/ex_e491531653032a5fe83e/exact-strings",
+      "timeout_seconds": 30
+    }
+  ]
+}

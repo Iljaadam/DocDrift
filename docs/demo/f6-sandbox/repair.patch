@@ -1,0 +1,11 @@
+--- a/README.md
++++ b/README.md
+@@ -16,7 +16,7 @@
+ from drift_demo import OccurrenceIndex
+ 
+ words = json.loads(os.environ["DOCDRIFT_INPUT"])
+-result = OccurrenceIndex().build(words)
++result = OccurrenceIndex().positions(words, include_empty=True)
+ print(json.dumps(result, sort_keys=True))
+ ```
+ 

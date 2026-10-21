@@ -17,8 +17,11 @@ Oct 16 (F7). The existing bearer key plus this project ID in the `Project` heade
 returned import, spawn, disposable-spawn, list, cancel, and image-tag permissions.
 The user's normal-terminal run created one import operation on Oct 21 (F10),
 which failed with a provider-side registry-download HTTP 404 and no result image.
-No runtime probes or verifier operations ran; billing remains unverified.
-All snippet execution so far is local Docker. The user explicitly authorized
+Recovery using an existing public image subsequently completed (F12): three
+runtime probes and twelve verifier operations, with the saved repair
+`behavior_verified` and no new inference. Billing remains unverified.
+The original F3–F6 model comparisons used local Docker; F12 separately verifies
+the saved F6 agent proposal on Nebius Sandboxes. The user explicitly authorized
 the prepared fixed-F6 Sandbox run while billing clarification is pending (D25).
 This supersedes D20's coverage-before-run condition for that bounded run only;
 it does not confirm coverage or any dollar spending cap. Default adapters/CLI
@@ -29,8 +32,8 @@ sandbox escalation (`sandbox_approval=false`). No provider response, resource
 submission, or live session state was produced by that earlier agent attempt.
 The later normal-terminal run reached Nebius (F10). Read-only discovery then
 listed existing `python:3.12-slim` UUID `4fa16c8f-62a9-35a4-a4ea-07b7e8cd44ae`
-(F11). Its fixed recovery is prepared under D27; no existing-image inspection or
-runtime operation has run yet, and no further billing-permission gate is needed.
+(F11). Its fixed recovery under D27 completed on Oct 21 (F12). Preserve the
+consumed operation allowance and receipts; continue with saved evidence.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -42,8 +45,8 @@ runtime operation has run yet, and no further billing-permission gate is needed.
 - [x] Live Nemotron tool-call response recorded (`docs/FEEDBACK_LOG.md` F2)
 - [x] Sandbox access application submitted Oct 15; permission confirmed Oct 16
   by one approved read-only `whoami` (F7)
-- [ ] Sandbox offline execution, image reuse, result parsing, cancellation, and
-  artifact download checked live under D25's scoped user authorization
+- [x] Sandbox offline execution, existing-image reuse, result parsing, terminal
+  cancellation, and exact-byte artifact download checked live under D25 (F12)
 
 **Manual vertical slice (milestone 1)**
 - [x] Local Docker slice: original failure, repaired checks, healthy neighbors, export, resume
@@ -53,7 +56,8 @@ runtime operation has run yet, and no further billing-permission gate is needed.
   import/probe/verification receipts, and separate historical/current model usage
 - [x] Prepare fixed existing-image recovery after the first import failed:
   pinned discovered UUID, preserved failed receipt, no additional import
-- [ ] Same slice on Nebius Sandbox: remote prep, original reproduction, pristine re-verification, operation reconciliation
+- [x] Same saved repair on Nebius Sandboxes: existing-image prep, original
+  reproduction, pristine re-verification, operation reconciliation (F12)
 
 **Model repair (milestone 2)**
 - [x] Tool loop, one-shot baseline, Token Factory client built and tested offline (`docs/MODEL_REPAIR.md`)
@@ -92,34 +96,33 @@ runtime operation has run yet, and no further billing-permission gate is needed.
 - [x] Package a sanitized demo from saved real Nemotron/Docker F6 evidence:
   `docs/demo/f6/index.html`, both proposals, comparison, repair review, evidence ZIP,
   original hashes/redaction disclosure, and deterministic offline packaging script
+- [x] Package separate actual Sandbox verification of the same saved proposal:
+  `docs/demo/f6-sandbox/`, review, evidence ZIP, runtime record, and disclosed
+  redactions; original local Docker comparison preserved
 - [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
 - [ ] Record video under 3 minutes (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
-- [ ] Nebius/NVIDIA feedback log (template ready: `docs/FEEDBACK_LOG.md`)
+- [x] Record Nebius/NVIDIA API feedback and actual failures/successes (F1–F12 in
+  `docs/FEEDBACK_LOG.md`); no external message sent
 - [ ] Finalize Devpost write-up and submit (`docs/SUBMISSION_DRAFT.md` now records
   actual F4/F5/F6 results; held-out results and free live-agent access remain open)
 
 **Decision dates**
-- Oct 22 access fallback is no longer triggered: permission confirmed Oct 16.
-  Live runtime acceptance and credit coverage are still outstanding; local
-  Docker evidence alone leaves Coding eligibility uncertain.
+- Oct 22 access fallback is no longer triggered: permission confirmed Oct 16;
+  actual Sandbox runtime verification completed Oct 21 (F12). Credit coverage
+  and formal track qualification remain unconfirmed.
 - Sandbox access after ~Oct 26: swap only the final verification onto Sandboxes; keep the rest.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** in the same normal terminal, run the fixed verifier with both
-`--authorization .docdrift/access/sandbox-authorization-2026-10-21.json` and
-`--reuse-record .docdrift/access/sandbox-f6-existing-image.json`. The prepared
-record pins the discovered public `python:3.12-slim` UUID. It preserves the
-original failed import/session, performs one exact-image inspection, and uses
-the remaining three probes and twelve verifier operations with no new import
-or inference. Keep the same paths for resume. See
-`docs/SANDBOX_VERIFICATION.md` for the complete command. Billing clarification
-remains pending; D25 already authorizes this bounded work with unknown coverage.
-No new model evaluation is needed. The real F6 demo bundle,
-submission draft, and 2:45 video script are ready for review without further
-inference. Record the video from saved evidence, keeping local Docker provenance
-visible. D8 and the free live-agent judge-access route remain unresolved. D9 and
-its single supplemental comparison are complete.
+**Next:** browse the separate [saved Sandbox verification](docs/demo/f6-sandbox/index.html)
+and original [F6 model comparison](docs/demo/f6/index.html), then record the
+under-three-minute video from those saved artifacts. F12 completed D25's bounded
+run: one historical failed import, three probes, twelve verifier operations, no
+new inference. Preserve `.docdrift/sandbox-f6/`; no further live operation is
+needed for this verification. Billing clarification remains pending. D8 and the
+funded free live-agent judge-access route through Dec 15 remain unresolved;
+credential-free saved-evidence browsing does not fulfill the live-agent route.
+D9 and its single supplemental comparison are complete.
 
 ## Resume handoff — October 21, 2026
 
@@ -176,14 +179,35 @@ identity or receipt. A narrowed image inspection precedes selection; saved
 selection survives restarts without another inspection or import. Further
 imports and reads that would overwrite the frozen failed response are blocked.
 Provenance names the existing image separately from the failed OCI source;
-billing remains unverified. Actual inspection and runtime capability remain
-unestablished. The actual recovery record was validated offline, with no request
-or session change. Pre-recovery report/session copies were saved under
+billing remains unverified. Before activation, the recovery record was validated
+offline, with no request or session change. Pre-recovery report/session copies were saved under
 `.docdrift/access/sandbox-f6-before-image-reuse-{runtime-report,session}.json`.
 
+The user completed recovery on **Oct 21** (F12); durable execution receipts span
+approximately 17:43:32–17:43:55 UTC. The displayed 17:53:11–17:53:12 runtime
+report describes a later completed resume, not the original execution duration.
+The Python probe reported Python 3.12, effective UID 65534, and only `lo`;
+the retained artifact downloaded with exact matching bytes. The cancellation
+operation is terminal `CANCELLED`; the resume report's already-cancelled
+observation does not establish a measured cancellation race or latency.
+Run `cb10f48b57264526ada5e04d12bb7641` reproduced the original `AttributeError`,
+verified three repaired target cases and three healthy regression cases, and
+preserved source/check hashes. Its twelve verifier operations are separate from
+the three probes and historical failed import. Current inference is zero;
+historical generation remains five calls / 7,841 tokens. The unsigned original
+archive SHA-256 is
+`f94b30506afc437476c2a74784c7c71187ffb8e8951d76fb8a330d18042be275`.
+The public supplement at `docs/demo/f6-sandbox/` preserves separate cloud
+provenance without changing the original local Docker comparison or claiming
+held-out results, signed attestation, formal qualification, or confirmed billing.
+
 Validation: **824 tests pass**, including synthetic recovery lifecycle, restart,
-source-binding, and receipt-preservation checks. These tests establish no new
-provider result.
+source-binding, and receipt-preservation checks. Separately, two deterministic
+offline bundle builds match byte-for-byte; the public archive verifies 39 payload
+members, 35 of 40 total original ZIP members are unchanged, and 73 checked local
+links resolve. Its SHA-256 is
+`ec8d789ded0c343dae4c9197893002389613cf42566ac4b80bb72d66062dd97c`.
+Tests and packaging make no new provider request or execution claim.
 
 The attempted access read could not reach Nebius: local DNS failed and the
 workspace's granular policy refused sandbox escalation. No matching connector
@@ -193,14 +217,13 @@ codes and counts, not the key. The later normal-terminal run created
 `.docdrift/sandbox-f6/`; keep its failed receipt, session identity, runtime report,
 and raw operation response intact.
 
-Next: run the existing-image recovery command in `docs/SANDBOX_VERIFICATION.md`
-from the same network-enabled terminal. Do not reset state or edit the bound
-inventory, authorization, or recovery record. No new inference is needed, and
-billing permission for the existing D25 scope need not be repeated.
+Next: use the saved supplemental bundle and updated video script. Do not reset
+state or edit the bound inventory, authorization, or recovery record. No new
+inference or cloud verification is needed for F12.
 The held-out run (D8), funded free live-agent judge access through Dec 15,
-and video recording remain open. The live import failed before any snippet
-execution; no further provider request, resource submission, inference,
-deployment, or push was performed during the diagnosis.
+and video recording remain open. The user's completed live run is recorded
+separately from the agent's offline evidence audit and packaging; the latter
+make no provider request, inference, deployment, external message, or push.
 
 ## Previous resume handoff — October 16, 2026
 
@@ -475,6 +498,21 @@ Who decided what, and when. Don't reverse one without the user.
   source to an existing public reference, not a second import or a claim that it
   matches the failed OCI digest. No general image selection, new billing
   approval, deployment, or extra resource operation is introduced.
+- D28 (agent, Oct 21, recording the user's completed run): Preserve F12 as a
+  separate live Sandbox re-verification of the unchanged F6 agent proposal.
+  Publish a sanitized supplemental evidence bundle with original and presented
+  hashes; retain the historical Nemotron/local Docker comparison unchanged.
+  D25's one-import/three-probe/twelve-verifier allowance is consumed. No further
+  runtime operation or inference is needed for this result; billing, formal
+  track qualification, held-out evaluation, and free live-agent judge access
+  remain separate unresolved matters.
+- D29 (user, Oct 21): Explicitly authorized committing and pushing the completed
+  saved Sandbox verification work and preceding local commits to `origin/main`.
+  This authorizes Git delivery, not additional cloud execution or inference.
+  The current workspace still mounts `.git` read-only, rejects elevated shell
+  execution, and cannot resolve `github.com`. Prepare an isolated writable local
+  checkout and portable commit bundle without modifying the protected metadata;
+  do not claim a successful push without a remote result.
 
 ## Session log
 
@@ -623,6 +661,35 @@ Who decided what, and when. Don't reverse one without the user.
   additional provider request, image inspection, resource submission, session reset, inference, deployment,
   external message, or push during implementation. Next: user runs the prepared
   command with `--reuse-record` from the network-enabled normal terminal.
+- 2026-10-21 (live Sandbox verification recorded): User completed F12 using the
+  existing image: original failures reproduced, three repaired target cases and
+  three healthy regressions passed, protected hashes preserved, zero new
+  inference. Audited all 16 durable IDs (one failed import, three probes, twelve
+  verifier operations); completed resume added no new recorded submissions.
+  Published a separate sanitized deterministic cloud-verification bundle at
+  `docs/demo/f6-sandbox/`, preserving exact proposal/source linkage and historical
+  Docker comparison. Updated README, submission/video/quickstart, runtime notes,
+  feedback log, and handoff. All 824 tests pass; 39 public archive payload members
+  verify; 73 checked local links resolve. Offline audit/packaging made no new
+  provider request, inference, deployment, external message, or push. Commit
+  attempted but blocked: this workspace mounts `.git` read-only, so Git cannot
+  create `index.lock`; validated changes remain uncommitted in the working tree. Next:
+  record the video from saved evidence and resolve free live-agent judge access
+  through Dec 15; D8 and billing clarification remain open.
+- 2026-10-21 (Git delivery authorized): User explicitly permitted commit and push
+  and then said to proceed. All 824 tests and the completed evidence validation
+  remain applicable; implementation and evidence bytes are unchanged. Staging
+  in the original checkout still failed on read-only `.git/index.lock`; the
+  approval system rejected elevated execution, and normal GitHub lookup failed
+  DNS resolution. Prepared the authorized commit in the isolated writable
+  checkout `/tmp/docdrift-delivery-ctctogzg/repo`, preserving the nine preceding
+  commits; the original Git metadata remains unchanged. A portable full-history
+  bundle and delivery receipt are saved under `.docdrift/access/` as
+  `docdrift-main.bundle` and `git-delivery-2026-10-21.json`. The explicit push
+  attempt failed on GitHub DNS resolution, so no successful push is claimed.
+  GitHub was found as an available but unconnected plugin; a connection was
+  suggested, not assumed. No new cloud execution or inference. Next: push the
+  prepared isolated checkout from the network-enabled normal terminal.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
