@@ -184,3 +184,72 @@ def test_known_acceptance_ids_survive_runner_errors_without_exposing_other_data(
     assert 'synthetic-not-a-real-provider-key' not in output.err + report_text
     assert 'synthetic-private-value' not in output.err + report_text
     assert 'Authorization' not in output.err + report_text
+
+
+def synthetic_image_listing(monkeypatch, values):
+    requests = []
+    def handle(transport, request):
+        assert request.method == 'GET'
+        assert request.url.path == '/sandboxes/v1/images'
+        assert dict(request.url.params) == {'tag': 'python', 'limit': '1000', 'offset': '0'}
+        requests.append(request)
+        return httpx.Response(200, json={'images': values})
+    monkeypatch.setattr(httpx.HTTPTransport, 'handle_request', handle)
+    def no_side_effects(*args, **kwargs):
+        raise AssertionError('Image discovery tests must not use sockets or subprocesses')
+    monkeypatch.setattr(socket, 'socket', no_side_effects)
+    monkeypatch.setattr(subprocess, 'Popen', no_side_effects)
+    monkeypatch.setenv('NEBIUS_API_KEY', 'synthetic-image-discovery-key')
+    return requests
+
+
+@pytest.mark.parametrize('values', [[], [
+    {'uuid': '22222222-2222-4222-8222-222222222222', 'tag': 'python:3.12-slim',
+     'unknown_provider_field': 'synthetic-private-provider-data'},
+    {'uuid': '11111111-1111-4111-8111-111111111111', 'tag': 'python:3.11'},
+]])
+def test_image_discovery_is_one_read_and_preserves_failed_import_state(
+        tmp_path, monkeypatch, capsys, values):
+    requests = synthetic_image_listing(monkeypatch, values)
+    state = tmp_path / 'state'
+    state.mkdir()
+    receipt = state / 'session.json'
+    receipt.write_bytes(b'Synthetic existing failed-import receipt; must remain unchanged.\n')
+    before = {path.name: path.read_bytes() for path in state.iterdir()}
+    assert command(monkeypatch, tmp_path, 'images') == 0
+    output = capsys.readouterr()
+    result = json.loads(output.out)
+    assert output.err == '' and len(requests) == result['provider_requests'] == 1
+    assert result['images'] == sorted(
+        [{'uuid': row['uuid'], 'tag': row['tag']} for row in values],
+        key=lambda row: (row['tag'], row['uuid']))
+    assert result['image_imports'] == result['guest_executions'] == result['inference_calls'] == 0
+    assert result['billing_coverage'] == 'unverified' and result['may_have_more'] is False
+    record = Path(result['record_path'])
+    assert json.loads(record.read_text()) == result
+    assert record.stat().st_mode & 0o777 == 0o600
+    assert 'synthetic-image-discovery-key' not in output.out
+    assert 'synthetic-private-provider-data' not in output.out
+    assert {path.name: path.read_bytes() for path in state.iterdir()} == before
+    assert not (tmp_path / 'plan').exists()
+
+
+@pytest.mark.parametrize('values', [None, {}, [{'uuid': 'bad-id', 'tag': 'python:3.12'}],
+    [{'uuid': '11111111-1111-4111-8111-111111111111', 'tag': 'python:3.12\nprivate-data'}],
+    [{'uuid': '11111111-1111-4111-8111-111111111111', 'tag': 'unrelated:latest'}],
+])
+def test_invalid_image_discovery_response_is_not_saved_or_echoed(tmp_path, monkeypatch, capsys, values):
+    requests = synthetic_image_listing(monkeypatch, values)
+    assert command(monkeypatch, tmp_path, 'images') == 2
+    output = capsys.readouterr()
+    assert len(requests) == 1 and output.out == ''
+    assert output.err.strip() == 'invalid_image_list_response'
+    assert not (tmp_path / 'access').exists() and not (tmp_path / 'state').exists()
+
+
+def test_image_discovery_without_key_stops_before_client_or_state(tmp_path, monkeypatch, capsys):
+    monkeypatch.delenv('NEBIUS_API_KEY', raising=False)
+    deny_side_effects(monkeypatch)
+    assert command(monkeypatch, tmp_path, 'images') == 2
+    assert 'NEBIUS_API_KEY is required' in capsys.readouterr().err
+    assert not (tmp_path / 'access').exists() and not (tmp_path / 'state').exists()

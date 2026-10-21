@@ -575,6 +575,46 @@ def test_rejected_import_attempt_remains_consumed_on_restart(prepared):
     assert prepared.wire.counts()['POST', 'images/import'] == 1
 
 
+@pytest.mark.parametrize('status', ['FAILED', 'CANCELLED'])
+def test_terminal_unsuccessful_import_resumes_without_requests_or_receipt_changes(prepared, status):
+    original_response = prepared.wire.response
+
+    def terminal_import(request, path, payload):
+        response = original_response(request, path, payload)
+        if (request.method, path) == ('POST', 'images/import'):
+            operation = prepared.wire.operations[response.json()['uuid']]
+            operation.update(status=status, result_image_uuid=None, result={'image': None},
+                             error='Synthetic private importer detail; never report this text.')
+        return response
+
+    prepared.wire.response = terminal_import
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        with pytest.raises(RemoteAdapterError, match='import_not_successful') as first:
+            remote.import_image()
+        assert first.value.operation_id is not None
+        assert first.value.attempt_id is not None
+        receipt = remote.journal.get(first.value.attempt_id)
+        assert receipt['state'] == 'completed'
+        assert receipt['result_metadata']['service_state'] == status
+        assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 0, 'verifier_operations': 0}
+
+    operation_path = prepared.state / 'operations' / (first.value.operation_id + '.json')
+    operation_bytes = operation_path.read_bytes()
+    requests = list(prepared.wire.requests)
+    prepared.wire.operations.clear()  # Even an expired provider operation must not be polled again.
+    with F6SandboxRemote(**prepared.kwargs) as remote:
+        with pytest.raises(RemoteAdapterError, match='import_not_successful') as resumed:
+            remote.import_image()
+        assert resumed.value.operation_id == first.value.operation_id
+        assert resumed.value.attempt_id == first.value.attempt_id
+        assert remote.journal.get(first.value.attempt_id) == receipt
+        assert remote.operation_counts == {'image_imports': 1, 'runtime_probes': 0, 'verifier_operations': 0}
+        assert remote.image_id is None
+        assert remote.run_id is None
+    assert prepared.wire.requests == requests
+    assert operation_path.read_bytes() == operation_bytes
+
+
 def test_foreign_operation_cannot_be_observed_or_cancelled(prepared):
     with F6SandboxRemote(**prepared.kwargs) as remote:
         with pytest.raises(RemoteAdapterError, match='read_out_of_scope'):

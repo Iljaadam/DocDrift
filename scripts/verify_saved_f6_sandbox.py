@@ -3,7 +3,8 @@
 ``prepare`` is offline and needs only the committed demo bundle. ``run`` also
 requires a credit-coverage or scoped user-authorization record, plus
 NEBIUS_API_KEY in the environment. Authorization does not establish billing terms.
-Neither command performs inference or evaluates held-out examples.
+``images`` makes one read-only public Python image-list request and selects no image.
+None of these commands performs inference or evaluates held-out examples.
 """
 
 from __future__ import annotations
@@ -14,12 +15,14 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+import re
 import sys
 from uuid import UUID
 
 from docdrift.engine import resume_run
 from docdrift.evidence import verify_evidence
-from docdrift.nebius import RemoteAdapterError
+from docdrift.nebius import NebiusSandboxAdapter, RemoteAdapterError
+from docdrift.sandbox_execution import _image_uuid
 from docdrift.sandbox_plan import initialize_f6_run, prepare_f6_plan, validate_f6_plan
 
 
@@ -74,6 +77,48 @@ def preparation(args) -> dict:
         'provider_requests': 0,
         'authorization': 'A credit-coverage or scoped user-authorization record is required before run.',
     }
+
+
+def discover_images(args) -> dict:
+    """List public Python image references with one GET and no resource creation."""
+    if args.project != PROJECT:
+        raise ValueError('Image discovery is scoped to the approved project')
+    key = os.environ.get('NEBIUS_API_KEY')
+    if not key:
+        raise ValueError('NEBIUS_API_KEY is required in the environment; no credentials are read automatically.')
+    query = {'tag': 'python', 'limit': 1000, 'offset': 0}
+    with NebiusSandboxAdapter(key, args.project) as remote:
+        _, content = remote._request('GET', 'images', params=query)
+        values = remote._object(content).get('images')
+    if not isinstance(values, list) or len(values) > query['limit']:
+        raise RemoteAdapterError('invalid_image_list_response')
+    images = []
+    for row in values:
+        if not isinstance(row, dict):
+            raise RemoteAdapterError('invalid_image_list_response')
+        try:
+            image_id = _image_uuid(row.get('uuid'))
+        except ValueError:
+            raise RemoteAdapterError('invalid_image_list_response') from None
+        tag = row.get('tag')
+        if (not isinstance(tag, str) or not tag.startswith(query['tag'])
+                or re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:/@+-]{0,255}', tag) is None):
+            raise RemoteAdapterError('invalid_image_list_response')
+        images.append({'uuid': image_id, 'tag': tag})
+    result = {
+        'kind': 'sandbox_public_python_image_inventory', 'status': 'read_only_images_listed',
+        'recorded_at_utc': datetime.now(timezone.utc).isoformat(), 'project_id': args.project,
+        'query': query, 'images': sorted(images, key=lambda row: (row['tag'], row['uuid'])),
+        'may_have_more': len(values) == query['limit'],
+        'provider_requests': 1, 'image_imports': 0, 'guest_executions': 0, 'inference_calls': 0,
+        'billing_coverage': 'unverified',
+        'note': 'Discovery only. Tags are mutable; no image selected and no Python capability verified.',
+    }
+    timestamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    path = args.state_root.parent / 'access' / f'sandbox-python-images-{timestamp}.json'
+    result['record_path'] = str(path)
+    write_json(path, result)
+    return result
 
 
 def verification(args) -> dict:
@@ -196,7 +241,7 @@ def verification(args) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('prepare', 'run'))
+    parser.add_argument('command', choices=('prepare', 'images', 'run'))
     parser.add_argument('--plan-root', type=Path, default=ROOT / '.docdrift/sandbox-f6-plan')
     parser.add_argument('--state-root', type=Path, default=ROOT / '.docdrift/sandbox-f6')
     parser.add_argument('--coverage', '--authorization', dest='coverage', type=Path,
@@ -206,7 +251,12 @@ def main() -> int:
     args = parser.parse_args()
     os.umask(0o077)
     try:
-        result = preparation(args) if args.command == 'prepare' else verification(args)
+        if args.command == 'prepare':
+            result = preparation(args)
+        elif args.command == 'images':
+            result = discover_images(args)
+        else:
+            result = verification(args)
     except (RemoteAdapterError, ValueError, OSError) as exc:
         message = exc.code if isinstance(exc, RemoteAdapterError) else str(exc)
         if isinstance(exc, RemoteAdapterError):
@@ -216,7 +266,7 @@ def main() -> int:
         print(message, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2))
-    return 0 if result['status'] in {'completed', 'prepared_offline'} else 2
+    return 0 if result['status'] in {'completed', 'prepared_offline', 'read_only_images_listed'} else 2
 
 
 if __name__ == '__main__':

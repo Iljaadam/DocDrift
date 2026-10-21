@@ -48,6 +48,9 @@ demo-able submission.
     actual charges. Retain the operation limits and durable receipts. Default
     adapters/CLI keep their live mutation blocks; there is no general
     live-execution switch. See `docs/SANDBOX_VERIFICATION.md` and D25.
+    The Oct 21 import failed with registry HTTP 404 (F10); its single attempt is
+    consumed. Preserve `.docdrift/sandbox-f6/`. Next is read-only `images`
+    discovery, not another import or state reset; see D26.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

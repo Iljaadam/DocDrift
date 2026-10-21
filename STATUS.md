@@ -15,8 +15,10 @@ Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
 Sandboxes: access confirmed by one user-approved read-only `GET whoami` on
 Oct 16 (F7). The existing bearer key plus this project ID in the `Project` header
 returned import, spawn, disposable-spawn, list, cancel, and image-tag permissions.
-No resources were created; credit coverage and live execution remain unverified.
-All snippet execution so far is local Docker. The user now explicitly authorizes
+The user's normal-terminal run created one import operation on Oct 21 (F10),
+which failed with a provider-side registry-download HTTP 404 and no result image.
+No runtime probes or verifier operations ran; billing remains unverified.
+All snippet execution so far is local Docker. The user explicitly authorized
 the prepared fixed-F6 Sandbox run while billing clarification is pending (D25).
 This supersedes D20's coverage-before-run condition for that bounded run only;
 it does not confirm coverage or any dollar spending cap. Default adapters/CLI
@@ -24,8 +26,9 @@ still block mutations.
 The Oct 21 access-read attempt failed locally (`transport_error`); DNS resolution
 returned `gaierror` / `EAI_AGAIN` and the workspace policy rejected a DNS-only
 sandbox escalation (`sandbox_approval=false`). No provider response, resource
-submission, or live session state was produced. This is an execution-environment
-blocker, not another permission/credit gate; see feedback F9.
+submission, or live session state was produced by that earlier agent attempt.
+The later normal-terminal run reached Nebius (F10); the current blocker is the
+failed image import, not another billing-permission gate.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -99,12 +102,16 @@ blocker, not another permission/credit gate; see feedback F9.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** run the prepared fixed-F6 verification from a network-enabled execution
-environment under D25's already recorded user authorization despite unresolved
-billing: one private image import, three
-capability probes, and twelve saved-repair verifier operations. Record the
-permission separately from coverage and actual charges; see
-`docs/SANDBOX_VERIFICATION.md`. Provider billing clarification remains pending.
+**Next:** in the same normal terminal, run
+`.venv/bin/python scripts/verify_saved_f6_sandbox.py images` for a read-only
+inventory of existing public Python images. The one allowed import was consumed
+by terminal failed operation `01a15f6f-2d46-71c6-a692-ede648b18661`. Preserve its
+state and do not submit a replacement import or change state directories to
+reset the allowance. Inspect the discovered immutable image IDs before
+implementing a concrete existing-image recovery contract; no automatic fallback
+is enabled. The three runtime probes and twelve verifier operations remain
+unexecuted. See `docs/SANDBOX_VERIFICATION.md`. Billing clarification remains
+pending; D25 already authorizes the original bounded run with unknown coverage.
 No new model evaluation is needed. The real F6 demo bundle,
 submission draft, and 2:45 video script are ready for review without further
 inference. Record the video from saved evidence, keeping local Docker provenance
@@ -140,26 +147,42 @@ blocked; they are not new provider results. Default live-execution restrictions,
 the one-import/three-probe/twelve-verification scope, and both frozen inventories
 are unchanged.
 
-Validation: **751 tests pass**, including thirty-two new synthetic authorization
-cases in this update. Offline F6 preparation and the actual scoped authorization
-validate without provider requests or inference. Both frozen inventories and
-the original saved evidence remain unchanged.
+The user subsequently ran the command from their regular terminal. Nebius
+accepted the private import at 17:08:04 UTC on Oct 21; it failed while fetching
+the digest-pinned Python image with HTTP 404. The saved operation contains no
+exact failing registry URL or evidence of the underlying 404 cause. No image,
+probe, verifier run, or inference resulted. The one import attempt is consumed.
+Raw response SHA-256:
+`c9eaa5d1fd3e121f87c47c75b75951a6288dfdf8765735b6f78783b348fd1ab5`.
+
+The runner now returns saved terminal failed/cancelled imports immediately
+without another GET or POST, retaining operation/attempt IDs and unchanged
+receipts. New read-only `images` discovery makes one filtered public-image GET,
+saves sanitized UUID/tag pairs separately, and neither selects an image nor
+changes the live state. Existing-image recovery is not implemented yet; discovery
+comes first. The failed import and current image-binding guard remain intact.
+
+Validation: **761 tests pass**, including ten new synthetic terminal-import and
+image-discovery cases. The saved real failed receipt and operation response are
+unchanged; both frozen inventories and the original published F6 evidence remain
+unchanged.
 
 The attempted access read could not reach Nebius: local DNS failed and the
 workspace's granular policy refused sandbox escalation. No matching connector
 was found in the plugin search results. The local failure record is
 `.docdrift/access/sandbox-network-failure-2026-10-21.json`; it contains safe error
-codes and counts, not the key. `.docdrift/sandbox-f6/` has not been created, so
-the one-import/three-probe/twelve-verification allowance is unconsumed.
+codes and counts, not the key. The later normal-terminal run created
+`.docdrift/sandbox-f6/`; keep its failed receipt, session identity, runtime report,
+and raw operation response intact.
 
-Next: run the command in `docs/SANDBOX_VERIFICATION.md` from a network-enabled
-terminal or session using the existing authorization record and Nebius
-credential. Do not ask for billing permission again for this bounded run.
-No new inference is needed.
+Next: run the read-only `images` command from the same network-enabled terminal,
+inspect available immutable Python image references, then implement explicit
+image reuse if suitable. Do not retry by resetting state. No new inference is
+needed, and billing permission for the existing D25 scope need not be repeated.
 The held-out run (D8), funded free live-agent judge access through Dec 15,
-and video recording remain open. One authenticated access request was attempted
-but received no provider response; no resource submission, inference, deployment,
-or push occurred this session.
+and video recording remain open. The live import failed before any snippet
+execution; no further provider request, resource submission, inference,
+deployment, or push was performed during the diagnosis.
 
 ## Previous resume handoff — October 16, 2026
 
@@ -420,6 +443,11 @@ Who decided what, and when. Don't reverse one without the user.
   coverage, free pricing, a monetary cap, or actual $0 charges. Default live
   adapters/CLI remain guarded; no held-out inference, deployment, general
   service activation, external messaging, or push is authorized.
+- D26 (agent, Oct 21): Preserve the terminal failed F10 import as the single
+  consumed attempt. Do not reset state or silently replace its registry/image
+  identity. Add read-only public Python image discovery to make a possible
+  existing-image recovery concrete before changing the runtime contract. The
+  discovery makes no resource mutation and does not authorize another import.
 
 ## Session log
 
@@ -551,6 +579,14 @@ Who decided what, and when. Don't reverse one without the user.
   submission, live state, inference, external message, deployment, or push.
   Next: execute the prepared command in a network-enabled environment under the
   existing permission; no repeat billing confirmation is needed for this scope.
+- 2026-10-21 (import diagnosis): User ran the fixed verifier in their normal
+  terminal; Nebius accepted import `01a15f6f-2d46-71c6-a692-ede648b18661`, then
+  reported terminal FAILED with HTTP 404 from the registry pull (F10). No result
+  image, runtime probe, verifier operation, or new inference. Preserved actual
+  receipts; fixed completed-failure resume to stop without provider requests and
+  added a read-only public Python image inventory command. 761 tests pass. Next: run `images`
+  in the same terminal, then inspect possible existing-image recovery; no
+  automatic reimport, fallback, state reset, or new provider call was performed.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

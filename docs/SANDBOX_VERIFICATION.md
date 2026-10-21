@@ -1,9 +1,9 @@
 # Verify the saved F6 repair on Sandboxes
 
-The fixed-scope path is prepared for the next real execution test. **No live
-Sandbox resources have been created, and no new inference has been performed.**
-The successful read-only `whoami` check confirmed permission flags, not credit
-coverage or runtime behavior. The [published F6 evidence](demo/f6/index.html)
+The first real image-import operation was accepted on October 21, then failed
+while the provider importer fetched the pinned Python image (HTTP 404).
+**One import attempt is consumed; no image, runtime probe, verifier operation,
+or new inference resulted.** The [published F6 evidence](demo/f6/index.html)
 remains live Nemotron generation with local Docker verification.
 
 ## Prepare offline
@@ -133,23 +133,53 @@ hosting, or general live execution.
 
 ## Current execution environment
 
-On October 21 an authorized read-only access attempt failed locally with
+The user ran the command from their normal terminal on October 21. Nebius
+accepted image-import operation `01a15f6f-2d46-71c6-a692-ede648b18661` at
+17:08:04 UTC; it reached `FAILED`. Its saved error reports HTTP 404 during the
+registry pull. The response identifies no exact registry request URL or reason
+for the 404. No result image was returned. This confirms an accepted provider
+request, not runtime capability or billing coverage. See feedback F10.
+
+The failed receipt, raw operation response, authorization binding, and runtime
+report remain in `.docdrift/sandbox-f6/`. A rerun now returns the saved terminal
+failure immediately without another provider request. Do not delete state,
+change the registry binding, or select a different state directory to bypass
+the consumed import allowance.
+
+Earlier in this agent session, an authorized read-only access attempt failed locally with
 `transport_error`; a credential-free DNS diagnostic returned `gaierror` /
 `EAI_AGAIN`. The workspace's granular approval policy rejected a DNS-only sandbox
-escalation because `sandbox_approval=false`. No provider response was received,
-and no image import, probe, verifier operation, or live session state was created.
-The safe local diagnostic record is
+escalation because `sandbox_approval=false`. That local attempt received no
+provider response. Its diagnostic record is
 `.docdrift/access/sandbox-network-failure-2026-10-21.json`.
 
-Use the already recorded permission and the command below from a network-enabled
-terminal or session. The scoped operation allowance is unconsumed; no further
-billing permission is required for that run. Keep the existing private credential
-and authorization record on the machine used for execution.
+### Next: discover an existing Python image without importing
+
+In the same normal terminal with `NEBIUS_API_KEY` still loaded, run:
+
+```sh
+.venv/bin/python scripts/verify_saved_f6_sandbox.py images
+```
+
+This makes one [public-image listing GET](https://docs.tokenfactory.nebius.com/api-reference/sandboxes/images/list-publicly-available-images)
+filtered to `python` tags, saves a mode-600 timestamped inventory under
+`.docdrift/access/`, and prints only UUID/tag pairs plus request counters.
+It creates no resource, chooses no image, and leaves the failed run untouched.
+Tags are discovery hints; Python 3.12 capability is not established by a tag.
+
+The next recovery option is an already available immutable Python image, if one
+is listed. Its selection/provenance and runtime capability still need a concrete
+recovery implementation; the current runner correctly requires a successful
+import receipt before binding an image. No public-image fallback or replacement
+import is enabled automatically. [Nebius documents existing-image references](https://docs.tokenfactory.nebius.com/sandboxes/guides/prepare-and-reuse-environments)
+as an alternative to OCI import without preparation compute.
 
 ## Run the fixed verification
 
-For the currently authorized scoped run, explicitly load the key from its
-existing private file outside the repository:
+The original invocation below is retained for reference and completed/pending
+operation recovery. With the current terminal failed import, it returns that
+saved failure rather than submitting another import. Explicitly load the key
+from its existing private file outside the repository:
 
 ```sh
 chmod 600 .docdrift/access/sandbox-authorization-2026-10-21.json

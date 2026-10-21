@@ -45,6 +45,9 @@ a SQLite run ledger, and SHA-256 manifests. Durable operation records support
 interruption recovery. An offline Nebius Sandbox adapter exercises synthetic
 HTTP request/recovery contracts; those responses execute no guest code and are
 explicitly unscored. They are separate from the real local execution evidence.
+The first private live Sandbox image import was accepted on October 21 but
+failed during the registry fetch with HTTP 404 (feedback F10); no image or
+snippet-execution evidence resulted. Runtime acceptance remains outstanding.
 
 An offline test suite and installed-wheel smoke checks cover the CLI, verifier,
 evidence integrity, recovery, and synthetic provider contracts. The archive

@@ -419,6 +419,10 @@ class F6SandboxRemote(NebiusSandboxAdapter):
         if not receipt['operation_id']:
             raise UncertainSubmission('saved_import_cannot_retry', attempt_id=receipt['attempt_id'])
         operation_id = receipt['operation_id']
+        if (receipt['state'] == 'completed'
+                and (receipt.get('result_metadata') or {}).get('service_state') in {'FAILED', 'CANCELLED'}):
+            raise RemoteAdapterError('import_not_successful', operation_id=operation_id,
+                                     attempt_id=receipt['attempt_id'])
         deadline = time.monotonic() + _IMPORT_TIMEOUT
         for _ in range(61):
             _, data = self._request('GET', f'operations/{operation_id}')
@@ -429,7 +433,8 @@ class F6SandboxRemote(NebiusSandboxAdapter):
             if value['status'] in {'FAILED', 'CANCELLED'}:
                 self.journal.completed(receipt['attempt_id'], {'operation_id': operation_id,
                     'state': 'failed' if value['status'] == 'FAILED' else 'cancelled', 'service_state': value['status']})
-                raise RemoteAdapterError('import_not_successful', operation_id=operation_id)
+                raise RemoteAdapterError('import_not_successful', operation_id=operation_id,
+                                         attempt_id=receipt['attempt_id'])
             if value['status'] == 'SUCCESS':
                 result = value.get('result')
                 result = result if isinstance(result, dict) else {}

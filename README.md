@@ -159,13 +159,18 @@ requires an explicitly selected `httpx.MockTransport`. A separate
 the saved live model proposal with zero current inference: one private image
 import, three runtime probes, and 12 verifier operations. It leaves the ordinary
 CLI and mocked bridge restrictions unchanged and requires explicitly supplied
-credentials plus factual execution/import/storage coverage before network use.
+credentials plus confirmed coverage or a distinct scoped user authorization.
+The user authorized the bounded run while billing is unverified (D25).
 
-The read-only Sandbox access check succeeded, but no Sandbox resources have been
-created and runtime behavior remains untested. Preparation used public Docker
-Hub image metadata and local tests. Token Factory credits are user-reported;
-Sandbox coverage remains unconfirmed and no coverage record has been created.
-The user's personal spending limit is $0.
+The access check succeeded. The first private image-import operation was then
+accepted on Oct 21 but failed during the registry fetch with HTTP 404. No result
+image, runtime probe, verifier operation, or new inference followed. The failed
+receipt is preserved and the one import attempt is consumed. Read-only
+`scripts/verify_saved_f6_sandbox.py images` discovers existing public Python
+image references without selecting an image or changing that run. Runtime
+capability and actual Sandbox billing remain unverified; no confirmed-coverage
+record has been created. The $0 personal-spend default retains D25's narrow
+exception for the already authorized bounded run.
 
 Check deliberately constructed bad patches without executing them:
 

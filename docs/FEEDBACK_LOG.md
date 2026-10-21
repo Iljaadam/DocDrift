@@ -33,7 +33,9 @@ approximately $30 promotional credits on Oct 15 (balance/expiry unverified).
 The user approved live calls on Oct 14 after
 being asked to confirm no card and no auto top-up (reply: "yes go ahead"). Execution in
 F3–F6 is local Docker. F7 is one separately approved live Sandbox access read;
-it created no resources and performed no execution or inference.
+it created no resources and performed no execution or inference. F10 records
+the first actual import attempt, which failed before producing an image or
+running any snippet.
 
 ### F1 — Model listing works; four Nemotron models (2026-10-14)
 
@@ -207,3 +209,37 @@ it created no resources and performed no execution or inference.
 - Next: execute the prepared bounded command from a network-enabled environment
   under the already recorded user authorization. No additional billing approval
   is required for that fixed scope; actual coverage and charges remain unknown.
+
+### F10 — First image import accepted, registry fetch fails with HTTP 404 (2026-10-21, live)
+
+- Product / API: private Sandbox `POST /sandboxes/v1/images/import`, invoked by
+  the user from their normal terminal under D25. Source is the pinned official
+  Python Linux amd64 manifest documented in `SANDBOX_VERIFICATION.md`, with a
+  120-second import timeout and no public tag.
+- Expected: successful import with an immutable result image UUID, followed by
+  the three probes and twelve saved-F6 verifier operations.
+- Actual: import operation `01a15f6f-2d46-71c6-a692-ede648b18661` was accepted at
+  **17:08:04 UTC** and reached `FAILED`. The importer error reports HTTP 404
+  while pulling the configured image from `registry-1.docker.io`. No exact
+  failed registry request URL or definitive underlying 404 cause is exposed.
+  `result_image_uuid` and `result.image` are null. The provider's `duration=-1`
+  is not treated as valid elapsed time or billing data.
+- Usage: **1 import attempt, 0 runtime probes, 0 verifier operations, 0 new
+  inference calls**. Credit coverage and billed amount remain unverified. This
+  is a real failed preparation operation, not runtime or behavior verification.
+- Evidence: `.docdrift/sandbox-f6/runtime-report.json`, durable completed receipt
+  in `state.sqlite3`, and private raw response
+  `operations/01a15f6f-2d46-71c6-a692-ede648b18661.json`. Response SHA-256:
+  `c9eaa5d1fd3e121f87c47c75b75951a6288dfdf8765735b6f78783b348fd1ab5`.
+  Raw provider environment details remain private; no key is published.
+- Effect on DocDrift: the single import attempt is consumed and preserved.
+  Completed failed/cancelled imports now stop from saved receipts without
+  repolling or resubmitting. A new `images` command performs one read-only
+  public Python image listing to investigate an existing-image alternative;
+  it selects nothing and leaves the failed run untouched. No recovery mutation
+  or replacement import was attempted during this diagnosis.
+- Suggestion: expose a structured importer failure with the registry operation,
+  HTTP status, and safe cause classification; document digest-reference support
+  and troubleshooting for registry fetch failures. Existing-image reuse remains
+  a documented alternative, but its availability for Python 3.12 is unverified
+  until discovery and actual capability testing.
