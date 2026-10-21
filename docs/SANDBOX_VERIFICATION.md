@@ -35,12 +35,39 @@ usage (5 calls / 7,841 tokens) from current inference usage (zero).
 ## Record actual coverage before running
 
 Sandbox execution, image import, and storage coverage are still unconfirmed.
-The user has been asked what the actual approval covers; no answer is recorded.
+On October 21 the user supplied a Builder email promising $25 in Token Factory
+credit in a separate email, plus partner credit offers. Receipt of that specific
+$25 allocation and its Sandbox coverage are not established. The user is unsure
+whether the current Sandbox beta is free; this is not a coverage confirmation.
 Do not infer $0 operation costs from `whoami`, permission flags, or reported
 Token Factory credits. The official [Sandbox limits and usage](https://docs.tokenfactory.nebius.com/sandboxes/operate/limits-retention-and-usage)
 and [billing documentation](https://docs.tokenfactory.nebius.com/other-capabilities/billing-new)
 do not establish this project's grant coverage or protection against personal
 charges.
+
+Public primary sources checked on October 21 explain the possible confusion:
+
+- The [February 19 ConTree announcement](https://contree.dev/blog/contree-eap-announcement/)
+  explicitly advertised a "free early access program."
+- The [May 19 migration announcement](https://contree.dev/blog/contree-joins-token-factory/)
+  moved the standalone program into Token Factory Sandboxes beta, but does not
+  establish the current prices or continued free coverage.
+- The [current ConTree FAQ](https://contree.dev/) says billing is managed through
+  Token Factory. The current limits/usage page above gives no free-beta promise
+  or invoice rates for execution, import, or retained images.
+
+These sources confirm historical free access, not the current project's billing
+terms. No zero-cost record should be derived from them or from API permissions.
+The earlier approximately $30 balance and the newly quoted $25 offer must not
+be added together without evidence that the latter is a distinct received grant.
+
+Ready-to-send question for `contree@nebius.com` (draft only; not sent):
+
+> For Token Factory project `aiproject-e00a0rb50jb0emajfv`, are Sandbox execution,
+> private OCI image import, file transfer, and retained checkpoint-image storage
+> currently free during beta? If any are billed, does the $25 AI Builder Program
+> Token Factory credit cover them, and can usage stop at the credited balance
+> with no personal charges? Are these terms expected to change before December 15?
 
 Once there is an actual confirmation that all three categories are free or
 grant-covered with no personal charges, record that fact in

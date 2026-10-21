@@ -6,7 +6,9 @@ Deadline: **October 30, 2026, 17:00 UTC**. Entry point for agents: `AGENTS.md`.
 
 Token Factory: key in `~/.config/docdrift/nebius.env`; live inference approved (D5).
 Builder Program approval received, per user Oct 21 (D22). This confirms access;
-the approval's grant amount, expiry, and Sandbox billing terms remain unverified.
+the Builder email promises $25 Token Factory credit in a separate email (D24).
+Receipt of that specific allocation, expiry, and Sandbox billing terms remain
+unverified; do not add it to the earlier reported balance without reconciliation.
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
 Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
@@ -17,7 +19,9 @@ No resources were created; credit coverage and live execution remain unverified.
 All snippet execution so far is local Docker. User requested proceeding with
 planned verification (D20); its bounded runner is prepared, but no Sandbox
 resource call may run until actual coverage/no personal charges are confirmed.
-The coverage question is pending. Default adapters/CLI still block mutations.
+User is unsure of coverage (D24); current public sources do not settle whether
+the beta is free. Provider clarification is pending. Default adapters/CLI still
+block mutations.
 
 **Access (milestone 0)**
 - [x] Owned renamed-method fixture and independent contract frozen
@@ -105,7 +109,13 @@ its single supplemental comparison are complete.
 ## Resume handoff — October 21, 2026
 
 Builder access is now user-confirmed (D22); actual Sandbox execution, import,
-and storage coverage with no personal charges is still unanswered. Tavily and
+and storage coverage with no personal charges remains unconfirmed. The user
+provided the $25 Builder credit offer and is unsure whether the current beta is
+free (D24). Public research found an explicitly free February ConTree early-access
+announcement, followed by a May migration into Token Factory without a current
+free-price commitment. Sources and an unsent provider question are saved in
+`docs/SANDBOX_VERIFICATION.md`; ask the provider rather than repeating the same
+coverage question to the user. Tavily and
 LangChain credentials were supplied but have not been used or saved. No extra
 service integration is needed for the prepared F6 verification.
 
@@ -370,6 +380,16 @@ Who decided what, and when. Don't reverse one without the user.
   execution image checks strict. Preserve validated operation/attempt UUIDs
   in diagnostics for manual reconciliation, including stderr when report storage
   fails; this does not authorize resubmitting uncertain operations.
+- D24 (user/research, Oct 21): User quoted the Builder approval email: $25
+  Token Factory credit is coming separately; partner offers are $100 LangSmith,
+  $25 Tavily, $50 Toloka, and $50 Tandem. These are offered benefits, not verified
+  redeemed balances or Sandbox billing coverage. User is unsure whether beta
+  usage is free. Official February ConTree early access was advertised as free;
+  the May Token Factory migration and current docs do not confirm current free
+  execution/import/storage. Preserve D20's $0 gate; obtain provider clarification
+  using the saved draft instead of asking the user to guess or treating a zero
+  diagnostic `cost` field as billing proof. No provider message is authorized or
+  sent, and no additional grant is assumed received.
 
 ## Session log
 
@@ -482,6 +502,15 @@ Who decided what, and when. Don't reverse one without the user.
   deployment, or push. Next: actual Sandbox execution/import/storage coverage
   confirmation, then the prepared bounded live verification; D8 and funded free
   live-agent judging access remain open.
+- 2026-10-21 (billing clarification): Recorded the user's exact Builder credit
+  offer and uncertainty about Sandbox beta billing. Researched public primary
+  sources: legacy ConTree early access was explicitly free; current Token Factory
+  beta coverage remains unverified. Saved source links and an unsent provider
+  question in `docs/SANDBOX_VERIFICATION.md`. Documentation-only update; the
+  preceding full code validation remains 719 passing tests. No authenticated
+  Sandbox request, inference, resource creation, coverage record, external
+  message, deployment, or push. Next: provider confirmation of current terms;
+  local development and saved-evidence review remain available meanwhile.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
