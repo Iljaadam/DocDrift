@@ -39,9 +39,11 @@ needs the VPS's GitHub SSH key checked; refreshing `gh` alone will not fix it.
 These commands follow the [GitHub CLI status](https://cli.github.com/manual/gh_auth_status)
 and [refresh](https://cli.github.com/manual/gh_auth_refresh) documentation.
 
-Tailscale is installed, but this restricted agent session could not connect to
-the local `tailscaled` daemon on October 22. Existing route configuration and
-Funnel eligibility are therefore **unverified**. Check from the normal terminal:
+On October 22 the owner's normal terminal showed Tailscale connected and both
+Serve and Funnel reporting `No serve config`. The restricted agent session
+cannot connect to the local daemon. The exact HTTPS hostname and Funnel
+eligibility still need the normal-terminal checks below; no route was created
+by the diagnostic commands.
 
 ```bash
 tailscale version
@@ -62,18 +64,30 @@ HTTPS port `8443`. Funnel requires Tailscale 1.38.3 or newer, MagicDNS, tailnet
 HTTPS certificates, and the `funnel` policy attribute. It provides a public HTTPS
 address; judges do not need a Tailscale account. Check those requirements in the
 [official Funnel guide](https://tailscale.com/docs/features/tailscale-funnel).
-This plan assumes no newly created third-party account and changes no tailnet
-policy automatically.
+This plan uses the existing Tailscale account. On first use, the Funnel command
+may print a browser approval link. Tailscale's enablement page provisions HTTPS
+and the required Funnel policy attribute; review that page as the tailnet owner.
 
 ## Prepare private configuration
 
-Use the DNS name shown for this VPS in Tailscale, for example
-`https://YOUR-VPS.YOUR-TAILNET.ts.net:8443`. This must be the exact origin judges
-will open, including the port. Do not put a passphrase in the URL.
+Read this machine's full DNS name automatically; the short names in ordinary
+`tailscale status` output do not include the tailnet suffix. Run the following
+blocks in the same normal VPS terminal, in order. Stop at the first error.
+The command checks for a `.ts.net` hostname and prints the exact public origin,
+including port `8443`. No hostname needs to be guessed or typed manually.
 
 ```bash
+cd /home/ubuntu/docdrift/repo
+DOCDRIFT_JUDGE_ORIGIN="$(tailscale status --json | .venv/bin/python -c '
+import json, sys
+name = json.load(sys.stdin)["Self"]["DNSName"].rstrip(".")
+if not name.endswith(".ts.net") or "/" in name or ":" in name:
+    raise SystemExit("No usable Tailscale DNS name; check MagicDNS in the Tailscale admin console")
+print("https://" + name + ":8443")
+')"
+printf '%s\n' "$DOCDRIFT_JUDGE_ORIGIN"
 .venv/bin/python scripts/docdrift_judge_setup.py --prepare \
-  --public-origin https://YOUR-VPS.YOUR-TAILNET.ts.net:8443
+  --public-origin "$DOCDRIFT_JUDGE_ORIGIN"
 .venv/bin/python -m docdrift.judge_service prepare \
   --state-root .docdrift/judge \
   --authorization .docdrift/access/judge-authorization-2026-10-22.json
@@ -126,15 +140,24 @@ files. The web unit strips provider keys from its environment and hides the
 Nebius env file and plaintext passphrase. The worker's key is loaded by the
 systemd manager before its filesystem restrictions apply.
 
-Run the project's offline tests before startup. If the VPS user manager cannot
-apply a hardening setting, inspect its error rather than repeatedly restarting
+The unchanged implementation passed all 1,014 offline tests on October 22.
+Rerun the suite if the code or environment changed before startup. If the VPS
+user manager cannot apply a hardening setting, inspect its error rather than repeatedly restarting
 or removing all protections. This is an operator compatibility issue, not a
 reason to touch NewsBias services.
 
+Check that port 8765 has no listener before starting the new service; the `ss`
+output should contain only its header. Leave an unrelated listener alone and
+resolve the port choice before continuing.
+
 ```bash
-.venv/bin/python -m pytest -o addopts=""
+ss -ltn '( sport = :8765 )'
+```
+
+```bash
 systemctl --user start docdrift-judge-web.service
-curl --fail --max-time 5 http://127.0.0.1:8765/healthz
+curl --fail --retry 5 --retry-connrefused --retry-delay 1 --max-time 3 \
+  http://127.0.0.1:8765/healthz
 ```
 
 At this point the loopback interface may show saved evidence and an inactive
@@ -159,7 +182,12 @@ set +a
   --state-root .docdrift/judge \
   --authorization .docdrift/access/judge-authorization-2026-10-22.json --live
 systemctl --user start docdrift-judge-worker.service
+.venv/bin/python -m docdrift.judge_service status
 ```
+
+Wait briefly for the worker heartbeat, then repeat `status` if it initially
+reports `worker_unavailable`. Continue only when `live_ready` is true. An HTTP
+health response alone does not check the worker or provider capability.
 
 An ambiguous or failed activation keeps its durable receipt; inspect it before
 any next step. Never clear `.docdrift/judge/` to retry. The completed F6 state at
@@ -179,6 +207,12 @@ tailscale funnel --bg --https=8443 http://127.0.0.1:8765
 tailscale funnel status
 ```
 
+If Tailscale prints an enablement URL, open it in your browser while signed into
+the existing tailnet owner account and follow the HTTPS/Funnel setup there.
+Then repeat the same Funnel command. If the local CLI reports permission denied,
+run only that Funnel command with `sudo`; do not reset routes or change the
+daemon's operator globally. A public DNS update can take a few minutes.
+
 The public HTTPS origin must exactly match `DOCDRIFT_JUDGE_PUBLIC_ORIGIN`. Funnel
 handles TLS and forwards to the loopback web process. The shared password still
 protects run creation, run status, and artifact downloads. Do not add a Serve
@@ -193,6 +227,20 @@ review and archive. That acceptance attempt counts toward the twenty approved
 attempts; it is not an extra free test. Preserve four attempts for the separately
 approved held-out comparison. A saved F6 page is not proof that the fresh path
 works.
+
+Open the origin printed earlier in the browser. The username is `judge`. Read
+the generated password only in your private terminal:
+
+```bash
+cat ~/.config/docdrift/judge-password.txt
+```
+
+Keep that output out of chat and recordings. Log in, open the saved evidence,
+then run **one** fresh repair and wait for its result. Record its job ID and
+verdict, and check that both its review and evidence ZIP download. A failed job
+also consumes its attempt; inspect it before admitting another. After this
+acceptance run, the expected total used is one, leaving fifteen public attempts
+and four reserved held-out attempts.
 
 ## Run the approved held-out comparison once
 
@@ -225,6 +273,11 @@ operator can enable persistence with `sudo loginctl enable-linger "$USER"`.
 This is a system setting for the current user; no NewsBias unit is enabled,
 disabled, restarted, or otherwise changed. The app stops new admissions after
 December 15; maintain its saved artifacts for the judging period.
+
+For the development handoff, share only the public origin, `tailscale funnel
+status`, the output of `python -m docdrift.judge_service status`, the acceptance
+job ID/verdict, and any error with credentials removed. The password, provider
+key, full Tailscale JSON, and private environment files are not needed.
 
 ## Operations and rollback
 

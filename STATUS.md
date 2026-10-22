@@ -120,8 +120,10 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** check Tailscale identity and unused HTTPS port 8443 from the normal
-VPS terminal, then follow [judge deployment](docs/JUDGE_DEPLOYMENT.md). The
+**Next:** follow [judge deployment](docs/JUDGE_DEPLOYMENT.md), which now reads
+the VPS's full Tailscale HTTPS name automatically. The owner reported connected
+Tailscale and no Serve/Funnel configuration on October 22; recheck port 8443
+before publishing. The
 private controller/worker is ready for activation, not yet live-accepted.
 Activation consumes the one new capability operation; the owner acceptance run
 and four held-out jobs come from D31's twenty-attempt allowance. Preserve both
@@ -138,7 +140,7 @@ user-unit setup are implemented. Follow `docs/JUDGE_DEPLOYMENT.md` after checkin
 the VPS's Tailscale HTTPS route. Activation and actual held-out results remain
 pending; no new model call or Sandbox operation was made during implementation.
 Workspace/Git steps are in `docs/WORKSPACE_ACCESS.md`. The restricted agent cannot
-reach tailscaled; a normal-terminal route check was requested asynchronously.
+reach tailscaled; the owner completed the normal-terminal route check (D32).
 
 ## Resume handoff — October 22, 2026
 
@@ -168,9 +170,11 @@ outside the repository, or public URL has been created during implementation.
 The VPS has sufficient observed memory/disk for the small controller. `gh` is
 installed but its in-sandbox authentication check reports failure; command
 networking is restricted and original `.git` is still read-only. Tailscale is
-installed but this session cannot reach its local daemon, so HTTPS hostname,
-existing routes, and Funnel eligibility remain unknown. A safe normal-terminal
-diagnostic question is pending. `docs/WORKSPACE_ACCESS.md` includes the official
+installed but this session cannot reach its local daemon. The owner reported
+connected status and `No serve config` for Serve and Funnel; the full HTTPS
+hostname and Funnel eligibility remain unverified. The deployment guide now
+discovers the hostname from `Self.DNSName` without guessing the tailnet suffix.
+`docs/WORKSPACE_ACCESS.md` includes the official
 permission-profile approach; `docs/JUDGE_DEPLOYMENT.md` covers setup, activation,
 private password handling, isolated units, conditional port 8443, and rollback.
 Do not change any existing Tailscale route or NewsBias unit to unblock it.
@@ -592,6 +596,12 @@ Who decided what, and when. Don't reverse one without the user.
   DocDrift units on 127.0.0.1:8765 without touching NewsBias or its forbidden ports.
   Existing commit/push permission persists; provide environment/terminal steps
   where managed restrictions prevent direct work. Partner services remain unused.
+- D32 (user report, Oct 22): Normal-terminal Tailscale diagnostics show the VPS
+  connected and no existing Serve/Funnel configuration. User requests all setup
+  instructions together and does not know the full `.ts.net` name. Read it from
+  local status JSON, retain port 8443 for the isolated password-protected route,
+  and provide the ordered setup/activation/acceptance/persistence/evaluation steps.
+  These diagnostics do not establish a working public route or change D31's quota.
 
 ## Session log
 
@@ -792,6 +802,11 @@ Who decided what, and when. Don't reverse one without the user.
   checkout; remote delivery still needs working network/host permissions. Next:
   establish HTTPS route, activate the one capability probe, accept one live judge
   run, then freeze and run the four reserved held-out jobs once; record video.
+- 2026-10-22 (deployment instructions): Recorded the owner's connected Tailscale
+  and empty Serve/Funnel diagnostics (D32); replaced the hostname placeholder
+  with validated automatic discovery and consolidated startup readiness, Funnel
+  enablement, private login, acceptance, and safe handoff instructions. Source
+  implementation unchanged; actual activation and public acceptance remain pending.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
