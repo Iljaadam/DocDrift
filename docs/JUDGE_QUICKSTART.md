@@ -43,12 +43,15 @@ demonstrates failure reproduction, patch limits, independent checks, healthy
 preservation, and evidence export. It is not a live Nemotron repair service.
 The submission's free live-agent access route is still pending.
 
-The private hosted route is implemented and tested offline; its public URL and
-live acceptance remain pending. Operators should follow
+The private hosted route is running on the VPS and passed a fresh local HTTP
+acceptance repair on October 22. Public HTTPS acceptance is awaiting the owner's
+one-time Tailscale Funnel account enablement. Operators should follow
 [the VPS deployment guide](JUDGE_DEPLOYMENT.md). Once activated, judges use the
 supplied HTTPS address and private credentials without a provider account.
 The twenty-attempt allowance includes acceptance testing and the separately
-reserved held-out comparison. Saved evidence and the manual demo remain useful
+reserved held-out comparison, now completed with both strategies verifying 2/2.
+Browse its [saved results and evidence](demo/held-out/index.html) without keys or
+execution. Saved evidence and the manual demo remain useful
 while hosting is being activated.
 
 ## Set up

@@ -69,6 +69,12 @@ demo-able submission.
     Preserve F6 state; use the separate judge authorization and state directory.
     This VPS choice permits a separate DocDrift service on loopback 8765; keep
     its units, storage, and route isolated from NewsBias and the forbidden ports.
+    On Oct 22 the agent activated the single startup capability check and used
+    five attempts: one fresh acceptance repair and the four once-only held-out
+    jobs. All five returned `behavior_verified`; fifteen public attempts remain.
+    Do not repeat the held-out comparison or reset the quota. The two dedicated
+    user services are enabled and running. Public HTTPS is awaiting the owner's
+    one-time Tailscale Funnel account enablement; local acceptance is complete.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

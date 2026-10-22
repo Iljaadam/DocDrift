@@ -2,8 +2,9 @@
 
 Draft based on recorded development runs. The historical model comparisons use
 local Docker. A separate Oct 21 run verifies the saved F6 agent repair on Nebius
-Sandboxes without new inference. Scored held-out evaluation, track eligibility,
-and free live-agent access through December 15 remain open in
+Sandboxes without new inference. On October 22 both model strategies verified
+2/2 reserved held-out cases using live Sandbox execution. Track eligibility
+and public live-agent access through December 15 remain open in
 [STATUS.md](../STATUS.md). The [original demo](demo/f6/index.html),
 [Sandbox supplement](demo/f6-sandbox/index.html), and
 [2:45 video script](DEMO_VIDEO_SCRIPT.md) can be reviewed without new inference.
@@ -31,8 +32,9 @@ whether it works, preserves healthy examples, and changes only documentation.
    hardcode output, or touch protected source, tests, profiles, and checks.
 5. Verifies the candidate in fresh offline environments with varied inputs,
    checks that the required API result reaches the printed output, and rechecks
-   healthy examples. Model comparisons used local Docker; the saved F6 agent
-   proposal also passed a separate bounded Nebius Sandbox verification.
+   healthy examples. Historical development comparisons used local Docker;
+   the saved F6 proposal and fresh October 22 acceptance/held-out runs passed
+   separate bounded Nebius Sandbox verification.
 6. Exports a Markdown diff, self-contained HTML review, model proposal transcript,
    logs, source/check snapshots, and a manifest-covered evidence ZIP.
 
@@ -52,6 +54,11 @@ recovery preserved its receipt and selected an existing Python 3.12 slim image
 without another import. Three runtime probes and twelve verifier operations
 completed with zero new inference. Sandbox billing remains unverified.
 
+The private judge service uses a single worker and durable global allowance.
+Its startup capability and fresh local HTTP acceptance repair passed on October
+22, followed by the reserved live Sandbox comparison. Public HTTPS acceptance
+is pending the owner's one-time Tailscale Funnel enablement.
+
 An offline test suite and installed-wheel smoke checks cover the CLI, verifier,
 evidence integrity, recovery, and synthetic provider contracts. The archive
 integrity checker verifies bytes and member coverage without extraction or
@@ -62,8 +69,8 @@ execution; its unsigned manifest is not an origin or execution attestation.
 The original inventory contains 14 cases: four owned broken fixtures (two
 reserved as held out), three owned healthy examples, three unsupported examples,
 one setup failure, and three pinned public candidates. Public candidates are
-inspected inputs, not reproduced upstream bugs. Recorded model evaluations use
-the development split; scored held-out results remain **TBD**.
+inspected inputs, not reproduced upstream bugs. Historical development results
+and the once-only held-out comparison below are reported separately.
 
 The original development results did not separate the model strategies:
 
@@ -114,14 +121,32 @@ a new strategy comparison or held-out evaluation. Browse the
 [Sandbox supplement](demo/f6-sandbox/index.html). The historical F6 counts and
 Docker provenance above remain unchanged; no billed dollar amount is confirmed.
 
+On October 22 the two originally reserved owned broken fixtures were each run
+once under both model strategies, using the same final verifier and live Nebius
+Sandboxes. The inventory and controller were frozen before the four jobs;
+there were no retries or fixture changes after observing results.
+
+| Held-out strategy | Verified repairs | Model calls | Prompt / completion tokens | Sandbox operations |
+|---|---|---|---|---|
+| One-shot Nemotron | 2/2 | 2 | 995 / 479 | 20 |
+| DocDrift agent | 2/2 | 10 | 12,843 / 1,611 | 23 |
+
+These two small cases show no verified-repair advantage for the agent. The
+comparison used 12 model calls / 15,928 tokens and 43 disposable Sandbox
+operations. The separate fresh deployment acceptance used four calls / 6,313
+tokens and fourteen operations, plus one global startup capability operation.
+Browse the [held-out reviews and archives](demo/held-out/index.html) and
+[feedback F13/F14](FEEDBACK_LOG.md). No billed dollar amount is confirmed.
+
 Separately, a deliberately constructed bad-patch challenge rejected 16/16
 patches with static gates. Those patches are constructed, not model output,
 and the challenge does not establish behavioral verification.
 
 ## Honest limits
 
-Owned fixtures are curator-authored. These small, single-comparison development
-results are exploratory. Behavior verification covers the frozen inputs and
+Owned fixtures are curator-authored. The development comparisons are exploratory,
+and the once-only held-out comparison has only two broken cases. Behavior
+verification covers the frozen inputs and
 static policy; it does not establish arbitrary semantic equivalence. Public
 repository downloads support inspection only, and arbitrary public execution
 and remote dependency installation remain outside this slice.
@@ -129,7 +154,7 @@ and remote dependency installation remain outside this slice.
 The original demo uses live Nemotron inference and local Docker execution.
 The Sandbox supplement records actual execution of the saved agent repair and
 keeps its provenance separate. Synthetic Sandbox contracts are labelled
-separately. Neither saved evidence bundle is a functional live-agent service.
+separately. Saved evidence browsing does not start a live-agent service.
 
 ## Testing instructions for judges
 
@@ -138,6 +163,8 @@ Docker, inference, or a web server. It includes both model outcomes and the
 successful repair's downloadable evidence.
 The [Sandbox supplement](demo/f6-sandbox/index.html) separately shows the saved
 repair's cloud verification without a provider account or new execution.
+The [held-out bundle](demo/held-out/index.html) separately includes all four
+October 22 model outcomes and downloadable evidence.
 
 Follow the [judge quickstart](JUDGE_QUICKSTART.md) to execute a supplied manual
 repair locally with no provider account or inference credits. This exercises
@@ -149,11 +176,12 @@ through December 15, and confirmation that the recorded owned-fixture evidence
 meets the chosen track's requirements. Saved evidence browsing and the manual
 local demo do not resolve that delivery dependency.
 
-The fixed-case private controller and bounded live worker are now implemented
-and tested offline, with a twenty-attempt deployment allowance approved by the
-owner. Public HTTPS activation, one actual end-to-end acceptance attempt, and
-the final held-out comparison are pending. Do not describe the route as
-available until those activation checks have been recorded.
+The fixed-case private controller and bounded live worker are running on the
+owner's VPS. Startup, a fresh local HTTP acceptance repair, and the once-only
+held-out comparison are complete. Five of the twenty approved attempts are
+used; fifteen remain for judges. Public HTTPS authentication and downloads still
+need acceptance after the owner's Tailscale Funnel account enablement. Do not
+describe the public route as available before that check is recorded.
 
 ## Feedback for Nebius / NVIDIA
 

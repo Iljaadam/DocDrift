@@ -20,6 +20,9 @@ development fixture, generated with live Token Factory calls and verified in
 local Docker. A [separate Oct 21 Sandbox verification](docs/demo/f6-sandbox/index.html)
 reuses the saved agent proposal and verifies its behavior on Nebius Sandboxes
 with no new inference. Neither result is held out or a live repair service.
+The [Oct 22 held-out comparison](docs/demo/held-out/index.html) separately records
+fresh Nemotron/Sandbox runs on two reserved owned cases: one-shot 2/2 verified
+and agent 2/2 verified. It includes four reviews, evidence archives, and usage.
 For a free local test with no provider credentials, follow the
 [judge quickstart](docs/JUDGE_QUICKSTART.md).
 The Nebius REST contract and durable submission journal can now be exercised
@@ -30,7 +33,8 @@ tracked in [STATUS.md](STATUS.md).
 
 The private judge service is implemented with one fixed owned fixture, fresh
 Nemotron/Sandbox verification, a durable twenty-attempt allowance, and sanitized
-downloads. Its live URL is pending VPS activation and acceptance; follow the
+downloads. The VPS services and a fresh local acceptance repair passed on Oct 22;
+public HTTPS acceptance awaits Tailscale account enablement. Follow the
 [deployment instructions](docs/JUDGE_DEPLOYMENT.md). No provider account is
 required from judges once the owner has activated it. The completed F6 evidence
 above remains separate from future fresh judge attempts.

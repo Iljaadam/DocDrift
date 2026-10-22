@@ -1,5 +1,10 @@
 # Restore Git and network access for this workspace
 
+Host access was restored on October 22. DNS, GitHub SSH, systemd, and Tailscale
+checks now succeed, and the agent has performed local activation and live
+verification. The instructions below are troubleshooting history for a future
+restricted session; they are not additional steps for the current deployment.
+
 ## Let the agent perform the deployment
 
 The owner asked on October 22 for the agent to run deployment rather than hand

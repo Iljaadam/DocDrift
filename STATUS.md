@@ -85,7 +85,7 @@ consumed operation allowance and receipts; continue with saved evidence.
   and unrelated healthy neighbor (`fixtures/development/`); original 14 cases unchanged
 - [x] Single live supplemental comparison: agent 1/1 verified, one_shot 0/1 static
   rejection; 8,781 tokens, local Docker only (F6). No general advantage claimed.
-- [ ] Scored held-out run, once (D8)
+- [x] Scored held-out run, once (D8): one_shot 2/2 and agent 2/2 on live Sandboxes (F14)
 - [x] Self-contained HTML review in evidence ZIPs; `docdrift review <run-id>` renders
   saved live Nemotron repairs without inference/execution or rescoring (Oct 15)
 - [x] HTML strategy comparison with inventory fingerprints and `review-evaluation`
@@ -120,75 +120,71 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** the owner wants the agent to execute deployment (D33), so fork with
-the host access command in [workspace access](docs/WORKSPACE_ACCESS.md). Then
-follow [judge deployment](docs/JUDGE_DEPLOYMENT.md), which now reads
-the VPS's full Tailscale HTTPS name automatically. The owner reported connected
-Tailscale and no Serve/Funnel configuration on October 22; recheck port 8443
-before publishing. The
-private controller/worker is ready for activation, not yet live-accepted.
-Activation consumes the one new capability operation; the owner acceptance run
-and four held-out jobs come from D31's twenty-attempt allowance. Preserve both
-judge and completed F6 state. After actual acceptance, record the approved
-once-only held-out comparison and the under-three-minute video. The owner
-records the video; repository publication waits for final review. F12 and D9
-remain completed historical evidence. Billing clarification is still pending.
-
-The user answered the hosted-demo questions on Oct 22 (D31): use this VPS and
-existing credentials, private shared access, twenty total attempts including four
-reserved held-out jobs, and the prepared video script for owner recording.
-The controller/worker, strict live bridge, quota, artifact filtering, and isolated
-user-unit setup are implemented. Follow `docs/JUDGE_DEPLOYMENT.md` after checking
-the VPS's Tailscale HTTPS route. Activation and actual held-out results remain
-pending; no new model call or Sandbox operation was made during implementation.
-Workspace/Git steps are in `docs/WORKSPACE_ACCESS.md`. The restricted agent cannot
-reach tailscaled; the owner completed the normal-terminal route check (D32).
+**Next:** the owner needs to enable Tailscale Funnel once in their existing
+account; the enablement link was requested asynchronously. Then the agent can
+finish public HTTPS authentication and artifact-download checks against the
+already completed acceptance job, without another fresh attempt. Both DocDrift
+services are running and enabled. Five of D31's twenty attempts are used and
+fifteen remain for judges. Do not repeat activation or the held-out comparison.
+After HTTPS acceptance, record the under-three-minute video, finish the Devpost
+write-up, and review repository publication. Billing clarification remains open.
 
 ## Resume handoff — October 22, 2026
 
-Implemented the private fixed-fixture HTTP interface, single durable worker,
-and separate judge live bridge. No new dependency or partner service is used.
-HTTP Basic authentication, same-origin admission, request idempotency, expiration,
-and exact artifact routes are checked with manufactured HTTP requests. The web
-process has no provider environment; the worker uses the existing Nebius key.
-Both dedicated user units have resource/filesystem limits and use loopback 8765.
+Host access is now verified: DNS, GitHub SSH, the user service manager, and
+Tailscale are reachable. The VPS's exact HTTPS origin is
+`https://evipeer-box.tail113e81.ts.net:8443`; Tailscale initially had no Serve or
+Funnel routes and DocDrift ports 8765/8443 were unused. The Funnel command is
+waiting for the owner's account enablement. No public HTTPS or external-browser
+acceptance is claimed yet. Do not change another route or NewsBias service.
 
-The separate mode-600 authorization and initialized state are prepared at
-`.docdrift/access/judge-authorization-2026-10-22.json` and `.docdrift/judge/`.
-Actual status: `activation_required`, zero attempts used, sixteen public slots
-and four reserved held-out slots, no startup capability submission. The external
-state-binding record detects a missing quota database rather than resetting it.
-Worker errors/interruption pause later jobs for operator reconciliation; no
-automatic retry can create another model/guest submission. Private original
-provider/state files are excluded from public artifacts, and exact credential
-bytes plus common credential patterns are rejected before publication.
+Private login configuration is in `~/.config/docdrift/judge.env`; the generated
+password is only in `~/.config/docdrift/judge-password.txt`, both mode 600. The
+username is `judge`. Never put the password into chat, Git, evidence, or a video.
+Both dedicated user services are active and enabled, user lingering was already
+on, and the web process binds `127.0.0.1:8765`. Only the worker has the provider
+key. Actual HTTP checks reject missing authentication and foreign origins and
+serve the saved and fresh evidence. Installed systemd units parse cleanly after
+fixing `EnvironmentFile=` whole-path quoting; parser warnings now fail the
+regression test, including paths with spaces and percent characters.
 
-`held-out --live` queues the four approved fixed jobs once after code freeze;
-`held-out-report` summarizes saved outcomes offline, retaining failures. Both
-the old F6 allowance and all fixture manifests remain unchanged. No new live
-inference, guest execution, held-out score, service startup, route, secret file
-outside the repository, or public URL has been created during implementation.
+The one reserved startup capability operation
+`01a164f6-c09a-768c-84fc-b299158aa936` succeeded: Python 3.12, UID 65534, and only
+loopback in the guest. Local HTTP acceptance job
+`04afd40e6053471d91bd321cd93993dd` returned `behavior_verified` with four model
+calls / 6,313 tokens and fourteen disposable Sandbox operations. Downloaded
+review/ZIP and repeated-request idempotency passed without a second attempt.
+Its run ID is `5bcab3132c714a1280bc92d53e4b3bd5`.
 
-The VPS has sufficient observed memory/disk for the small controller. `gh` is
-installed but its in-sandbox authentication check reports failure; command
-networking is restricted and original `.git` is still read-only. Tailscale is
-installed but this session cannot reach its local daemon. The owner reported
-connected status and `No serve config` for Serve and Funnel; the full HTTPS
-hostname and Funnel eligibility remain unverified. The deployment guide now
-discovers the hostname from `Self.DNSName` without guessing the tailnet suffix.
-`docs/WORKSPACE_ACCESS.md` includes the official
-permission-profile approach; `docs/JUDGE_DEPLOYMENT.md` covers setup, activation,
-private password handling, isolated units, conditional port 8443, and rollback.
-Do not change any existing Tailscale route or NewsBias unit to unblock it.
+The four reserved held-out jobs are complete, once each: one_shot 2/2 verified
+and agent 2/2 verified on `renamed_import` and `changed_return_shape`. They used
+12 model calls / 15,928 tokens and 43 disposable Sandbox operations, with the
+original inventory and controller frozen. There is no verified-repair advantage
+for the agent on these two cases. See F13/F14 in `docs/FEEDBACK_LOG.md` and the
+portable sanitized bundle at `docs/demo/held-out/index.html`.
 
-Validation: **1,014 tests pass**, including 190 new judge tests. The offline
-wheel/source build and installed-wheel smoke checks pass with unchanged fixture
-hashes, no live requests, no paid calls, and no guest execution. JavaScript
-syntax and rendered user-unit validation also pass. HTTP/browser interactions
-were tested with manufactured request sockets; an external browser/HTTPS
-acceptance has not yet occurred. Source is committed in the writable isolated
-delivery checkout; original `.git` remains protected. Do not infer a new push
-or activation from those local checks.
+Together, this deployment has used five attempts, sixteen model calls / 22,241
+tokens, and 58 Sandbox operations including the startup check. Fifteen public
+attempts remain; billing/credit coverage is still unverified. The quota database,
+external binding record, and completed F6 state must remain intact. Worker
+failures/interruption pause later jobs and never automatically retry uncertain
+requests. Existing expiration remains December 16, 00:00 UTC.
+
+Durable private deployment records and downloaded acceptance artifacts are in
+`.docdrift/judge/deployment/`; the original jobs and provider receipts remain
+under `.docdrift/judge/jobs/`. `.docdrift/judge/held-out-comparison.json` is the
+actual completed comparison. The four public presentation ZIPs passed unsigned
+manifest integrity checks; they are not origin or execution attestations.
+
+Validation: **1,015 tests pass** after the systemd path fix. Earlier offline
+package/installed-wheel and JavaScript checks passed; no later runtime source
+change was made. The prepared service and fix were pushed to private
+`origin/main` at `20fa884`; this session's deployment/result documentation and
+bundle are being committed next. The original working tree still carries the
+old metadata from the previous restricted executor; preserve all its bytes
+when synchronizing it to the matching prepared commits. The GitHub repository
+remains private. No Tavily, LangSmith, Toloka, Tandem, or paid hosting account
+was used.
 
 ## Previous resume handoff — October 21, 2026
 
@@ -425,7 +421,8 @@ not held out; no general superiority claim. Exact provenance and usage are in
 `docs/SUBMISSION_DRAFT.md` using actual development results (its conditional
 Sandbox wording and old test count still need reconciliation), and turn
 `ARCHITECTURE_PLAN.md` → Competition and demonstration into the final short
-video script. Keep scored held-out results TBD until D8 is decided. A free
+video script. At that historical handoff, scored held-out results were TBD;
+the once-only comparison is now complete in F14. A free
 functional live-agent route through Dec 15 is still a delivery dependency;
 the existing credential-free quickstart demonstrates a manual local repair.
 
@@ -615,6 +612,15 @@ Who decided what, and when. Don't reverse one without the user.
   been established. Use the supported `codex fork` command to create a new chat
   retaining recorded history, then continue deployment with the existing limits.
   Do not delete lock files, kill daemons, or treat the lock error as lost work.
+- D35 (user, Oct 22; agent execution): User requested hosted deployment after
+  granting host access. Verified DNS/Git/systemd/Tailscale, installed the two
+  isolated units, and completed the authorized startup capability, one fresh
+  acceptance repair, and four once-only held-out jobs. Both strategies verified
+  2/2 held-out cases. Five attempts are consumed and fifteen remain. Preserve
+  the frozen results, quota, and old F6 state. Public HTTPS waits on Tailscale's
+  owner account enablement; do not claim it from local success. Existing credit-
+  only intent, unverified billing, private repository, and NewsBias exclusions
+  remain unchanged.
 
 ## Session log
 
@@ -829,6 +835,14 @@ Who decided what, and when. Don't reverse one without the user.
   error (D34). Verified installed `codex fork` flags and official transcript
   preservation behavior; corrected the handoff to a separate chat with history.
   Documentation only; 1,014-test validation unchanged and no new live request.
+- 2026-10-22 (hosted activation): Host access restored. Fixed systemd 249 ignoring
+  quoted EnvironmentFile paths, reproduced the warning in a regression check,
+  and passed all 1,015 tests. Installed/enabled the isolated web/worker units;
+  startup capability and one fresh local HTTP repair passed, then both strategies
+  verified 2/2 once-only held-out cases. Exported four sanitized reviews/ZIPs.
+  Five attempts used, fifteen remain; 16 model calls / 22,241 tokens and 58 total
+  Sandbox operations, no imports. Service/fix pushed to private origin/main.
+  Public HTTPS is pending the owner's one-time Funnel account enablement.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

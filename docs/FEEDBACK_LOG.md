@@ -311,3 +311,67 @@ the saved F6 agent proposal using an existing public image, with no new inferenc
   milestone without a new model call or changed F6 comparison. The original
   registry 404 remains unresolved; this is not a successful OCI import, held-out
   result, formal qualification decision, or free live-agent service.
+
+### F13 — Fresh hosted repair verified on live Sandboxes (2026-10-22)
+
+- Product / API: dedicated judge worker, live Nemotron Token Factory inference,
+  pinned existing Python 3.12 image, non-root UID 65534, guest networking disabled.
+  D31's separate twenty-attempt scope applies; no F6 allowance was reused.
+- Startup capability: operation `01a164f6-c09a-768c-84fc-b299158aa936` verified
+  Python `[3,12]`, effective UID 65534, and only the loopback guest interface.
+- Actual fresh repair: acceptance job `04afd40e6053471d91bd321cd93993dd`, run
+  `5bcab3132c714a1280bc92d53e4b3bd5`, completed as `behavior_verified` on the owned
+  source-inspection development fixture. This is new inference and execution,
+  separate from F6's saved proposal and its F12 re-verification.
+- Usage: **4 model calls, 5,653 prompt / 660 completion tokens, 14 disposable
+  Sandbox operations**, plus the one global startup capability operation.
+  No image import or additional partner service was used. Billing remains
+  unverified; operation resource `cost` is not an invoice amount.
+- Delivery checks: actual loopback HTTP rejects unauthenticated and cross-origin
+  requests, serves the page and saved evidence, and downloads the new review and
+  ZIP. Repeating the same idempotency key returns the same completed job and
+  leaves the attempt count at one. The web process has no provider key; only the
+  worker has it. The two services are enabled, with user lingering already on.
+- Deployment finding: systemd 249 ignores quoted `EnvironmentFile=` paths while
+  returning success from `verify`. The generator now uses a whole path for that
+  directive; the regression check rejects parser warnings and covers spaces and
+  percent characters. Both installed units parse without warnings; 1,015 tests
+  pass. No service had been started before the path correction.
+- Evidence: private `.docdrift/judge/deployment/acceptance-request.json`, startup
+  receipt, job report and provider receipts. Downloaded presentation archive
+  SHA-256 `e3cbc421d2bb71f8630bbeb7ba8fd676df7cd87b04a6c831c03dcea2f723394e`.
+- Limit: these checks establish local HTTP acceptance. Tailscale requires the
+  owner's one-time Funnel account enablement before public HTTPS acceptance;
+  no external-browser result is claimed.
+
+### F14 — Once-only held-out comparison on live Sandboxes (2026-10-22)
+
+- Scope: the original two reserved owned broken fixtures, `renamed_import` and
+  `changed_return_shape`, each run once with one-shot and agent strategies.
+  No retries, fixture edits, or controller changes between the four jobs.
+  Both strategies use the same final verifier and live Sandbox backend.
+- Frozen controller SHA-256:
+  `a673ce0c333374e51a20c9f4530f1816169c600aa2876434b0d263056e61067b`.
+  Original evaluation inventory SHA-256:
+  `90a372334f102a16fa10010fd94702ce7f611ea51ec416bf55b4d0abfbef4468`.
+- Result: **one-shot 2/2 verified; agent 2/2 verified**. Every job completed with
+  live inference evidence and `behavior_verified`. These two small cases do not
+  show a verified-repair advantage for the agent.
+
+| Case | Strategy | Model calls | Prompt / completion tokens | Sandbox operations |
+|---|---|---|---|---|
+| renamed_import | one_shot | 1 | 617 / 264 | 13 |
+| renamed_import | agent | 4 | 5,348 / 670 | 14 |
+| changed_return_shape | one_shot | 1 | 378 / 215 | 7 |
+| changed_return_shape | agent | 6 | 7,495 / 941 | 9 |
+
+- Usage: **12 model calls, 15,928 tokens, 43 disposable Sandbox operations**.
+  These consume the four reserved attempts inside D31's allowance. Together with
+  F13, five attempts are used and fifteen remain; totals are 16 model calls /
+  22,241 tokens and 58 Sandbox operations including the startup check. No billed
+  amount is confirmed.
+- Evidence: private `.docdrift/judge/held-out-comparison.json` and all four job
+  receipts. The [saved comparison bundle](demo/held-out/index.html) contains the
+  comparison, four sanitized reviews/archives, and provenance hashes. Each ZIP
+  passed unsigned manifest integrity verification without new execution; that
+  is not an origin or execution attestation.

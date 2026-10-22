@@ -1,0 +1,114 @@
+{
+  "kind": "docdrift_held_out_judge_comparison",
+  "status": "completed",
+  "controller_sha256": "a673ce0c333374e51a20c9f4530f1816169c600aa2876434b0d263056e61067b",
+  "inventory_sha256": "90a372334f102a16fa10010fd94702ce7f611ea51ec416bf55b4d0abfbef4468",
+  "scope": "Two reserved owned broken cases, one_shot and agent once each; earlier development results are separate.",
+  "billing_coverage": "unverified",
+  "rows": [
+    {
+      "case": "changed_return_shape",
+      "strategy": "agent",
+      "split": "held_out",
+      "job_id": "2fcac6f42e724c78b1b617ce8db7a3e6",
+      "job_status": "completed",
+      "error_code": null,
+      "model_calls_attempted": 6,
+      "guest_operations_attempted": 9,
+      "scored": true,
+      "verified": true,
+      "detected": true,
+      "outcome": "behavior_verified",
+      "usage": {
+        "model_calls": 6,
+        "prompt_tokens": 7495,
+        "completion_tokens": 941,
+        "snippet_runs": 2,
+        "malformed_responses": 0
+      },
+      "run_id": "f60f897c182a4a56ab92156879b43fb4",
+      "proposal_sha256": "b379529f7bd403eb244c9403d7a3146ca818b58947b9d72dba77c90f89dd8514"
+    },
+    {
+      "case": "changed_return_shape",
+      "strategy": "one_shot",
+      "split": "held_out",
+      "job_id": "316c9f88f23d45ba956070e4c0ca2002",
+      "job_status": "completed",
+      "error_code": null,
+      "model_calls_attempted": 1,
+      "guest_operations_attempted": 7,
+      "scored": true,
+      "verified": true,
+      "detected": true,
+      "outcome": "behavior_verified",
+      "usage": {
+        "model_calls": 1,
+        "prompt_tokens": 378,
+        "completion_tokens": 215,
+        "snippet_runs": 0,
+        "malformed_responses": 0
+      },
+      "run_id": "df1584d4046c4e34b6fbfbd332ad84bd",
+      "proposal_sha256": "02618e295cd03226622e279c52b920ac052d5f93d9c824a73edae76d787ad0ec"
+    },
+    {
+      "case": "renamed_import",
+      "strategy": "agent",
+      "split": "held_out",
+      "job_id": "92a7c855a9bb4f89b1c14d45e2b9aab2",
+      "job_status": "completed",
+      "error_code": null,
+      "model_calls_attempted": 4,
+      "guest_operations_attempted": 14,
+      "scored": true,
+      "verified": true,
+      "detected": true,
+      "outcome": "behavior_verified",
+      "usage": {
+        "model_calls": 4,
+        "prompt_tokens": 5348,
+        "completion_tokens": 670,
+        "snippet_runs": 1,
+        "malformed_responses": 0
+      },
+      "run_id": "79f512ff17ab48028e6ffc0733f5eabf",
+      "proposal_sha256": "4b7cd8f76a781ce97fbcb8fc2553f9b8e6e9b6ce3dd792b319049bb93b435e7e"
+    },
+    {
+      "case": "renamed_import",
+      "strategy": "one_shot",
+      "split": "held_out",
+      "job_id": "10029ea30a894563adc25619083e0d5f",
+      "job_status": "completed",
+      "error_code": null,
+      "model_calls_attempted": 1,
+      "guest_operations_attempted": 13,
+      "scored": true,
+      "verified": true,
+      "detected": true,
+      "outcome": "behavior_verified",
+      "usage": {
+        "model_calls": 1,
+        "prompt_tokens": 617,
+        "completion_tokens": 264,
+        "snippet_runs": 0,
+        "malformed_responses": 0
+      },
+      "run_id": "3f30fcf4de2a4c2d9e5d61bf892da0eb",
+      "proposal_sha256": "58030b7f22d76de19015ba89a4b424423d6bdda83ea46bb88bbe28bff92ac760"
+    }
+  ],
+  "summary": {
+    "one_shot": {
+      "planned_cases": 2,
+      "completed_scored_cases": 2,
+      "verified_cases": 2
+    },
+    "agent": {
+      "planned_cases": 2,
+      "completed_scored_cases": 2,
+      "verified_cases": 2
+    }
+  }
+}

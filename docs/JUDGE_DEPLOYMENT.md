@@ -11,10 +11,19 @@ and installing units are offline. Activation makes the separately authorized
 runtime check; starting the worker permits admitted jobs to consume credits.
 The service is not deployed merely because these files exist.
 
+Deployment state on October 22: the agent now has host access, both dedicated
+user services are active and enabled, the startup capability passed, and a fresh
+local HTTP repair verified. The four reserved held-out jobs are complete: both
+strategies 2/2 verified. Five attempts are used and fifteen remain. Do not repeat
+activation or submit another acceptance job to resume this deployment. Public
+HTTPS still awaits the owner's Tailscale Funnel account enablement; finish its
+authentication/download checks using the existing completed job. See
+[feedback F13/F14](FEEDBACK_LOG.md) and private `.docdrift/judge/deployment/`.
+
 ## Check access and the HTTPS route first
 
-GitHub authentication and the agent's workspace permissions are separate. This
-agent session has restricted networking and read-only `.git` metadata; a new
+GitHub authentication and the agent's workspace permissions are separate. The
+earlier agent session had restricted networking and read-only `.git` metadata; a new
 `gh` login cannot change either. Relaunch the agent session with outbound
 network access and write access to this repository's `.git` in its environment
 permissions, if those controls are available. Otherwise, run the small operator
@@ -140,7 +149,8 @@ files. The web unit strips provider keys from its environment and hides the
 Nebius env file and plaintext passphrase. The worker's key is loaded by the
 systemd manager before its filesystem restrictions apply.
 
-The unchanged implementation passed all 1,014 offline tests on October 22.
+The implementation passed all 1,015 offline tests on October 22 after correcting
+systemd 249's whole-path `EnvironmentFile=` parsing.
 Rerun the suite if the code or environment changed before startup. If the VPS
 user manager cannot apply a hardening setting, inspect its error rather than repeatedly restarting
 or removing all protections. This is an operator compatibility issue, not a

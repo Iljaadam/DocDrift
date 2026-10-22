@@ -81,7 +81,7 @@ The owner selected this VPS and will operate it through judging. Before public
 activation, confirm its HTTPS route and actual service startup in the normal
 terminal. No external hosting account or paid hosting allocation is assumed.
 
-## Implemented without live calls
+## Implementation and actual activation
 
 Queue admission/idempotency, authentication, expiration, quota accounting,
 worker recovery, the fixed-fixture adapter boundary, artifact sanitization, and
@@ -90,8 +90,16 @@ resource-limited user units, secret preparation, health checks, and deployment
 instructions are prepared. Web authentication, store concurrency, crash
 accounting, fresh engine verification, and secret rejection are checked offline.
 
-Activation stays visibly unconfigured until the startup probe succeeds. The
-reserved held-out comparison is approved once after code freeze, using four of
-the twenty attempts; queuing it is an operator action. Video recording, public
+On October 22 the startup capability operation succeeded and a fresh local
+HTTP acceptance repair returned `behavior_verified`. Both user services are
+enabled and running; the web process has no provider key. The original two
+reserved held-out fixtures were then run once under each strategy: one-shot
+2/2 verified and agent 2/2 verified. Five attempts are used and fifteen remain.
+Saved results and actual usage are in [feedback F13/F14](FEEDBACK_LOG.md) and
+the [held-out bundle](demo/held-out/index.html).
+
+Public HTTPS acceptance still awaits the owner's one-time Tailscale Funnel
+account enablement. Local success is not proof of an external-browser session.
+Video recording, public
 repository release after final review, and final submission
 remain separate deliverables; the hosted demo is not evidence that they occurred.
