@@ -1,5 +1,26 @@
 # Restore Git and network access for this workspace
 
+## Let the agent perform the deployment
+
+The owner asked on October 22 for the agent to run deployment rather than hand
+over a long command list. The installed CLI supports this single normal-VPS-
+terminal command; choose the current DocDrift conversation in the resume picker:
+
+```bash
+codex resume --no-daemon -C /home/ubuntu/docdrift/repo --sandbox danger-full-access --ask-for-approval on-request
+```
+
+This requests local host access while retaining on-request approvals, allowing
+the agent to use the user service manager, Tailscale, Git, and authorized Nebius
+requests. It does not change the already-running restricted executor. A managed
+host policy may reject or override the requested mode; that requires the host
+owner's environment settings rather than another shell workaround. D31's quota,
+credit-only intent, and NewsBias exclusions continue to apply. See the official
+[agent approvals documentation](https://learn.chatgpt.com/docs/agent-approvals-security).
+
+The narrower profile below is an alternative where the host supports explicit
+filesystem, network, and local service-access controls.
+
 The VPS has `gh`, Git, and Tailscale installed. This agent's executor has a
 separate managed filesystem/network policy: `.git` is read-only and outbound
 command networking is restricted. A working GitHub login does not change that

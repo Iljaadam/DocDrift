@@ -120,7 +120,9 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** follow [judge deployment](docs/JUDGE_DEPLOYMENT.md), which now reads
+**Next:** the owner wants the agent to execute deployment (D33), so resume with
+the host access command in [workspace access](docs/WORKSPACE_ACCESS.md). Then
+follow [judge deployment](docs/JUDGE_DEPLOYMENT.md), which now reads
 the VPS's full Tailscale HTTPS name automatically. The owner reported connected
 Tailscale and no Serve/Funnel configuration on October 22; recheck port 8443
 before publishing. The
@@ -602,6 +604,12 @@ Who decided what, and when. Don't reverse one without the user.
   local status JSON, retain port 8443 for the isolated password-protected route,
   and provide the ordered setup/activation/acceptance/persistence/evaluation steps.
   These diagnostics do not establish a working public route or change D31's quota.
+- D33 (user, Oct 22): The manual deployment checklist is too much; the agent
+  should execute it. Rechecks confirm this executor cannot connect to systemd
+  or tailscaled and command DNS fails. Verified the installed CLI's resume,
+  no-daemon, host-access sandbox mode, and on-request approval options; provide
+  one normal-terminal relaunch command. Existing deployment permission and
+  limits persist. No attempt to bypass the current managed policy is authorized.
 
 ## Session log
 
@@ -807,6 +815,11 @@ Who decided what, and when. Don't reverse one without the user.
   with validated automatic discovery and consolidated startup readiness, Funnel
   enablement, private login, acceptance, and safe handoff instructions. Source
   implementation unchanged; actual activation and public acceptance remain pending.
+- 2026-10-22 (agent execution access): Owner requested agent-operated deployment
+  instead of manual steps (D33). Confirmed local service/network restrictions;
+  documented one supported resume command requesting host access with on-request
+  approvals. No source change or new live request; existing 1,014-test pass holds.
+  Next: resume with effective host access, then perform and accept deployment.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
