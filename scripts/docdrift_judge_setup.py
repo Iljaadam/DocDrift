@@ -106,20 +106,24 @@ def prepare(config_dir: Path, state_root: Path, origin: str) -> dict[str, object
             "state_root": str(state_root), "services_started": False, "provider_requests": 0}
 
 
-def _unit_argument(value: Path | str) -> str:
+def _unit_path(value: Path | str) -> str:
     value = str(value)
     if any(character in value for character in ("\n", "\r", "\x00")):
         raise SetupError("Service paths must not contain control characters")
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"').replace("%", "%%") + '"'
+    return value.replace("%", "%%")
+
+
+def _unit_argument(value: Path | str) -> str:
+    return '"' + _unit_path(value).replace("\\", "\\\\").replace('"', '\\"') + '"'
 
 
 def render_units(repo_root: Path, config_dir: Path, state_root: Path, authorization: Path) -> dict[str, bytes]:
     substitutions = {
-        # WorkingDirectory consumes one whole value, unlike ExecStart's argv.
-        "@REPO_ROOT@": str(repo_root).replace("%", "%%"),
+        # These directives consume one whole path, not a quoted argv word.
+        "@REPO_ROOT@": _unit_path(repo_root),
         "@PYTHON@": _unit_argument(repo_root / ".venv/bin/python"),
-        "@JUDGE_ENV@": _unit_argument(config_dir / "judge.env"),
-        "@NEBIUS_ENV@": _unit_argument(config_dir / "nebius.env"),
+        "@JUDGE_ENV@": _unit_path(config_dir / "judge.env"),
+        "@NEBIUS_ENV@": _unit_path(config_dir / "nebius.env"),
         "@PRIVATE_FILES@": " ".join(_unit_argument("-" + str(path)) for path in
                                      (config_dir / "judge-password.txt", config_dir / "nebius.env")),
         "@STATE_ROOT@": _unit_argument(state_root),

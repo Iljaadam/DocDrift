@@ -101,8 +101,8 @@ def test_units_keep_api_key_out_of_web_environment(prepared, tmp_path):
     worker = units["docdrift-judge-worker.service"].decode()
     assert '--host 127.0.0.1 --port 8765' in web
     assert ' --live' not in web and ' --live' in worker
-    assert f'EnvironmentFile="{config / "nebius.env"}"' not in web
-    assert f'EnvironmentFile="{config / "nebius.env"}"' in worker
+    assert f'EnvironmentFile={config / "nebius.env"}' not in web
+    assert f'EnvironmentFile={config / "nebius.env"}' in worker
     assert 'UnsetEnvironment=NEBIUS_API_KEY NEBIUS_PROJECT_ID' in web
     for unit in (web, worker):
         assert 'MemoryMax=384M' in unit and 'TasksMax=32' in unit
@@ -163,13 +163,15 @@ def test_existing_unrelated_unit_is_preserved_before_any_unit_write(prepared, tm
     assert not (units / "docdrift-judge-web.service").exists()
 
 
-def test_user_units_parse_with_systemd_when_available(prepared, tmp_path):
+@pytest.mark.parametrize("config_name", ["config", "config with space%name"])
+def test_user_units_parse_with_systemd_when_available(tmp_path, config_name):
     import shutil
 
     binary = shutil.which("systemd-analyze")
     if not binary:
         pytest.skip("systemd-analyze is not installed")
-    config, state = prepared
+    config, state = tmp_path / config_name, tmp_path / "state"
+    setup.prepare(config, state, "https://judge.example.ts.net:8443")
     paths = []
     for name, content in setup.render_units(ROOT, config, state, tmp_path / "authorization.json").items():
         path = tmp_path / name
@@ -180,3 +182,5 @@ def test_user_units_parse_with_systemd_when_available(prepared, tmp_path):
     if "Failed to lookup RuntimeDirectory path" in checked.stderr or "Failed to connect to bus" in checked.stderr:
         pytest.skip("The restricted session cannot access the user manager")
     assert checked.returncode == 0, checked.stderr
+    # systemd may return success while ignoring an invalid directive.
+    assert not checked.stderr.strip(), checked.stderr
