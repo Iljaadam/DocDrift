@@ -3,20 +3,29 @@
 ## Let the agent perform the deployment
 
 The owner asked on October 22 for the agent to run deployment rather than hand
-over a long command list. The installed CLI supports this single normal-VPS-
-terminal command; choose the current DocDrift conversation in the resume picker:
+over a long command list. Resuming the current chat reported that it was already
+open in another app. The installed CLI supports creating a new conversation
+with its recorded history; run this in the normal VPS terminal and choose the
+DocDrift conversation in the fork picker:
 
 ```bash
-codex resume --no-daemon -C /home/ubuntu/docdrift/repo --sandbox danger-full-access --ask-for-approval on-request
+codex fork --no-daemon -C /home/ubuntu/docdrift/repo --sandbox danger-full-access --ask-for-approval on-request
 ```
 
 This requests local host access while retaining on-request approvals, allowing
 the agent to use the user service manager, Tailscale, Git, and authorized Nebius
-requests. It does not change the already-running restricted executor. A managed
+requests. Forking preserves the original chat and avoids requesting ownership
+of that same conversation. The reported error may mean the current app still
+holds it even while idle; no stale lock or orphan process has been established.
+No lock deletion or daemon restart is needed for this handoff. Say "proceed with
+the hosted judge deployment; read AGENTS.md and STATUS.md first" in the new chat.
+It does not change the already-running restricted executor. A managed
 host policy may reject or override the requested mode; that requires the host
 owner's environment settings rather than another shell workaround. D31's quota,
 credit-only intent, and NewsBias exclusions continue to apply. See the official
 [agent approvals documentation](https://learn.chatgpt.com/docs/agent-approvals-security).
+The official [CLI reference](https://learn.chatgpt.com/docs/cli/reference)
+documents `codex fork` as a new chat preserving the original transcript.
 
 The narrower profile below is an alternative where the host supports explicit
 filesystem, network, and local service-access controls.

@@ -120,7 +120,7 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** the owner wants the agent to execute deployment (D33), so resume with
+**Next:** the owner wants the agent to execute deployment (D33), so fork with
 the host access command in [workspace access](docs/WORKSPACE_ACCESS.md). Then
 follow [judge deployment](docs/JUDGE_DEPLOYMENT.md), which now reads
 the VPS's full Tailscale HTTPS name automatically. The owner reported connected
@@ -610,6 +610,11 @@ Who decided what, and when. Don't reverse one without the user.
   no-daemon, host-access sandbox mode, and on-request approval options; provide
   one normal-terminal relaunch command. Existing deployment permission and
   limits persist. No attempt to bypass the current managed policy is authorized.
+- D34 (user report, Oct 22): The normal-terminal resume command reports the
+  conversation is open in another app. No stale lock or extra host process has
+  been established. Use the supported `codex fork` command to create a new chat
+  retaining recorded history, then continue deployment with the existing limits.
+  Do not delete lock files, kill daemons, or treat the lock error as lost work.
 
 ## Session log
 
@@ -820,6 +825,10 @@ Who decided what, and when. Don't reverse one without the user.
   documented one supported resume command requesting host access with on-request
   approvals. No source change or new live request; existing 1,014-test pass holds.
   Next: resume with effective host access, then perform and accept deployment.
+- 2026-10-22 (conversation ownership): Recorded the reported resume ownership
+  error (D34). Verified installed `codex fork` flags and official transcript
+  preservation behavior; corrected the handoff to a separate chat with history.
+  Documentation only; 1,014-test validation unchanged and no new live request.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
