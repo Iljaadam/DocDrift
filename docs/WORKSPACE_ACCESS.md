@@ -2,7 +2,8 @@
 
 Host access was restored on October 22. DNS, GitHub SSH, systemd, and Tailscale
 checks now succeed, and the agent has performed local activation and live
-verification. The instructions below are troubleshooting history for a future
+verification. The original checkout is synchronized with the pushed prepared
+commits and can use Git normally. The instructions below are troubleshooting history for a future
 restricted session; they are not additional steps for the current deployment.
 
 ## Let the agent perform the deployment
@@ -107,16 +108,19 @@ Use [the VPS deployment guide](JUDGE_DEPLOYMENT.md) for the separate judge units
 private credentials, and HTTPS route. Neither a permission change nor GitHub
 authentication authorizes additional provider activity beyond D31's quota.
 
-## Deliver the prepared commits from the normal terminal
+## Previous restricted-session Git delivery
 
-The original working tree contains the implemented files, but this session
-cannot update its Git metadata. The isolated writable checkout contains the
-prepared commits and can push them using the VPS's ordinary SSH access:
+The earlier restricted executor prepared commits in an isolated writable
+checkout. On October 22 the agent pushed them, verified all 211 original
+worktree files against that commit, and fast-forwarded the original checkout's
+metadata without changing worktree bytes or private state. Future delivery can
+use this repository directly:
 
 ```bash
-git -C /tmp/docdrift-delivery-ctctogzg/repo push origin main
+git -C /home/ubuntu/docdrift/repo push origin main
 ```
 
-The full-history bundle at `.docdrift/access/docdrift-main.bundle` and its private
-delivery receipt preserve the commit if the temporary checkout is lost. Do not
-delete or reset the original worktree or private run state to fix the mismatch.
+The old isolated checkout at `/tmp/docdrift-delivery-ctctogzg/repo` and full-history
+bundle at `.docdrift/access/docdrift-main.bundle` remain backups. The private
+delivery receipt records the latest pushed commit. Preserve private run state;
+there is no remaining original-worktree mismatch to repair.

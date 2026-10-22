@@ -179,12 +179,12 @@ manifest integrity checks; they are not origin or execution attestations.
 Validation: **1,015 tests pass** after the systemd path fix. Earlier offline
 package/installed-wheel and JavaScript checks passed; no later runtime source
 change was made. The prepared service and fix were pushed to private
-`origin/main` at `20fa884`; this session's deployment/result documentation and
-bundle are being committed next. The original working tree still carries the
-old metadata from the previous restricted executor; preserve all its bytes
-when synchronizing it to the matching prepared commits. The GitHub repository
-remains private. No Tavily, LangSmith, Toloka, Tandem, or paid hosting account
-was used.
+`origin/main`, followed by the deployment/result documentation and evidence at
+`217f064`. The original worktree's 211 files were checked against that exact
+prepared commit, then its Git metadata was fast-forwarded without changing any
+worktree byte or private state. Normal Git delivery now works from this checkout.
+The GitHub repository remains private. No Tavily, LangSmith, Toloka, Tandem, or
+paid hosting account was used.
 
 ## Previous resume handoff — October 21, 2026
 
@@ -842,7 +842,9 @@ Who decided what, and when. Don't reverse one without the user.
   verified 2/2 once-only held-out cases. Exported four sanitized reviews/ZIPs.
   Five attempts used, fifteen remain; 16 model calls / 22,241 tokens and 58 total
   Sandbox operations, no imports. Service/fix pushed to private origin/main.
-  Public HTTPS is pending the owner's one-time Funnel account enablement.
+  Public HTTPS is pending the owner's one-time Funnel account enablement. Verified
+  all 211 source/artifact files and synchronized the original Git metadata to the
+  pushed prepared tree without changing worktree bytes or private state.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
