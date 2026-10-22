@@ -1,0 +1,29 @@
+[Unit]
+Description=DocDrift private judge web interface
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=@REPO_ROOT@
+Environment=PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+EnvironmentFile=@JUDGE_ENV@
+UnsetEnvironment=NEBIUS_API_KEY NEBIUS_PROJECT_ID TAVILY_API_KEY LANGCHAIN_API_KEY LANGSMITH_API_KEY
+ExecStart=@PYTHON@ -m docdrift.judge_service web --state-root @STATE_ROOT@ --authorization @AUTHORIZATION@ --host 127.0.0.1 --port 8765
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+Nice=10
+CPUQuota=25%
+MemoryMax=384M
+TasksMax=32
+LimitNOFILE=1024
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=@STATE_ROOT@
+InaccessiblePaths=@PRIVATE_FILES@
+
+[Install]
+WantedBy=default.target

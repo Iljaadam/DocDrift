@@ -36,4 +36,4 @@ packages = ["src/docdrift"]
 "fixtures/renamed_method/repository/drift_demo/__init__.py" = "docdrift/data/renamed_method/repository/drift_demo/__init__.py"
 
 [tool.hatch.build.targets.sdist]
-only-include = ["src", "tests", "fixtures", "docs", "scripts", ".github", "ARCHITECTURE_PLAN.md", "README.md", "STATUS.md", "LICENSE", "pyproject.toml", "uv.lock", ".python-version", ".gitignore"]
+only-include = ["src", "tests", "fixtures", "docs", "scripts", "deploy", ".github", "ARCHITECTURE_PLAN.md", "README.md", "STATUS.md", "LICENSE", "pyproject.toml", "uv.lock", ".python-version", ".gitignore"]

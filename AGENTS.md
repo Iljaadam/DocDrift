@@ -30,8 +30,8 @@ demo-able submission.
 
 ## Hard rules
 
-- **$0 personal spend by default.** Only granted free credits, except the
-  explicitly authorized fixed Sandbox verification below (D25).
+- **$0 personal spend by default.** Use granted credits. The separate scoped
+  Sandbox authorizations below record permission, not verified billing coverage.
   - Inference: approved by the user on 2026-10-14 for the $1 Token Factory
     trial key (`--live` on `repair`/`evaluate`). On 2026-10-15 the user reported
     promotional credits already on the account, approximately $30 (exact balance
@@ -56,6 +56,19 @@ demo-able submission.
     Oct 21 (F12): three probes and twelve verifier operations, saved repair
     `behavior_verified`, no new inference. This bounded allowance is consumed;
     use saved evidence next. Billing remains unverified.
+  - Hosted judging (D31, user Oct 22): User chose this VPS, existing Nebius
+    credentials, private shared access, and approved 20 total fresh attempts,
+    including tests and four reserved held-out attempts. Each attempt is capped
+    at eight model calls and seventeen disposable Sandbox operations, with one
+    additional startup capability operation overall and no image imports.
+    User said "proceed, ill check the usages myself" and intends granted-credit
+    funding only; the reported $30.98 is specifically Token Factory credit.
+    Sandbox credit coverage and actual charges remain unverified. Do not claim
+    a guaranteed dollar cap or another partner service's balance. Keep a durable
+    global quota, count uncertain attempts, and stop new admissions after Dec 15.
+    Preserve F6 state; use the separate judge authorization and state directory.
+    This VPS choice permits a separate DocDrift service on loopback 8765; keep
+    its units, storage, and route isolated from NewsBias and the forbidden ports.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

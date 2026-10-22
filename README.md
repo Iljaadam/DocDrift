@@ -28,6 +28,13 @@ and evaluation. The historical model comparison uses local Docker; the separate
 Sandbox run verifies the unchanged saved repair. Remaining delivery work is
 tracked in [STATUS.md](STATUS.md).
 
+The private judge service is implemented with one fixed owned fixture, fresh
+Nemotron/Sandbox verification, a durable twenty-attempt allowance, and sanitized
+downloads. Its live URL is pending VPS activation and acceptance; follow the
+[deployment instructions](docs/JUDGE_DEPLOYMENT.md). No provider account is
+required from judges once the owner has activated it. The completed F6 evidence
+above remains separate from future fresh judge attempts.
+
 ## Run from a checkout
 
 Requires Git, Python 3.12, [uv](https://docs.astral.sh/uv/), and a usable local

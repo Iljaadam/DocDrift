@@ -149,6 +149,12 @@ through December 15, and confirmation that the recorded owned-fixture evidence
 meets the chosen track's requirements. Saved evidence browsing and the manual
 local demo do not resolve that delivery dependency.
 
+The fixed-case private controller and bounded live worker are now implemented
+and tested offline, with a twenty-attempt deployment allowance approved by the
+owner. Public HTTPS activation, one actual end-to-end acceptance attempt, and
+the final held-out comparison are pending. Do not describe the route as
+available until those activation checks have been recorded.
+
 ## Feedback for Nebius / NVIDIA
 
 [Feedback log](FEEDBACK_LOG.md): model discovery, standard tool-call support,

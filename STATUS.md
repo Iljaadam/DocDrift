@@ -11,6 +11,9 @@ Receipt of that specific allocation, expiry, and Sandbox billing terms remain
 unverified; do not add it to the earlier reported balance without reconciliation.
 User reports granted credits already on the account, approximately $30 (Oct 15,
 D10); exact balance, expiry, and Sandbox coverage have not been checked.
+On Oct 22 the user reported **$30.98 in Token Factory credit**; this is not a
+balance for partner services or evidence of Sandbox billing coverage (D31).
+Tavily, LangSmith/LangGraph/LangChain, Toloka, and Tandem remain unused.
 Nebius project ID (user-supplied): `aiproject-e00a0rb50jb0emajfv`.
 Sandboxes: access confirmed by one user-approved read-only `GET whoami` on
 Oct 16 (F7). The existing bearer key plus this project ID in the `Project` header
@@ -99,7 +102,10 @@ consumed operation allowance and receipts; continue with saved evidence.
 - [x] Package separate actual Sandbox verification of the same saved proposal:
   `docs/demo/f6-sandbox/`, review, evidence ZIP, runtime record, and disclosed
   redactions; original local Docker comparison preserved
-- [ ] Free judge-access route through Dec 15 (CLI + credits, or hosted fixed-case endpoint — not on NewsBias infra)
+- [x] Implement private fixed-case judge service with durable global quota,
+  single worker, fresh model/Sandbox path, sanitized artifacts, and VPS setup
+- [ ] Activate and accept the private judge URL on this VPS through Dec 15;
+  keep DocDrift units/state/route separate from NewsBias (D31)
 - [ ] Record video under 3 minutes (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
 - [x] Record Nebius/NVIDIA API feedback and actual failures/successes (F1–F12 in
   `docs/FEEDBACK_LOG.md`); no external message sent
@@ -114,22 +120,71 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** browse the separate [saved Sandbox verification](docs/demo/f6-sandbox/index.html)
-and original [F6 model comparison](docs/demo/f6/index.html), then record the
-under-three-minute video from those saved artifacts. F12 completed D25's bounded
-run: one historical failed import, three probes, twelve verifier operations, no
-new inference. Preserve `.docdrift/sandbox-f6/`; no further live operation is
-needed for this verification. Billing clarification remains pending. D8 and the
-funded free live-agent judge-access route through Dec 15 remain unresolved;
-credential-free saved-evidence browsing does not fulfill the live-agent route.
-D9 and its single supplemental comparison are complete.
+**Next:** check Tailscale identity and unused HTTPS port 8443 from the normal
+VPS terminal, then follow [judge deployment](docs/JUDGE_DEPLOYMENT.md). The
+private controller/worker is ready for activation, not yet live-accepted.
+Activation consumes the one new capability operation; the owner acceptance run
+and four held-out jobs come from D31's twenty-attempt allowance. Preserve both
+judge and completed F6 state. After actual acceptance, record the approved
+once-only held-out comparison and the under-three-minute video. The owner
+records the video; repository publication waits for final review. F12 and D9
+remain completed historical evidence. Billing clarification is still pending.
 
-The user has now selected a hosted fixed-case live demo for judge access. Its
-portable implementation brief and proposed separate allowance are in
-`docs/JUDGE_HOSTING_PLAN.md`. Hosting, funding, activation limits, credentials,
-and availability decisions are being collected together before new live work.
+The user answered the hosted-demo questions on Oct 22 (D31): use this VPS and
+existing credentials, private shared access, twenty total attempts including four
+reserved held-out jobs, and the prepared video script for owner recording.
+The controller/worker, strict live bridge, quota, artifact filtering, and isolated
+user-unit setup are implemented. Follow `docs/JUDGE_DEPLOYMENT.md` after checking
+the VPS's Tailscale HTTPS route. Activation and actual held-out results remain
+pending; no new model call or Sandbox operation was made during implementation.
+Workspace/Git steps are in `docs/WORKSPACE_ACCESS.md`. The restricted agent cannot
+reach tailscaled; a normal-terminal route check was requested asynchronously.
 
-## Resume handoff — October 21, 2026
+## Resume handoff — October 22, 2026
+
+Implemented the private fixed-fixture HTTP interface, single durable worker,
+and separate judge live bridge. No new dependency or partner service is used.
+HTTP Basic authentication, same-origin admission, request idempotency, expiration,
+and exact artifact routes are checked with manufactured HTTP requests. The web
+process has no provider environment; the worker uses the existing Nebius key.
+Both dedicated user units have resource/filesystem limits and use loopback 8765.
+
+The separate mode-600 authorization and initialized state are prepared at
+`.docdrift/access/judge-authorization-2026-10-22.json` and `.docdrift/judge/`.
+Actual status: `activation_required`, zero attempts used, sixteen public slots
+and four reserved held-out slots, no startup capability submission. The external
+state-binding record detects a missing quota database rather than resetting it.
+Worker errors/interruption pause later jobs for operator reconciliation; no
+automatic retry can create another model/guest submission. Private original
+provider/state files are excluded from public artifacts, and exact credential
+bytes plus common credential patterns are rejected before publication.
+
+`held-out --live` queues the four approved fixed jobs once after code freeze;
+`held-out-report` summarizes saved outcomes offline, retaining failures. Both
+the old F6 allowance and all fixture manifests remain unchanged. No new live
+inference, guest execution, held-out score, service startup, route, secret file
+outside the repository, or public URL has been created during implementation.
+
+The VPS has sufficient observed memory/disk for the small controller. `gh` is
+installed but its in-sandbox authentication check reports failure; command
+networking is restricted and original `.git` is still read-only. Tailscale is
+installed but this session cannot reach its local daemon, so HTTPS hostname,
+existing routes, and Funnel eligibility remain unknown. A safe normal-terminal
+diagnostic question is pending. `docs/WORKSPACE_ACCESS.md` includes the official
+permission-profile approach; `docs/JUDGE_DEPLOYMENT.md` covers setup, activation,
+private password handling, isolated units, conditional port 8443, and rollback.
+Do not change any existing Tailscale route or NewsBias unit to unblock it.
+
+Validation: **1,014 tests pass**, including 190 new judge tests. The offline
+wheel/source build and installed-wheel smoke checks pass with unchanged fixture
+hashes, no live requests, no paid calls, and no guest execution. JavaScript
+syntax and rendered user-unit validation also pass. HTTP/browser interactions
+were tested with manufactured request sockets; an external browser/HTTPS
+acceptance has not yet occurred. Source is committed in the writable isolated
+delivery checkout; original `.git` remains protected. Do not infer a new push
+or activation from those local checks.
+
+## Previous resume handoff — October 21, 2026
 
 Builder access is now user-confirmed (D22); actual Sandbox execution, import,
 and storage coverage with no personal charges remains unconfirmed. The user
@@ -524,6 +579,19 @@ Who decided what, and when. Don't reverse one without the user.
   choices use the proposed defaults in `docs/JUDGE_HOSTING_PLAN.md`. Hosting,
   fresh inference/Sandbox allowances, funding coverage, and deployment activation
   still need the answers being collected. The completed F6 scope is not reused.
+- D31 (user, Oct 22): Answered the consolidated questions: use this VPS, the
+  existing Nebius key/project, private shared judge access, and twenty total
+  attempts with one worker. Approves eight model calls/seventeen disposable
+  operations per attempt plus one global startup capability operation, with
+  four attempts reserved for the once-only held-out comparison after code
+  freeze. User reports $30.98 Token Factory credit and says "proceed, ill check
+  the usages myself" while keeping granted credits as the official funding
+  intent. This is bounded permission, not confirmed Sandbox coverage, an invoice,
+  or an enforceable dollar cap. No new image imports. Owner records the video;
+  repository publication waits for final review. The same VPS may host isolated
+  DocDrift units on 127.0.0.1:8765 without touching NewsBias or its forbidden ports.
+  Existing commit/push permission persists; provide environment/terminal steps
+  where managed restrictions prevent direct work. Partner services remain unused.
 
 ## Session log
 
@@ -709,6 +777,21 @@ Who decided what, and when. Don't reverse one without the user.
   remaining hosting/funding/access/allowance decisions in one questionnaire.
   This is planning documentation; no new inference, provider execution,
   deployment, or held-out evaluation. Existing 824-test validation is unchanged.
+- 2026-10-22 (private judge service): Recorded D31's VPS/existing-key/private-access
+  choices, $30.98 Token Factory balance report, and separate twenty-attempt scope.
+  Built fixed-fixture live bridge, durable queue/quotas, bounded model accounting,
+  single-worker crash pause, private HTTP interface, saved-evidence fallback,
+  sanitized review/downloads, once-only held-out queue/report, setup script, and
+  isolated resource-limited user units. Prepared private authorization/state
+  offline with zero attempts used. All 1,014 tests pass; cached offline package
+  build/installed smoke and unit/JS checks pass. No new provider/model/guest
+  request, service startup, route change, partner service, or outside-repo secret
+  was used or created. Tailscale hostname/8443 availability remain unknown from
+  this sandbox; normal-terminal diagnostics are pending. Added official workspace
+  permission and VPS/GitHub steps. Commit prepared in the isolated delivery
+  checkout; remote delivery still needs working network/host permissions. Next:
+  establish HTTPS route, activate the one capability probe, accept one live judge
+  run, then freeze and run the four reserved held-out jobs once; record video.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
