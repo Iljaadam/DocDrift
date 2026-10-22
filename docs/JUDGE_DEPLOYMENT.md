@@ -223,6 +223,14 @@ Then repeat the same Funnel command. If the local CLI reports permission denied,
 run only that Funnel command with `sudo`; do not reset routes or change the
 daemon's operator globally. A public DNS update can take a few minutes.
 
+If the enablement page reports `404: node not found`, compare the browser's
+selected account/tailnet with the server's active one and confirm that the
+admin console lists this VPS. The owner reported this error on October 22;
+the server remained online and regenerating its prompt returned the same URL.
+An account mismatch has not been confirmed. Tailscale documents switching the
+admin console's selected tailnet in its
+[multiple-tailnet guide](https://tailscale.com/docs/features/multiple-tailnets).
+
 The public HTTPS origin must exactly match `DOCDRIFT_JUDGE_PUBLIC_ORIGIN`. Funnel
 handles TLS and forwards to the loopback web process. The shared password still
 protects run creation, run status, and artifact downloads. Do not add a Serve

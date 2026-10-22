@@ -121,7 +121,10 @@ consumed operation allowance and receipts; continue with saved evidence.
   not an independently verified budget (first repair ~7k tokens).
 
 **Next:** the owner needs to enable Tailscale Funnel once in their existing
-account; the enablement link was requested asynchronously. Then the agent can
+account; the enablement link returned `404: node not found` in their browser.
+The VPS is online with the same node ID and official Tailscale control server;
+a fresh privileged Funnel command returned the same link. First confirm that
+the browser's account/tailnet can see `evipeer-box` (D36). Then the agent can
 finish public HTTPS authentication and artifact-download checks against the
 already completed acceptance job, without another fresh attempt. Both DocDrift
 services are running and enabled. Five of D31's twenty attempts are used and
@@ -621,6 +624,13 @@ Who decided what, and when. Don't reverse one without the user.
   owner account enablement; do not claim it from local success. Existing credit-
   only intent, unverified billing, private repository, and NewsBias exclusions
   remain unchanged.
+- D36 (user report, Oct 22): The Funnel enablement page returns `404: node not
+  found`. Agent confirmed the node is online, the active account/tailnet is
+  unchanged, and the control URL is official Tailscale. Regenerating the prompt
+  produced the same node link. Browser account/tailnet visibility is the next
+  diagnostic; an account mismatch is possible, not established. Only the agent's
+  pending Funnel CLI was replaced; the shared daemon, machine enrollment,
+  service units, and quota were not reset. No new inference or Sandbox operation.
 
 ## Session log
 
@@ -845,6 +855,11 @@ Who decided what, and when. Don't reverse one without the user.
   Public HTTPS is pending the owner's one-time Funnel account enablement. Verified
   all 211 source/artifact files and synchronized the original Git metadata to the
   pushed prepared tree without changing worktree bytes or private state.
+- 2026-10-22 (Funnel enablement 404): Owner reports `node not found`. Rechecked
+  online node, official control URL, and active account; fresh prompt has the
+  same URL. Requested browser account/tailnet and machine-visibility check.
+  Public route remains unconfigured; both services are active, five attempts
+  used and fifteen remain. Documentation-only change; 1,015-test pass unchanged.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
