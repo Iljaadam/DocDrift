@@ -152,6 +152,9 @@ def install(repo_root: Path, config_dir: Path, unit_dir: Path, state_root: Path,
         raise SetupError("The existing nebius.env must be an owned mode-600 regular file")
     if not (repo_root / ".venv/bin/python").is_file() or not authorization.is_file():
         raise SetupError("The repository virtualenv and prepared authorization record must exist")
+    interpreter = (repo_root / ".venv/bin/python").resolve(strict=True)
+    if any(interpreter.is_relative_to(directory) for directory in ("/tmp", "/var/tmp")):
+        raise SetupError("The judge Python interpreter needs a persistent installation outside /tmp and /var/tmp")
     if authorization.is_symlink():
         raise SetupError("The authorization record must not be a symlink")
     _directory(state_root)

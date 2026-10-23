@@ -1,5 +1,11 @@
 # Judge deployment on the current VPS
 
+October 23 update: the existing Tailscale account belongs to the user's brother.
+The user asked about unpairing risks; no disconnection or account switch is
+authorized by that question. Preserve that enrollment while choosing an
+independent DocDrift route or obtaining the account owner's cooperation. The
+earlier Funnel steps below describe that route only if its use is agreed.
+
 The current VPS has room for this small Python service. DocDrift binds only
 `127.0.0.1:8765`, uses two dedicated **user** systemd units, and stores its queue
 under `.docdrift/judge/`. The web process receives a password digest; only the
@@ -132,6 +138,27 @@ The reported $30.98 balance is specifically Token Factory credit. Consult
 F6 authorization is consumed and does not authorize these new jobs.
 
 ## Install and inspect the units
+
+Use a persistent base Python installation. A virtualenv can remain present
+while its interpreter symlink points at a deleted temporary installation; that
+caused an actual `203/EXEC` outage on October 23. The installer now refuses a
+base interpreter under `/tmp` or `/var/tmp`. This VPS was repaired using:
+
+```bash
+uv python install 3.12.13 \
+  --install-dir /home/ubuntu/.local/share/docdrift/python --no-bin \
+  --cache-dir /home/ubuntu/.cache/docdrift/uv
+uv sync --extra dev --locked --link-mode copy \
+  --python /home/ubuntu/.local/share/docdrift/python/cpython-3.12.13-linux-aarch64-gnu/bin/python3.12 \
+  --cache-dir /home/ubuntu/.cache/docdrift/uv
+```
+
+These commands are for this aarch64 VPS. Preserve `.docdrift/` and all external
+configuration during environment recovery. Existing virtualenvs keep their old
+interpreter references when an installation directory changes; uv documents
+the need to recreate them in its [storage reference](https://docs.astral.sh/uv/reference/storage/).
+Use `UV_CACHE_DIR=/home/ubuntu/.cache/docdrift/uv` for the test suite and offline
+distribution checks as well; the old `/tmp/docdrift-uv-cache` was also absent.
 
 ```bash
 .venv/bin/python scripts/docdrift_judge_setup.py --install

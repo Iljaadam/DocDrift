@@ -57,7 +57,7 @@ completed with zero new inference. Sandbox billing remains unverified.
 The private judge service uses a single worker and durable global allowance.
 Its startup capability and fresh local HTTP acceptance repair passed on October
 22, followed by the reserved live Sandbox comparison. Public HTTPS acceptance
-is pending the owner's one-time Tailscale Funnel enablement.
+is pending tunnel setup and acceptance.
 
 An offline test suite and installed-wheel smoke checks cover the CLI, verifier,
 evidence integrity, recovery, and synthetic provider contracts. The archive
@@ -180,7 +180,7 @@ The fixed-case private controller and bounded live worker are running on the
 owner's VPS. Startup, a fresh local HTTP acceptance repair, and the once-only
 held-out comparison are complete. Five of the twenty approved attempts are
 used; fifteen remain for judges. Public HTTPS authentication and downloads still
-need acceptance after the owner's Tailscale Funnel account enablement. Do not
+need acceptance after the public tunnel is configured. Do not
 describe the public route as available before that check is recorded.
 
 ## Feedback for Nebius / NVIDIA

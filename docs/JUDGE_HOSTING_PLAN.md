@@ -98,8 +98,10 @@ reserved held-out fixtures were then run once under each strategy: one-shot
 Saved results and actual usage are in [feedback F13/F14](FEEDBACK_LOG.md) and
 the [held-out bundle](demo/held-out/index.html).
 
-Public HTTPS acceptance still awaits the owner's one-time Tailscale Funnel
-account enablement. Local success is not proof of an external-browser session.
+Public HTTPS acceptance still awaits an approved tunnel. The existing Tailscale
+account was identified as the user's brother's on October 23; preserve that
+enrollment while choosing a separate route or obtaining his cooperation.
+Local success is not proof of an external-browser session.
 Video recording, public
 repository release after final review, and final submission
 remain separate deliverables; the hosted demo is not evidence that they occurred.

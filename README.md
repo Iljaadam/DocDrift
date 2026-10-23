@@ -34,7 +34,7 @@ tracked in [STATUS.md](STATUS.md).
 The private judge service is implemented with one fixed owned fixture, fresh
 Nemotron/Sandbox verification, a durable twenty-attempt allowance, and sanitized
 downloads. The VPS services and a fresh local acceptance repair passed on Oct 22;
-public HTTPS acceptance awaits Tailscale account enablement. Follow the
+public HTTPS access still needs an approved tunnel and acceptance check. Follow the
 [deployment instructions](docs/JUDGE_DEPLOYMENT.md). No provider account is
 required from judges once the owner has activated it. The completed F6 evidence
 above remains separate from future fresh judge attempts.

@@ -75,6 +75,18 @@ demo-able submission.
     Do not repeat the held-out comparison or reset the quota. The two dedicated
     user services are enabled and running. Public HTTPS is awaiting the owner's
     one-time Tailscale Funnel account enablement; local acceptance is complete.
+    On Oct 23 the user clarified that the existing Tailscale account belongs to
+    their brother. They asked about unpairing risks, not for disconnection. The
+    existing enrollment and network configuration remain unchanged; choose a
+    separate DocDrift access route or obtain the account owner's cooperation.
+    The Oct 23 runtime repair moved Python from missing temporary storage to
+    `~/.local/share/docdrift/python/`; never deploy this service with its base
+    interpreter under `/tmp` or `/var/tmp`. No additional attempts were used.
+    Later on Oct 23 the user explicitly authorized removing the brother's local
+    Tailscale enrollment and signing into their own account, named `iljas-vps`.
+    Logout removed the old saved profile; fresh own-account browser authentication
+    is pending. Other containers, ordinary SSH, and DocDrift stayed running.
+    Do not reuse the brother's old HTTPS origin after the new account connects.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.
@@ -84,13 +96,14 @@ demo-able submission.
 ## Commands
 
 ```bash
+export UV_CACHE_DIR="$HOME/.cache/docdrift/uv"
 uv sync --extra dev --locked
 uv run --no-sync pytest -o addopts=""      # plain -q hides the summary line
 uv run --no-sync docdrift demo --inspect-only
 uv run --no-sync docdrift demo --image python:3.12-slim   # local Docker slice
 uv run --no-sync docdrift sandbox-contract-demo           # offline, no creds
 uv run --no-sync docdrift challenge                        # bad-patch rejection
-.venv/bin/python scripts/check_distribution.py --build --dist-dir /tmp/docdrift-dist --cache-dir /tmp/docdrift-uv-cache
+.venv/bin/python scripts/check_distribution.py --build --dist-dir /tmp/docdrift-dist --cache-dir "$UV_CACHE_DIR"
 uv run --no-sync docdrift evaluate --strategies execution_only    # baseline, local Docker
 uv run --no-sync docdrift repair --strategy agent --replay r.json # synthetic rehearsal
 uv run --no-sync docdrift review <run-id>                    # saved evidence, no execution

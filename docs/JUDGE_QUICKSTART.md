@@ -44,8 +44,9 @@ preservation, and evidence export. It is not a live Nemotron repair service.
 The submission's free live-agent access route is still pending.
 
 The private hosted route is running on the VPS and passed a fresh local HTTP
-acceptance repair on October 22. Public HTTPS acceptance is awaiting the owner's
-one-time Tailscale Funnel account enablement. Operators should follow
+acceptance repair on October 22. Public HTTPS acceptance awaits an approved
+tunnel; the VPS's existing private network is shared and will be preserved.
+Operators should follow
 [the VPS deployment guide](JUDGE_DEPLOYMENT.md). Once activated, judges use the
 supplied HTTPS address and private credentials without a provider account.
 The twenty-attempt allowance includes acceptance testing and the separately

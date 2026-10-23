@@ -163,6 +163,27 @@ def test_existing_unrelated_unit_is_preserved_before_any_unit_write(prepared, tm
     assert not (units / "docdrift-judge-web.service").exists()
 
 
+def test_install_refuses_python_under_temporary_storage(prepared, tmp_path, monkeypatch):
+    import shutil
+
+    config, state = prepared
+    (config / "nebius.env").write_text("synthetic key")
+    (config / "nebius.env").chmod(0o600)
+    auth = tmp_path / "authorization.json"
+    auth.write_text("{}")
+    repo = tmp_path / "repo"
+    (repo / ".venv/bin").mkdir(parents=True)
+    shutil.copytree(ROOT / "deploy", repo / "deploy")
+    interpreter = tmp_path / "python3.12"
+    interpreter.write_text("synthetic temporary interpreter\n")
+    (repo / ".venv/bin/python").symlink_to(interpreter)
+    units = tmp_path / "units"
+    monkeypatch.setattr(setup.subprocess, "run", lambda *a, **k: pytest.fail("Do not reload units"))
+    with pytest.raises(setup.SetupError, match="persistent"):
+        setup.install(repo, config, units, state, auth)
+    assert not units.exists()
+
+
 @pytest.mark.parametrize("config_name", ["config", "config with space%name"])
 def test_user_units_parse_with_systemd_when_available(tmp_path, config_name):
     import shutil

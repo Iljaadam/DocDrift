@@ -120,19 +120,53 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** the owner needs to enable Tailscale Funnel once in their existing
-account; the enablement link returned `404: node not found` in their browser.
-The VPS is online with the same node ID and official Tailscale control server;
-a fresh privileged Funnel command returned the same link. First confirm that
-the browser's account/tailnet can see `evipeer-box` (D36). Then the agent can
-finish public HTTPS authentication and artifact-download checks against the
-already completed acceptance job, without another fresh attempt. Both DocDrift
-services are running and enabled. Five of D31's twenty attempts are used and
-fifteen remain for judges. Do not repeat activation or the held-out comparison.
+**Next:** finish the explicitly authorized own-account Tailscale migration (D39).
+The brother's local profile was removed by logout. A fresh login is waiting for
+the user to approve this VPS in their own account; the requested Tailscale name
+is `iljas-vps`. Ordinary SSH and all original containers are still running.
+After authentication, inspect the actual new account/DNS name, replace only the
+private judge public-origin setting, and configure its HTTPS route. Verify the
+existing acceptance job and downloads without another fresh attempt. Both
+DocDrift services remain active; five attempts are used and fifteen remain.
+Do not repeat activation or the held-out comparison. The earlier read-only
+instruction (D37) was superseded by the user's explicit migration request.
 After HTTPS acceptance, record the under-three-minute video, finish the Devpost
 write-up, and review repository publication. Billing clarification remains open.
 
-## Resume handoff — October 22, 2026
+## Resume handoff — October 23, 2026
+
+Current migration stage: `sudo tailscale logout` succeeded, the old saved profile
+list became empty, and `switch remove 1d74` confirmed it was already absent.
+`sudo tailscale login --hostname=iljas-vps --accept-dns=true
+--accept-routes=false --ssh=false` is waiting for the user's browser approval.
+No brother credentials were copied, and his account/other devices were not
+deleted. Record: `.docdrift/access/tailscale-migration-2026-10-23.json`.
+Existing containers, SSH, external DNS, loopback health, and quota were checked
+after logout. The old `evipeer-box.tail113e81.ts.net:8443` judge origin must be
+updated to the authenticated account's actual new origin before publication.
+
+The user clarified that the existing Tailscale identity belongs to their
+brother and asked whether removal could break his work. This is not a request
+to disconnect, change accounts, or inspect his projects. Read-only checks found
+no Serve/Funnel configuration, no configured exit node or advertised subnet
+routes, and built-in Tailscale SSH disabled. The current SSH transport appears
+independent of Tailscale. Ordinary SSH/private apps could still depend on the
+tailnet; no claim is made that unpairing is safe. Leave the existing network
+alone while choosing DocDrift's separate public route or getting the brother's
+cooperation. The previous Funnel CLI is no longer running.
+
+An unrelated actual deployment failure was discovered during those checks:
+`.venv/bin/python` pointed at missing `/tmp/docdrift-python/...` storage, so both
+DocDrift units were in `203/EXEC` restart loops. Stopped only these two units,
+installed the same CPython 3.12.13 under `~/.local/share/docdrift/python/`, and
+rebuilt `.venv` from the unchanged lockfile with a dedicated persistent cache.
+The installer now rejects a base interpreter under `/tmp` or `/var/tmp` before
+writing units. Both services are restored; authenticated page/status/archive
+checks pass. Five completed jobs, authorization bytes, the frozen controller,
+and the existing acceptance archive hash are unchanged. No new inference or
+Sandbox operation. Durable recovery records are in `.docdrift/judge/deployment/`.
+
+## Previous deployment handoff — October 22, 2026
 
 Host access is now verified: DNS, GitHub SSH, the user service manager, and
 Tailscale are reachable. The VPS's exact HTTPS origin is
@@ -631,6 +665,25 @@ Who decided what, and when. Don't reverse one without the user.
   diagnostic; an account mismatch is possible, not established. Only the agent's
   pending Funnel CLI was replaced; the shared daemon, machine enrollment,
   service units, and quota were not reset. No new inference or Sandbox operation.
+- D37 (user, Oct 23): The existing Tailscale account is their brother's, who
+  previously built something on this VPS. User asks what Tailscale/Funnel do
+  and whether unpairing could break his work; no removal is requested. Keep
+  the existing enrollment/configuration, explain network dependencies, and
+  recommend a separate DocDrift route under the user's control. A route change
+  has not been selected or carried out.
+- D38 (agent implementation, Oct 23): Restore the already authorized DocDrift
+  deployment after its temporary base interpreter disappeared. Use the same
+  CPython 3.12.13 in persistent DocDrift storage and rebuild the locked virtualenv;
+  reject temporary base interpreters in future unit installation. This does
+  not alter the frozen controller, Tailscale, another project, quota, or billing
+  authorization. Existing evidence checks replace any new paid acceptance run.
+- D39 (user, Oct 23): After the read-only inventory, explicitly requested removal
+  of the brother's Tailscale membership on this VPS and login to their own account.
+  Clarified that `evipeer-box` is this VPS's Tailscale name, then said to proceed
+  and rename it to "ilja's vps or something". Use `iljas-vps` as the Tailscale
+  hostname. This authorizes local profile removal/re-enrollment, not deleting
+  the brother's entire account or changing his other devices. Logout removed
+  the old profile; own-account browser approval remains necessary.
 
 ## Session log
 
@@ -860,6 +913,19 @@ Who decided what, and when. Don't reverse one without the user.
   same URL. Requested browser account/tailnet and machine-visibility check.
   Public route remains unconfigured; both services are active, five attempts
   used and fifteen remain. Documentation-only change; 1,015-test pass unchanged.
+- 2026-10-23: Recorded brother-owned Tailscale identity and unpairing-risk question
+  (D37); read-only network checks, no enrollment/configuration change. Found the
+  DocDrift Python target under /tmp had disappeared; restored persistent CPython
+  and the locked virtualenv, added an installer regression guard (D38), and
+  verified authenticated existing evidence without new paid calls. Both units
+  are restored; five attempts used, fifteen remain. Public route choice remains
+  open; preserve the brother's network and all frozen results.
+- 2026-10-23 (own-account migration): User authorized changing this VPS's Tailscale
+  account and name (D39). Logged out the brother profile and verified its local
+  removal, then initiated `iljas-vps` login. Awaiting the user's own-account
+  browser approval. All original containers and ordinary SSH remained up;
+  DocDrift health/quota still pass, no new model/Sandbox runs. Runtime-recovery
+  regression and full offline suite pass: 1,016 tests with the persistent cache.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
