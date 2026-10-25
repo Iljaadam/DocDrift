@@ -73,20 +73,23 @@ demo-able submission.
     five attempts: one fresh acceptance repair and the four once-only held-out
     jobs. All five returned `behavior_verified`; fifteen public attempts remain.
     Do not repeat the held-out comparison or reset the quota. The two dedicated
-    user services are enabled and running. Public HTTPS is awaiting the owner's
-    one-time Tailscale Funnel account enablement; local acceptance is complete.
+    user services are enabled and running. Local acceptance completed on Oct 22;
+    public HTTPS acceptance completed on Oct 25 as recorded below.
     On Oct 23 the user clarified that the existing Tailscale account belongs to
     their brother. They asked about unpairing risks, not for disconnection. The
-    existing enrollment and network configuration remain unchanged; choose a
-    separate DocDrift access route or obtain the account owner's cooperation.
+    enrollment was initially preserved pending explicit migration authorization.
     The Oct 23 runtime repair moved Python from missing temporary storage to
     `~/.local/share/docdrift/python/`; never deploy this service with its base
     interpreter under `/tmp` or `/var/tmp`. No additional attempts were used.
     Later on Oct 23 the user explicitly authorized removing the brother's local
     Tailscale enrollment and signing into their own account, named `iljas-vps`.
-    Logout removed the old saved profile; fresh own-account browser authentication
-    is pending. Other containers, ordinary SSH, and DocDrift stayed running.
-    Do not reuse the brother's old HTTPS origin after the new account connects.
+    Logout removed the old saved profile. On Oct 25 the user completed own-account
+    authentication and Funnel enablement. The VPS is `iljas-vps`; DocDrift is at
+    `https://iljas-vps.tail2832de.ts.net:8443`, forwarding only to loopback 8765.
+    Verified public HTTPS authentication, assets, status, existing review/ZIP,
+    and idempotent admission without another attempt or provider call. Five
+    attempts are used and fifteen remain. Other containers and ordinary
+    SSH stayed running. Never reuse the brother's old HTTPS origin or reset quota.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

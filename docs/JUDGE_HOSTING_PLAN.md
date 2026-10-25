@@ -1,10 +1,10 @@
 # Hosted judge demo — implementation brief
 
-Status: implemented and tested offline after the user's October 22 answers;
-not yet a deployed or live-accepted service. The user approved this VPS, the
-existing key/project, private shared access, and the bounded allowance below.
-See [the activation instructions](JUDGE_DEPLOYMENT.md). The completed F6
-allowance and private state are preserved.
+Status: deployed on the user's VPS; fresh model/Sandbox acceptance passed on
+October 22 and public HTTPS acceptance passed on October 25. The user approved
+this VPS, the existing key/project, private shared access, and the bounded
+allowance below. See [the deployment instructions](JUDGE_DEPLOYMENT.md).
+The completed F6 allowance and private state are preserved.
 
 ## Judge experience
 
@@ -98,10 +98,11 @@ reserved held-out fixtures were then run once under each strategy: one-shot
 Saved results and actual usage are in [feedback F13/F14](FEEDBACK_LOG.md) and
 the [held-out bundle](demo/held-out/index.html).
 
-Public HTTPS acceptance still awaits an approved tunnel. The existing Tailscale
-account was identified as the user's brother's on October 23; preserve that
-enrollment while choosing a separate route or obtaining his cooperation.
-Local success is not proof of an external-browser session.
-Video recording, public
-repository release after final review, and final submission
+The user explicitly authorized replacing the brother's local Tailscale enrollment.
+Own-account authentication and Funnel enablement completed on October 25; the
+VPS is `iljas-vps`. The password-protected origin is
+`https://iljas-vps.tail2832de.ts.net:8443`. Public-network TLS/HTTP authentication,
+status, and evidence downloads passed using the existing acceptance job without
+a new attempt. This is protocol acceptance, not an interactive browser session.
+Video recording, public repository release after final review, and final submission
 remain separate deliverables; the hosted demo is not evidence that they occurred.

@@ -1,4 +1,21 @@
-# Judge quickstart: saved model evidence and free local verification
+# Judge quickstart: hosted repair, saved evidence, and local verification
+
+## Run a fresh hosted repair
+
+Open [DocDrift](https://iljas-vps.tail2832de.ts.net:8443) and enter username
+`judge` with the passphrase supplied privately in the judging instructions.
+No provider account, API key, local installation, or Tailscale account is needed.
+
+Select **Run fresh repair**, wait for a terminal result, then open its review
+and download the evidence ZIP. This generates a new Nemotron proposal and verifies
+it on Nebius Sandboxes against the owned fixture's frozen contracts. Each fresh
+attempt consumes one shared slot, including a failed attempt. Fifteen slots
+remained when public HTTPS acceptance passed on October 25; the page displays
+the current allowance. New admissions end after December 15.
+
+The owner maintains the VPS and supplies service credentials. Saved evidence
+below remains available without starting a new repair. Operator details are in
+[the deployment guide](JUDGE_DEPLOYMENT.md).
 
 ## Browse the real model repair
 
@@ -40,20 +57,12 @@ Docker strategy comparison; it is not a new model evaluation or live service.
 This route uses the packaged owned fixture, a supplied manual repair, and local
 Docker. It needs no Nebius account, provider key, or inference credits. It
 demonstrates failure reproduction, patch limits, independent checks, healthy
-preservation, and evidence export. It is not a live Nemotron repair service.
-The submission's free live-agent access route is still pending.
+preservation, and evidence export. It demonstrates a supplied manual repair.
+The hosted route above provides fresh Nemotron generation separately.
 
-The private hosted route is running on the VPS and passed a fresh local HTTP
-acceptance repair on October 22. Public HTTPS acceptance awaits an approved
-tunnel; the VPS's existing private network is shared and will be preserved.
-Operators should follow
-[the VPS deployment guide](JUDGE_DEPLOYMENT.md). Once activated, judges use the
-supplied HTTPS address and private credentials without a provider account.
-The twenty-attempt allowance includes acceptance testing and the separately
-reserved held-out comparison, now completed with both strategies verifying 2/2.
-Browse its [saved results and evidence](demo/held-out/index.html) without keys or
-execution. Saved evidence and the manual demo remain useful
-while hosting is being activated.
+The twenty-attempt hosted allowance includes acceptance testing and the reserved
+held-out comparison, now completed with both strategies verifying 2/2. Browse
+its [saved results and evidence](demo/held-out/index.html) without keys or execution.
 
 ## Set up
 

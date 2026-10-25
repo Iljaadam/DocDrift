@@ -92,7 +92,7 @@ consumed operation allowance and receipts; continue with saved evidence.
 - [x] Offline `verify-evidence` validates ZIP structure, manifest coverage, CRCs,
   and hashes without extraction or execution; no origin/execution attestation
 - [x] Free credential-free local judge quickstart (`docs/JUDGE_QUICKSTART.md`);
-  demonstrates a manual repair, so free live-agent access below remains unresolved
+  demonstrates a manual repair; hosted fresh-agent access is separate below
 - [x] CLI wheel with fixtures, offline install check
 
 **Submission (milestone 5)**
@@ -104,13 +104,13 @@ consumed operation allowance and receipts; continue with saved evidence.
   redactions; original local Docker comparison preserved
 - [x] Implement private fixed-case judge service with durable global quota,
   single worker, fresh model/Sandbox path, sanitized artifacts, and VPS setup
-- [ ] Activate and accept the private judge URL on this VPS through Dec 15;
-  keep DocDrift units/state/route separate from NewsBias (D31)
+- [x] Activate and accept the private judge HTTPS URL on this VPS (Oct 25, F15);
+  keep its units/state/route available through Dec 15 and separate from NewsBias (D31)
 - [ ] Record video under 3 minutes (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
-- [x] Record Nebius/NVIDIA API feedback and actual failures/successes (F1–F12 in
+- [x] Record Nebius/NVIDIA API feedback and actual failures/successes (F1–F15 in
   `docs/FEEDBACK_LOG.md`); no external message sent
 - [ ] Finalize Devpost write-up and submit (`docs/SUBMISSION_DRAFT.md` now records
-  actual F4/F5/F6 results; held-out results and free live-agent access remain open)
+  actual development/held-out results and the accepted private judge URL)
 
 **Decision dates**
 - Oct 22 access fallback is no longer triggered: permission confirmed Oct 16;
@@ -120,20 +120,40 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** finish the explicitly authorized own-account Tailscale migration (D39).
-The brother's local profile was removed by logout. A fresh login is waiting for
-the user to approve this VPS in their own account; the requested Tailscale name
-is `iljas-vps`. Ordinary SSH and all original containers are still running.
-After authentication, inspect the actual new account/DNS name, replace only the
-private judge public-origin setting, and configure its HTTPS route. Verify the
-existing acceptance job and downloads without another fresh attempt. Both
-DocDrift services remain active; five attempts are used and fifteen remain.
-Do not repeat activation or the held-out comparison. The earlier read-only
-instruction (D37) was superseded by the user's explicit migration request.
-After HTTPS acceptance, record the under-three-minute video, finish the Devpost
-write-up, and review repository publication. Billing clarification remains open.
+**Next:** record the under-three-minute video, finish the Devpost write-up, and
+review repository publication. Own-account Tailscale migration and public HTTPS
+acceptance are complete (D40/F15). Maintain the VPS and granted-credit funding
+through December 15; billing clarification remains open. Both DocDrift services
+are active; five attempts are used and fifteen remain. Do not repeat activation,
+the fresh acceptance repair, or the once-only held-out comparison.
 
-## Resume handoff — October 23, 2026
+## Resume handoff — October 25, 2026
+
+The VPS is connected to the user's own Tailscale account as `iljas-vps`. Its
+only Funnel route is `https://iljas-vps.tail2832de.ts.net:8443`, forwarding to
+`http://127.0.0.1:8765`. The old brother-owned local profile is absent. Only the
+private judge origin was changed; the existing passphrase/digest were preserved
+and only the web unit was restarted. The username is `judge`; the password stays
+in `~/.config/docdrift/judge-password.txt`, mode 600, outside Git/chat/evidence.
+
+Public DNS and certificate verification passed through an actual public Funnel
+IPv4 address, bypassing this host's private MagicDNS answer. Seventeen HTTP
+checks covered unauthenticated rejection, page/assets, job/status APIs, saved
+and existing acceptance downloads, same-job idempotent admission, and rejection
+of the old origin. The downloaded ZIP's hashes/integrity match the original.
+This was an HTTPS protocol check from the VPS, not an interactive external-browser
+session. It used no new inference or Sandbox operations. Durable private record:
+`.docdrift/judge/deployment/public-https-acceptance.json`; migration receipt:
+`.docdrift/access/tailscale-migration-2026-10-23.json`.
+
+All five jobs remain completed, with fifteen attempts available. Both dedicated
+services are active/enabled and user lingering remains on. All original running
+containers and ordinary SSH survived the account migration. Ports 80/443/8501
+and other projects were not changed. All **1,016 tests pass** with the persistent
+Python/cache. The repository remains private; publication and submission are
+separate remaining steps.
+
+## Previous migration handoff — October 23, 2026
 
 Current migration stage: `sudo tailscale logout` succeeded, the old saved profile
 list became empty, and `switch remove 1d74` confirmed it was already absent.
@@ -684,6 +704,13 @@ Who decided what, and when. Don't reverse one without the user.
   hostname. This authorizes local profile removal/re-enrollment, not deleting
   the brother's entire account or changing his other devices. Logout removed
   the old profile; own-account browser approval remains necessary.
+- D40 (user completion / agent verification, Oct 25): User completed own-account
+  authentication and enabled Funnel. Verified `iljas-vps` on the user's account,
+  updated only the private judge origin, and published HTTPS 8443 to loopback
+  8765. Public-network TLS/HTTP checks reused the completed acceptance job;
+  no new model/Sandbox calls or attempts. Keep the existing password, twenty-run
+  quota, frozen controller, and completed evidence. Fifteen attempts remain;
+  public availability does not establish Sandbox billing coverage.
 
 ## Session log
 
@@ -926,6 +953,13 @@ Who decided what, and when. Don't reverse one without the user.
   browser approval. All original containers and ordinary SSH remained up;
   DocDrift health/quota still pass, no new model/Sandbox runs. Runtime-recovery
   regression and full offline suite pass: 1,016 tests with the persistent cache.
+- 2026-10-25: Completed own-account migration as `iljas-vps` and accepted the
+  password-protected public HTTPS route (D40/F15). Seventeen HTTP checks and
+  original archive integrity passed through a public Funnel IP; no interactive
+  external-browser session or new provider run. Five attempts used, fifteen
+  remain; all 1,016 tests pass. Updated deployment/judge/submission handoff.
+  Next: video, Devpost/final eligibility review, and repository publication review;
+  keep the VPS and existing evidence available through December 15.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

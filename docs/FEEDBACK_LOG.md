@@ -375,3 +375,26 @@ the saved F6 agent proposal using an existing public image, with no new inferenc
   comparison, four sanitized reviews/archives, and provenance hashes. Each ZIP
   passed unsigned manifest integrity verification without new execution; that
   is not an origin or execution attestation.
+
+### F15 — Public hosted HTTPS accepted after own-account migration (2026-10-25)
+
+- Scope: the user authorized replacing the brother's local Tailscale profile,
+  completed authentication in their own account, and enabled Funnel. This VPS is
+  now `iljas-vps`; only its DocDrift route was added, on HTTPS 8443 to loopback 8765.
+- Origin: [hosted judge](https://iljas-vps.tail2832de.ts.net:8443), protected by
+  the existing shared login. The private origin was updated while preserving
+  the passphrase/digest; only the web unit was restarted.
+- Acceptance: seventeen HTTP checks passed through a publicly resolved Funnel
+  IPv4 address with normal hostname/certificate verification. Checks covered
+  unauthenticated rejection, page/assets, status/job APIs, existing review/ZIP,
+  saved evidence, same-job idempotency, and rejection of the old account's origin.
+  MagicDNS on the VPS returned a private IP, so it was deliberately bypassed for
+  this check. This is protocol acceptance, not an interactive external-browser test.
+- Evidence: reused completed job `04afd40e6053471d91bd321cd93993dd`; its downloaded
+  archive retained SHA-256
+  `e3cbc421d2bb71f8630bbeb7ba8fd676df7cd87b04a6c831c03dcea2f723394e`
+  and passed offline manifest integrity verification. Private record:
+  `.docdrift/judge/deployment/public-https-acceptance.json`.
+- Usage: **zero new model calls, Sandbox operations, or admitted attempts**.
+  Five attempts are used and fifteen remain; Sandbox billing coverage is
+  still unverified. Both dedicated services are active/enabled; all 1,016 tests pass.

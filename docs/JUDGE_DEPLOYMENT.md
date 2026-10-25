@@ -1,10 +1,13 @@
 # Judge deployment on the current VPS
 
-October 23 update: the existing Tailscale account belongs to the user's brother.
-The user asked about unpairing risks; no disconnection or account switch is
-authorized by that question. Preserve that enrollment while choosing an
-independent DocDrift route or obtaining the account owner's cooperation. The
-earlier Funnel steps below describe that route only if its use is agreed.
+October 25 state: the user authorized migration from the brother's local
+Tailscale profile and completed authentication in their own account. This VPS
+is now `iljas-vps`. DocDrift is available at
+[its password-protected HTTPS origin](https://iljas-vps.tail2832de.ts.net:8443).
+Funnel forwards only HTTPS 8443 to `http://127.0.0.1:8765`; no old-account origin
+is reused. Authentication, assets, status, and existing evidence downloads
+passed over verified TLS through a public Funnel IP. This was protocol acceptance
+from the VPS, not an interactive external-browser session.
 
 The current VPS has room for this small Python service. DocDrift binds only
 `127.0.0.1:8765`, uses two dedicated **user** systemd units, and stores its queue
@@ -12,19 +15,20 @@ under `.docdrift/judge/`. The web process receives a password digest; only the
 worker receives the existing Nebius key. No NewsBias directory, container,
 timer, or listener on ports 80, 443, or 8501 is part of this deployment.
 
-These are operator commands for the normal VPS terminal. Preparing configuration
-and installing units are offline. Activation makes the separately authorized
-runtime check; starting the worker permits admitted jobs to consume credits.
-The service is not deployed merely because these files exist.
+These are operator commands for inspection and initial-install reference.
+This host is already deployed: preserve its configuration, state, and quota.
+Do not repeat activation, the fresh acceptance repair, or the held-out comparison.
+Preparation and unit installation are offline; activation consumes the separately
+authorized runtime check, and admitted fresh jobs consume service credits.
 
 Deployment state on October 22: the agent now has host access, both dedicated
 user services are active and enabled, the startup capability passed, and a fresh
 local HTTP repair verified. The four reserved held-out jobs are complete: both
 strategies 2/2 verified. Five attempts are used and fifteen remain. Do not repeat
 activation or submit another acceptance job to resume this deployment. Public
-HTTPS still awaits the owner's Tailscale Funnel account enablement; finish its
-authentication/download checks using the existing completed job. See
-[feedback F13/F14](FEEDBACK_LOG.md) and private `.docdrift/judge/deployment/`.
+HTTPS acceptance completed on October 25 using that existing job, with no new
+provider calls. See [feedback F13–F15](FEEDBACK_LOG.md) and private
+`.docdrift/judge/deployment/public-https-acceptance.json`.
 
 ## Check access and the HTTPS route first
 
@@ -54,11 +58,8 @@ needs the VPS's GitHub SSH key checked; refreshing `gh` alone will not fix it.
 These commands follow the [GitHub CLI status](https://cli.github.com/manual/gh_auth_status)
 and [refresh](https://cli.github.com/manual/gh_auth_refresh) documentation.
 
-On October 22 the owner's normal terminal showed Tailscale connected and both
-Serve and Funnel reporting `No serve config`. The restricted agent session
-cannot connect to the local daemon. The exact HTTPS hostname and Funnel
-eligibility still need the normal-terminal checks below; no route was created
-by the diagnostic commands.
+Host access is working. The checks below inspect the active identity and route;
+they should show `iljas-vps` and the existing DocDrift Funnel on 8443.
 
 ```bash
 tailscale version
@@ -68,18 +69,18 @@ tailscale funnel status
 ```
 
 Do not reset Serve/Funnel, restart a shared daemon, or overwrite an existing
-route. If `8443` already has a Serve or Funnel route, leave it alone and review
-the route choice before continuing. Port `10000` is another supported option
-if it is unused; update every origin and Funnel command consistently. Leave
+route. Preserve the existing DocDrift route on `8443`. During a new installation,
+an unrelated mapping on that port must be left alone. Port `10000` is another
+supported option if it is unused; update every origin and Funnel command consistently. Leave
 port `443` alone. If the daemon is also unavailable in the normal terminal,
 the public route is not ready; the Python service can still be inspected locally.
 
-The recommended route uses the VPS's existing Tailscale identity and an unused
-HTTPS port `8443`. Funnel requires Tailscale 1.38.3 or newer, MagicDNS, tailnet
+The deployed route uses the user's own Tailscale identity and HTTPS port `8443`.
+Funnel requires Tailscale 1.38.3 or newer, MagicDNS, tailnet
 HTTPS certificates, and the `funnel` policy attribute. It provides a public HTTPS
 address; judges do not need a Tailscale account. Check those requirements in the
 [official Funnel guide](https://tailscale.com/docs/features/tailscale-funnel).
-This plan uses the existing Tailscale account. On first use, the Funnel command
+This deployment uses the user's own account. On first use, the Funnel command
 may print a browser approval link. Tailscale's enablement page provisions HTTPS
 and the required Funnel policy attribute; review that page as the tailnet owner.
 
@@ -176,8 +177,8 @@ files. The web unit strips provider keys from its environment and hides the
 Nebius env file and plaintext passphrase. The worker's key is loaded by the
 systemd manager before its filesystem restrictions apply.
 
-The implementation passed all 1,015 offline tests on October 22 after correcting
-systemd 249's whole-path `EnvironmentFile=` parsing.
+The implementation passed all 1,016 offline tests on October 25, including the
+systemd 249 `EnvironmentFile=` parsing and persistent-interpreter regression checks.
 Rerun the suite if the code or environment changed before startup. If the VPS
 user manager cannot apply a hardening setting, inspect its error rather than repeatedly restarting
 or removing all protections. This is an operator compatibility issue, not a
@@ -234,10 +235,11 @@ The quota database is also bound by a small state record beside its authorizatio
 file. Preserve both. If the database disappears, startup fails rather than
 recreating a fresh twenty-attempt allowance.
 
-## Publish only the unused HTTPS route
+## Inspect or publish the DocDrift HTTPS route
 
-Immediately before publishing, repeat `tailscale serve status` and
-`tailscale funnel status` to confirm `8443` is still unused. Then:
+The route below is already running persistently in the background. Before a new
+publication, inspect Serve/Funnel and confirm the selected port is unused;
+preserve an existing matching DocDrift route. The original publication command was:
 
 ```bash
 tailscale funnel --bg --https=8443 http://127.0.0.1:8765
@@ -245,7 +247,7 @@ tailscale funnel status
 ```
 
 If Tailscale prints an enablement URL, open it in your browser while signed into
-the existing tailnet owner account and follow the HTTPS/Funnel setup there.
+the user's own tailnet owner account and follow the HTTPS/Funnel setup there.
 Then repeat the same Funnel command. If the local CLI reports permission denied,
 run only that Funnel command with `sudo`; do not reset routes or change the
 daemon's operator globally. A public DNS update can take a few minutes.
@@ -254,7 +256,9 @@ If the enablement page reports `404: node not found`, compare the browser's
 selected account/tailnet with the server's active one and confirm that the
 admin console lists this VPS. The owner reported this error on October 22;
 the server remained online and regenerating its prompt returned the same URL.
-An account mismatch has not been confirmed. Tailscale documents switching the
+The old enrollment was later identified as the brother's; authorized migration
+to the user's own account and a new node resolved enablement on October 25.
+Do not reuse the old node's link. Tailscale documents switching the
 admin console's selected tailnet in its
 [multiple-tailnet guide](https://tailscale.com/docs/features/multiple-tailnets).
 
@@ -266,12 +270,19 @@ describes the HTTPS port and reverse-proxy behavior, and the Funnel guide notes
 that Serve and Funnel cannot share a port. Never run `tailscale serve reset` or
 `tailscale funnel reset` on this shared VPS.
 
-Check from a device outside the tailnet: login, read the fixture description,
-run one fresh attempt, wait for a terminal result, and download its sanitized
-review and archive. That acceptance attempt counts toward the twenty approved
-attempts; it is not an extra free test. Preserve four attempts for the separately
-approved held-out comparison. A saved F6 page is not proof that the fresh path
-works.
+The fresh acceptance repair already completed on October 22. Its job ID is
+`04afd40e6053471d91bd321cd93993dd`; its result is `behavior_verified`. For route
+checks, inspect that job and download its review/ZIP without creating another
+attempt. The October 25 public-network check covered authentication, assets,
+status, both saved and acceptance downloads, same-job idempotency, and old-origin
+rejection. Its downloaded acceptance ZIP retained SHA-256
+`e3cbc421d2bb71f8630bbeb7ba8fd676df7cd87b04a6c831c03dcea2f723394e`.
+
+This host's MagicDNS resolves its own hostname to a private address. Public
+acceptance therefore resolved the public Funnel IPv4 through DNS-over-HTTPS
+and connected to it with hostname/certificate verification. Ordinary loopback
+or private-tailnet access alone would not establish public routing. No interactive
+external-browser session is claimed.
 
 Open the origin printed earlier in the browser. The username is `judge`. Read
 the generated password only in your private terminal:
@@ -280,14 +291,17 @@ the generated password only in your private terminal:
 cat ~/.config/docdrift/judge-password.txt
 ```
 
-Keep that output out of chat and recordings. Log in, open the saved evidence,
-then run **one** fresh repair and wait for its result. Record its job ID and
-verdict, and check that both its review and evidence ZIP download. A failed job
-also consumes its attempt; inspect it before admitting another. After this
-acceptance run, the expected total used is one, leaving fifteen public attempts
-and four reserved held-out attempts.
+Keep that output out of chat and recordings. Log in and inspect the saved or
+completed acceptance evidence. Judges may select **Run fresh repair** for a new
+attempt; each one counts against the shared allowance, including failures.
+Acceptance and the four held-out jobs have used five slots; fifteen remain as
+of October 25. The page displays the current allowance.
 
 ## Run the approved held-out comparison once
+
+Already completed on this host: one-shot 2/2 verified and agent 2/2 verified.
+Do not rerun it or reset its frozen record. The commands below document the
+original once-only procedure; `held-out-report` can inspect its saved result.
 
 After code and offline checks are frozen and the worker is active, queue the
 four reserved jobs: the two untouched held-out fixtures, each under one-shot

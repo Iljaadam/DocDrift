@@ -56,8 +56,9 @@ completed with zero new inference. Sandbox billing remains unverified.
 
 The private judge service uses a single worker and durable global allowance.
 Its startup capability and fresh local HTTP acceptance repair passed on October
-22, followed by the reserved live Sandbox comparison. Public HTTPS acceptance
-is pending tunnel setup and acceptance.
+22, followed by the reserved live Sandbox comparison. Public HTTPS authentication
+and evidence downloads passed on October 25 using that completed job, without
+new inference or Sandbox operations.
 
 An offline test suite and installed-wheel smoke checks cover the CLI, verifier,
 evidence integrity, recovery, and synthetic provider contracts. The archive
@@ -158,6 +159,14 @@ separately. Saved evidence browsing does not start a live-agent service.
 
 ## Testing instructions for judges
 
+Open [the hosted judge](https://iljas-vps.tail2832de.ts.net:8443) using username
+`judge` and the passphrase supplied privately in the testing instructions. Select
+**Run fresh repair**, wait for its result, and download the review/evidence ZIP.
+No provider account, API key, Tailscale account, or local installation is needed.
+The hosted fixture is curator-owned; each fresh attempt uses a shared slot,
+including failures. Fifteen remained at acceptance on October 25; new admissions
+end after December 15. The owner maintains the VPS through judging.
+
 Open the [saved demo bundle](demo/f6/index.html) from the checkout without keys,
 Docker, inference, or a web server. It includes both model outcomes and the
 successful repair's downloadable evidence.
@@ -171,17 +180,18 @@ repair locally with no provider account or inference credits. This exercises
 failure reproduction, frozen checks, healthy preservation, and evidence export.
 It is a separate route from the recorded model repair.
 
-**Unresolved before submission:** a free functional live-agent route maintained
-through December 15, and confirmation that the recorded owned-fixture evidence
-meets the chosen track's requirements. Saved evidence browsing and the manual
-local demo do not resolve that delivery dependency.
+**Unresolved before submission:** confirm that the recorded owned-fixture evidence
+meets the chosen track's requirements, record the video, and finalize submission.
+Maintain the hosted route and granted-credit funding through December 15;
+Sandbox billing coverage remains unverified.
 
 The fixed-case private controller and bounded live worker are running on the
 owner's VPS. Startup, a fresh local HTTP acceptance repair, and the once-only
 held-out comparison are complete. Five of the twenty approved attempts are
-used; fifteen remain for judges. Public HTTPS authentication and downloads still
-need acceptance after the public tunnel is configured. Do not
-describe the public route as available before that check is recorded.
+used; fifteen remain for judges. Public HTTPS authentication, status, assets,
+and downloads passed on October 25 over verified TLS through a public Funnel IP,
+reusing the completed acceptance job. No interactive external-browser session is
+claimed. Its private acceptance record is retained by the operator.
 
 ## Feedback for Nebius / NVIDIA
 
