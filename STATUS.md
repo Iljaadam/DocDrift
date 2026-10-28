@@ -138,6 +138,8 @@ consumed operation allowance and receipts; continue with saved evidence.
 - [x] Prepare the fuller seven-part Devpost story with an actual owned-fixture
   patch, comparison table, implementation detail, and twenty accurate Built with
   options; Markdown/LaTeX tips describe editor capabilities, not required math
+- [x] Package the copy-ready story as `docs/SUBMISSION_STORY.md` for GitHub;
+  link it from the submission draft and documentation index
 - [ ] Prepare the Devpost gallery thumbnail: JPG/PNG/GIF, at most 5 MB;
   Devpost recommends a 3:2 aspect ratio
 
@@ -816,6 +818,10 @@ Who decided what, and when. Don't reverse one without the user.
   in the seven-part story; equations are optional. Offer twenty implemented
   language/library/provider/build/deployment tags, with sponsor tools prioritized.
   Keep owned fixtures, exploratory results, and tied held-out results explicit.
+- D47 (user, Oct 28): Explicitly asks to push the story to GitHub. Publish the
+  copy-ready seven-section Markdown as `docs/SUBMISSION_STORY.md`; keep the
+  submission metadata, tags, testing instructions, and feedback in the linked
+  draft. This does not authorize a Devpost submission or new provider work.
 
 ## Session log
 
@@ -1126,6 +1132,12 @@ Who decided what, and when. Don't reverse one without the user.
   hosted attempts, external messages, or Devpost submission. Next: video/public
   YouTube link, thumbnail, external-device access check, final form submission,
   and judging funding/quota resolution.
+- 2026-10-28 (story GitHub delivery): Added the exact copy-ready seven-section
+  story as `docs/SUBMISSION_STORY.md` at the user's request (D47). The submission
+  draft and docs index link to that single body. Checked the text against the
+  prepared story and validated headings and local links. Documentation only;
+  the latest 1,027-test pass remains applicable. Next: video, thumbnail, final
+  Devpost form, external-device access, and judging funding/quota resolution.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

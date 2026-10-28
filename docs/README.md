@@ -24,6 +24,7 @@
 
 ## Submission and project history
 
-- [Submission draft](SUBMISSION_DRAFT.md) and [video script](DEMO_VIDEO_SCRIPT.md).
+- [Project story](SUBMISSION_STORY.md), [submission fields](SUBMISSION_DRAFT.md),
+  and [video script](DEMO_VIDEO_SCRIPT.md).
 - [Current checklist and session history](../STATUS.md).
 - [Original architecture plan](../ARCHITECTURE_PLAN.md).
