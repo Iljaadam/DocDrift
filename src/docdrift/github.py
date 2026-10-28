@@ -308,7 +308,7 @@ def _archive(compressed, destination: Path, expected_files: dict[str, dict], exp
                             raise SnapshotError("Archive file inventory or size does not match the pinned Git tree")
                         fileobj = source.extractfile(item)
                         assert fileobj is not None
-                        digest = hashlib.sha1(f"blob {item.size}\0".encode("ascii"))
+                        digest = hashlib.sha1(f"blob {item.size}\0".encode("ascii"), usedforsecurity=False)
                         first = fileobj.read(128)
                         if first.startswith(b"version https://git-lfs.github.com/spec/v1"):
                             raise SnapshotError("LFS pointers are unsupported")

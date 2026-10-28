@@ -1,68 +1,65 @@
-# Constructed static verification challenge
+# Constructed verification challenge
 
-`docdrift.challenge.run_challenge` checks deliberately constructed proposals
-against the owned renamed-method fixture. It reads frozen bytes and parses
-Markdown/Python ASTs. It never imports the target package, executes a proposal,
-starts Docker, or calls Nebius or a model.
+DocDrift checks deliberately bad proposals against the owned renamed-method
+fixture. These are constructed inputs, not model-generated repairs.
 
-The report is labeled `static_policy_challenge`. Every case records its expected
-rejection, actual static verdict, reason, gate, and evidence hashes. The known
-manual `tally` → `count` control must pass the patch boundary, the required
-operation, and the result data-flow gate. Its verdict is `accepted_static`, with `behavior_verified: false`.
+## Recorded runtime result — October 28, 2026
 
-The constructed cases cover:
+| Check | Result |
+|---|---|
+| Bad proposals receiving behavioral verification | **0/16** |
+| Bad code replacements entering the real engine | 7 |
+| Invalid payloads rejected at submission gates | 9 |
+| Good manual control | `behavior_verified` |
+| Execution | 54 local Docker snippet operations |
+| Model calls / Nebius operations / hosted attempts | 0 / 0 / 0 |
 
-- Deleting the entire target fence or relabeling it as text.
-- Swallowing an exception, replacing the API operation with a fixed result, or
-  keeping a dummy API call while replacing the result used by the output.
-- Inserting a skip marker, NUL, Markdown fence, empty replacement, or non-text
-  replacement.
-- Editing application source, the package manifest, independent checks, the
-  frozen profile, or the fixture provenance manifest.
-- Adding an unauthorized test file. This owned target currently has no tests
-  directory; the report states that limitation. Unit tests additionally prove
-  that the same hash gate rejects changes to an existing protected test file
-  using an explicitly synthetic byte sentinel.
+All 16 proposals fail the static challenge. Seven representable code replacements
+also enter the production engine with real Docker execution. Whole-document
+edits, protected-file edits, and non-text payloads are refused at the submission
+boundary; no gate is bypassed to execute an invalid payload.
 
-The dummy-call case illustrates the distinction between coarse operation
-presence and data flow. The ordinary patch policy accepts its retained calls,
-and the named `WordCounter.count` operation remains present. The
-`operation_data_flow` gate rejects it because the printed result is reassigned
-from a value that no longer carries the call's result. (Before October 14 this
-gate required an exact match with the known repair's AST; that rejected
-equivalent model rewrites and was relaxed.)
+The most useful negative control keeps the API call but discards its result.
+It exits zero on all three inputs and matches the expected JSON on one, yet
+receives only `execution_passed`: varied-input checks and result data flow prevent
+`behavior_verified`. The good control passes all three repaired inputs and all
+three healthy regressions; protected hashes are preserved.
 
-The reusable `validate_protected_changes` function compares full relative paths,
-the exact file inventory, all protected hashes, and the selected Markdown hash.
-Its `approved_target_hash` must come from bytes returned by `apply_replacement`;
-an arbitrary proposed document cannot nominate its own approved hash. This lets
-the engine use its existing exact-span policy and the same hash boundary without
-giving another file with the same basename the target's exemption.
+Read the [recorded cases and evidence](demo/challenge/README.md) or
+[summary JSON](demo/challenge/report.json).
 
-```python
-from pathlib import Path
-from docdrift.challenge import run_challenge
+## Reproduce with local Docker
 
-report = run_challenge(
-    Path("fixtures/renamed_method"),
-    Path("artifacts/static-challenge.json"),
-)
-assert report["all_expectations_met"]
+Use an already installed Python 3.12 image and a new state directory:
+
+```sh
+.venv/bin/python scripts/verify_challenge.py --execute \
+  --image python:3.12-slim --state-dir .docdrift/my-verifier-challenge \
+  --output /tmp/docdrift-challenge.json
 ```
 
-Output is optional and must remain outside the frozen fixture. Reports are
-deterministic and contain hashes rather than simulated execution logs or
-invented observed outputs. The input manifest must match before the runner
-evaluates a case; all proposals remain in memory.
+The script records each case and its engine ledger. It refuses to overwrite an
+existing state directory. It performs no inference, image pull, cloud execution,
+or hosted admission. Rejected code can stop before candidate execution after
+the real original-failure and healthy baselines have run.
 
-Generated `__pycache__` directories and `.pyc`/`.pyo` files are excluded from the
-source inventory, matching the repository's Python cache policy. The report
-records that exclusion rule. The runner never loads or executes these caches;
-their presence cannot alter a frozen source, profile, check, or known repair.
-Other unlisted files still invalidate the fixture inventory.
+## Static coverage
 
-This challenge supplies static rejection evidence only. It establishes no
-execution pass, behavioral verification, healthy-example rerun, model-generated
-repair, or provider qualification. It does not complete milestone 3 of the
-architecture plan. The previously recorded local Docker manual run is separate
-runtime evidence; this runner does not repeat or replace it.
+```sh
+uv run --no-sync docdrift challenge
+```
+
+This separate command parses frozen bytes and Python ASTs without execution.
+Its known manual control is `accepted_static`, never behavior-verified.
+Cases cover deleting or relabeling a fence, swallowing exceptions, hardcoded
+output, discarded API results, skips, NULs, fence injection, empty or non-text
+replacements, and protected-file edits or additions.
+
+The file-hash gate checks complete paths and the exact inventory. Only bytes
+approved by the one-span replacement policy may change. Unit tests also cover
+changes to an existing protected test file using a synthetic sentinel; the owned
+fixture itself has no test directory.
+
+Runtime results are actual local Docker evidence, separate from the saved model
+comparisons and Nebius Sandbox runs. They cover the declared fixture contracts
+and do not establish arbitrary semantic equivalence or cloud qualification.

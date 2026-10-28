@@ -72,7 +72,11 @@ consumed operation allowance and receipts; continue with saved evidence.
 
 **Verification challenge (milestone 3)**
 - [x] 16 constructed bad patches rejected by static gates
-- [ ] Same challenge run through the live verifier
+- [x] Runtime challenge with real local Docker: seven bad replacements entered
+  the production engine, nine invalid payloads stopped at submission gates,
+  no bad proposal behavior-verified, and the good manual control verified.
+  54 local operations; no inference, Nebius operations, or hosted attempts.
+  See `docs/demo/challenge/README.md`; this is not a cloud challenge.
 
 **Evaluation and review (milestone 4)**
 - [x] 14-case inventory frozen; two held-out broken cases reserved
@@ -112,6 +116,9 @@ consumed operation allowance and receipts; continue with saved evidence.
   (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
 - [ ] Publish the code repository after a final tracked-file/history review;
   confirm public access and visible MIT license (GitHub still private Oct 28)
+- [x] Review source, history, evidence archives, and dependencies before publication;
+  fix certifi trust bundle and model credential redirects; 1,027 tests pass.
+  Shorten the README, judge quickstart, and submission draft; add a docs index.
 - [ ] Check judge login and existing review/download in an external browser;
   avoid consuming another attempt for this access check
 - [ ] Resolve judging-period access/funding: Sandbox billing coverage and credit
@@ -130,9 +137,11 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** record and publicly upload the under-three-minute video, publish the
-licensed repository after review, finish the Devpost write-up/testing instructions,
-and submit before October 30, 17:00 UTC. Own-account Tailscale migration and
+**Next:** finish public repository delivery, record and publicly upload the
+under-three-minute video, finish the Devpost write-up/testing instructions,
+and submit before October 30, 17:00 UTC. Publication review and the real Docker
+verification challenge are complete; see `docs/SECURITY_REVIEW.md` and
+`docs/demo/challenge/README.md`. Own-account Tailscale migration and
 public HTTPS acceptance are complete (D40/F15); both services and authenticated
 HTTPS page/status were rechecked Oct 28 without new provider calls. Five attempts
 are used and fifteen remain. Maintain the VPS through December 15 and resolve
@@ -731,6 +740,18 @@ Who decided what, and when. Don't reverse one without the user.
   public licensed code, and unrestricted free judge testing; acceptance of the
   fifteen remaining hosted attempts as sufficient testing access is unconfirmed.
   This audit does not expand the live-operation authorization or publish anything.
+- D42 (user, Oct 28): Explicitly requested GitHub access, repository fixes and
+  public visibility after vulnerability review, and the remaining technical
+  challenge. Then requested less overloaded, neater writing. This authorizes
+  local fixes, delivery to GitHub, and publication; no further publication
+  confirmation is required. Use real local Docker for the challenge, preserving
+  all live Sandbox allowances and the once-only held-out results.
+- D43 (agent implementation, Oct 28): Fix the audited certificate trust issue
+  with certifi 2026.10.23 and a >=2026.10.19 package minimum. Model inference now
+  pins its HTTPS destination, rejects redirects, ignores environment proxies,
+  bounds response bytes, and omits provider error bodies. Restart only the idle
+  DocDrift web/worker units to load the fixes, then accept saved HTTPS evidence
+  without another attempt. Keep prior model results and their controller freeze.
 
 ## Session log
 
@@ -991,6 +1012,19 @@ Who decided what, and when. Don't reverse one without the user.
   resolve Sandbox funding and whether the fixed hosted allowance meets free
   judging-access requirements through Dec 15. Live bad-patch challenge remains
   unrun; the existing static result is still 16/16 constructed rejections.
+- 2026-10-28 (publication preparation): User authorized fixes, vulnerability
+  review, public GitHub delivery, runtime challenge, and simpler writing (D42).
+  Found and fixed certifi's revoked-root trust issue, blocked inference redirects
+  and error-body credential echoes, and passed all 1,027 tests (D43). OSV returns
+  zero matches for the fifteen locked dependencies. Gitleaks/history/known-key
+  checks found only two reviewed synthetic test values. Real Docker challenge:
+  no bad proposal behavior-verified, seven bad replacements through the engine,
+  nine boundary refusals, good manual control verified; 54 local operations,
+  no model/cloud/judge use. Published sanitized local evidence in the worktree;
+  simplified README/quickstart/submission and added CLI/docs/security guides.
+  Both idle DocDrift units restarted with fixes; authenticated HTTPS is healthy
+  and fifteen attempts remain. Next: final GitHub push/publication, video,
+  external-browser acceptance, Devpost submission, and judging funding/quota.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

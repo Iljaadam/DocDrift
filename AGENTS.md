@@ -90,6 +90,17 @@ demo-able submission.
     and idempotent admission without another attempt or provider call. Five
     attempts are used and fifteen remain. Other containers and ordinary
     SSH stayed running. Never reuse the brother's old HTTPS origin or reset quota.
+  - Publication and challenge (user Oct 28): User explicitly authorized repository
+    fixes, a vulnerability review, GitHub delivery, public visibility, and the
+    remaining technical check; then requested neater, shorter writing (D42).
+    The challenge used real local Docker, with 54 snippet operations and no
+    inference, Nebius operations, or hosted admissions: seven bad replacements
+    entered the engine, nine invalid payloads stopped at submission gates,
+    no bad proposal behavior-verified, and the good manual control verified.
+    This does not expand any cloud allowance. The security audit updated certifi
+    to 2026.10.23 and hardened model requests against redirects/error-body leaks;
+    both idle DocDrift units were restarted with the fixes (D43). Preserve the
+    existing five used / fifteen remaining attempts and frozen held-out evidence.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

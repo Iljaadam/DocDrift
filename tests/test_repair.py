@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+import httpx
 
 from docdrift.cli import demo_repository
 from docdrift.markdown import extract_examples
@@ -158,3 +159,50 @@ def test_token_factory_client_requires_explicit_model_and_key_and_rejects_malfor
     client = TokenFactoryClient('nvidia/example-model', 'secret', transport=lambda *args: b'{"choices": []}')
     with pytest.raises(InferenceError):
         client.complete([], None, 10)
+
+
+@pytest.mark.parametrize('base_url', [
+    'http://api.tokenfactory.nebius.com/v1/',
+    'https://example.invalid/v1/',
+    'file:///tmp/provider/',
+    'https://api.tokenfactory.nebius.com@elsewhere.invalid/v1/',
+])
+def test_inference_rejects_endpoints_that_could_receive_the_provider_key(base_url):
+    with pytest.raises(ValueError, match='fixed Token Factory HTTPS endpoint'):
+        TokenFactoryClient('nvidia/example-model', 'synthetic-key', base_url=base_url)
+
+
+@pytest.mark.parametrize('status', [301, 302, 307, 308, 401, 500])
+def test_live_transport_never_follows_redirects_retries_or_echoes_error_bodies(monkeypatch, status):
+    requests = []
+    client_class = httpx.Client
+
+    def handle(request):
+        requests.append(request)
+        return httpx.Response(status, headers={'Location': 'https://elsewhere.invalid/stolen'},
+                              content=b'synthetic-secret-echoed-by-provider')
+
+    def client(**options):
+        assert options['trust_env'] is False
+        return client_class(transport=httpx.MockTransport(handle), **options)
+
+    monkeypatch.setattr('docdrift.repair.httpx.Client', client)
+    model = TokenFactoryClient('nvidia/example-model', 'synthetic-secret-echoed-by-provider')
+    with pytest.raises(InferenceError, match=f'HTTP {status}') as error:
+        model.complete([], None, 256)
+    assert 'synthetic-secret' not in str(error.value)
+    assert len(requests) == 1
+    assert str(requests[0].url) == TOKEN_FACTORY_BASE_URL + 'chat/completions'
+
+
+def test_live_transport_caps_response_bytes_before_parsing(monkeypatch):
+    from docdrift.repair import MAX_RESPONSE_BYTES
+
+    client_class = httpx.Client
+    monkeypatch.setattr('docdrift.repair.httpx.Client', lambda **options: client_class(
+        transport=httpx.MockTransport(lambda request: httpx.Response(200, content=b' ' * (MAX_RESPONSE_BYTES + 1))),
+        **options,
+    ))
+    model = TokenFactoryClient('nvidia/example-model', 'synthetic-key')
+    with pytest.raises(InferenceError, match='exceeds 1 MiB'):
+        model.complete([], None, 256)

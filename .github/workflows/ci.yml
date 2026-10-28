@@ -1,7 +1,7 @@
 name: Manual offline validation
 
-# Pushing this file never starts a hosted runner. The repository is private and
-# the user's personal spending limit is $0; included Actions quota is unconfirmed.
+# Pushes never start a hosted runner. The user's personal spending limit is $0;
+# manual execution keeps its explicit quota acknowledgement.
 on:
   workflow_dispatch:
     inputs:

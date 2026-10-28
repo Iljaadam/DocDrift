@@ -14,11 +14,11 @@ from __future__ import annotations
 
 import json
 import re
-import urllib.error
-import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Protocol
+
+import httpx
 
 from .markdown import Example
 from .policy import PolicyError, apply_replacement
@@ -54,19 +54,24 @@ class ModelClient(Protocol):
     def complete(self, messages: list[dict], tools: list[dict] | None, max_tokens: int) -> dict: ...
 
 
-def _urllib_transport(url: str, headers: dict[str, str], body: bytes, timeout: float) -> bytes:
-    request = urllib.request.Request(url, data=body, headers=headers, method='POST')
+def _http_transport(url: str, headers: dict[str, str], body: bytes, timeout: float) -> bytes:
+    if url != TOKEN_FACTORY_BASE_URL + 'chat/completions':
+        raise InferenceError('Live inference requires the fixed Token Factory HTTPS endpoint')
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            data = response.read(MAX_RESPONSE_BYTES + 1)
-    except urllib.error.HTTPError as exc:
-        detail = exc.read(4096).decode('utf-8', 'replace')
-        raise InferenceError(f'Token Factory returned HTTP {exc.code}: {detail}') from exc
-    except (urllib.error.URLError, TimeoutError) as exc:
-        raise InferenceError(f'Token Factory request failed: {exc}') from exc
-    if len(data) > MAX_RESPONSE_BYTES:
-        raise InferenceError('Token Factory response exceeds 1 MiB')
-    return data
+        # A redirect must never forward the bearer key or repeat a billed call.
+        with httpx.Client(timeout=timeout, trust_env=False, follow_redirects=False) as client:
+            with client.stream('POST', url, headers=headers, content=body) as response:
+                if not 200 <= response.status_code < 300:
+                    # Provider error bodies can echo request credentials.
+                    raise InferenceError(f'Token Factory returned HTTP {response.status_code}')
+                data = bytearray()
+                for chunk in response.iter_bytes(chunk_size=64 * 1024):
+                    data.extend(chunk)
+                    if len(data) > MAX_RESPONSE_BYTES:
+                        raise InferenceError('Token Factory response exceeds 1 MiB')
+    except httpx.HTTPError as exc:
+        raise InferenceError('Token Factory request failed') from exc
+    return bytes(data)
 
 
 class TokenFactoryClient:
@@ -84,11 +89,13 @@ class TokenFactoryClient:
             raise ValueError('An explicit model ID is required')
         if not api_key:
             raise ValueError('NEBIUS_API_KEY is required for live inference')
+        if base_url.rstrip('/') != TOKEN_FACTORY_BASE_URL.rstrip('/'):
+            raise ValueError('Inference requires the fixed Token Factory HTTPS endpoint')
         self.model = model
         self._api_key = api_key
         self._url = base_url.rstrip('/') + '/chat/completions'
         self._timeout = timeout
-        self._transport = transport or _urllib_transport
+        self._transport = transport or _http_transport
 
     def complete(self, messages: list[dict], tools: list[dict] | None, max_tokens: int) -> dict:
         body = {'model': self.model, 'messages': messages, 'temperature': 0, 'max_tokens': max_tokens}

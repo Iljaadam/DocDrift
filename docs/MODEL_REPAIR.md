@@ -2,8 +2,10 @@
 
 Built offline on October 14, 2026, then exercised with live Nemotron inference
 on Token Factory the same day (`docs/FEEDBACK_LOG.md` F1–F5). Synthetic scripted
-responses and contract doubles remain separately labelled. All runtime
-verification so far uses local Docker; live Sandbox access is unverified.
+responses and contract doubles remain separately labelled. Development comparisons
+used local Docker. The saved F6 proposal was verified on actual Nebius Sandboxes
+on October 21; fresh hosted acceptance and the once-only held-out comparison
+completed there on October 22. Both held-out strategies verified 2/2 cases.
 
 ## Strategies (`src/docdrift/repair.py`)
 
@@ -40,7 +42,10 @@ runs, 2 malformed responses, 2048 completion tokens per call, 60k total tokens.
 `TokenFactoryClient` posts OpenAI-compatible chat completions to
 `https://api.tokenfactory.nebius.com/v1/chat/completions` with
 `Authorization: Bearer $NEBIUS_API_KEY`, `temperature: 0`, and no automatic
-retry. The model ID has no default; pass the exact Nemotron ID.
+retry. The live transport uses a fixed HTTPS endpoint, blocks redirects, ignores
+environment proxies, and caps responses at 1 MiB. Errors retain the HTTP status
+without copying provider error bodies. The model ID has no default; pass the
+exact Nemotron ID.
 
 Verified live on October 14 (`docs/FEEDBACK_LOG.md` F1–F3): four Nemotron
 models are listed; `nvidia/nemotron-3-super-120b-a12b` supports `tools` in the
