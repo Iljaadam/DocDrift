@@ -1,0 +1,90 @@
+{
+  "kind": "docdrift_review_navigation_refresh",
+  "date": "2026-10-28",
+  "source_commit": "09805d19117d5c76e5d001de98e2f8318db51d4d",
+  "updated_html": [
+    {
+      "path": "docs/demo/challenge/control/review.html",
+      "previous_html_sha256": "8ebd2acada9e7e96ec25d8f50bb41853ca0d72e40474303f9577d49d32999b83",
+      "updated_html_sha256": "76a54c00131b8a2deb300e0a963c82fcc85dca33e166f79b0dc51d27db3e402e",
+      "archive_path": "docs/demo/challenge/control/evidence.zip",
+      "archive_sha256": "d19c45ed53d392b158503e2c02342032cc2af4d4ee146ce87e478d247727c4e2",
+      "archived_html_sha256": "8ebd2acada9e7e96ec25d8f50bb41853ca0d72e40474303f9577d49d32999b83"
+    },
+    {
+      "path": "docs/demo/challenge/discarded-result/review.html",
+      "previous_html_sha256": "f32af9c398f2f68054f0aea17c91fa44d99445310fed2cdae134700f89219be3",
+      "updated_html_sha256": "79a632d5ea81958409fded9b931d60f8b5e10d6cf7514659e5ad676cb4502ba9",
+      "archive_path": "docs/demo/challenge/discarded-result/evidence.zip",
+      "archive_sha256": "e5eb0d03b6425dd86f998bfbb45baaa9a5ea6b40bc2fa5e7eeec3fade37acefd",
+      "archived_html_sha256": "f32af9c398f2f68054f0aea17c91fa44d99445310fed2cdae134700f89219be3"
+    },
+    {
+      "path": "docs/demo/f6/agent/review.html",
+      "previous_html_sha256": "2d87222b2fafaa2fc0f5cc58caa472830bd25c8a66589ae1b88bb6682d7a86ad",
+      "updated_html_sha256": "e3b0512bbed79a12a34902a8c052da3b44236b1274a028e8d3be110a6ab0e92e",
+      "archive_path": "docs/demo/f6/agent/evidence.zip",
+      "archive_sha256": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+      "archived_html_sha256": "2d87222b2fafaa2fc0f5cc58caa472830bd25c8a66589ae1b88bb6682d7a86ad"
+    },
+    {
+      "path": "docs/demo/f6/comparison.html",
+      "previous_html_sha256": "b05d4b572ce64a32423a7e85e5924b7689361bd537045292446494410d0ebdf0",
+      "updated_html_sha256": "c2781e5d8bb708f22afdcfdb4d2777fc009cde5c5a3baf29403f7fa2e4d6675f"
+    },
+    {
+      "path": "docs/demo/f6-sandbox/review.html",
+      "previous_html_sha256": "f2442fd52ff8a27fff43b0564121e1a8bbc81173e422bb8a06ee29473d8c1702",
+      "updated_html_sha256": "d4e2ff6404ea4f9bba7f5f4917dc024e0e1158b0ccf6be0bf3e3355522176055",
+      "archive_path": "docs/demo/f6-sandbox/evidence.zip",
+      "archive_sha256": "ec8d789ded0c343dae4c9197893002389613cf42566ac4b80bb72d66062dd97c",
+      "archived_html_sha256": "f2442fd52ff8a27fff43b0564121e1a8bbc81173e422bb8a06ee29473d8c1702"
+    },
+    {
+      "path": "docs/demo/held-out/changed_return_shape-agent/review.html",
+      "previous_html_sha256": "d9db77f28fea1f59ec383a6fe60acad223d433ec93cc8b1e13288812592b8596",
+      "updated_html_sha256": "ae4ad0b451e76aaecaf6b2d1801885b8d97fb2a1eb9145cab6cf5d74f0e7e859",
+      "archive_path": "docs/demo/held-out/changed_return_shape-agent/evidence.zip",
+      "archive_sha256": "afa9a2faa6fda4cc1a329d49b096cf37c22068942a17f3923469a64da83bd3bc",
+      "archived_html_sha256": "d9db77f28fea1f59ec383a6fe60acad223d433ec93cc8b1e13288812592b8596"
+    },
+    {
+      "path": "docs/demo/held-out/changed_return_shape-one_shot/review.html",
+      "previous_html_sha256": "05b481d773757ff0c470f1b63c826d6d825d4a5d57746b985d407d024f101f60",
+      "updated_html_sha256": "65c06527f08bc312dfab09a3a8301db763932ebc6d6e4998e33dd54e762cda0c",
+      "archive_path": "docs/demo/held-out/changed_return_shape-one_shot/evidence.zip",
+      "archive_sha256": "500b5718953cb4ec1e26cdaec8deccea8f53f2c8fe0692961fab248da67aa2f7",
+      "archived_html_sha256": "05b481d773757ff0c470f1b63c826d6d825d4a5d57746b985d407d024f101f60"
+    },
+    {
+      "path": "docs/demo/held-out/renamed_import-agent/review.html",
+      "previous_html_sha256": "3d85127a3d2480f41bef4e85496abd776b93c538d101488e2f2cca9e7086989f",
+      "updated_html_sha256": "f256748e39abde35e000aa2bc162988f4bd4e736de4cb979534d6d59bf3b9177",
+      "archive_path": "docs/demo/held-out/renamed_import-agent/evidence.zip",
+      "archive_sha256": "fe885e9cede20ce013f0720bce566ba4a7b408789676c62a4616bd55f9adc31f",
+      "archived_html_sha256": "3d85127a3d2480f41bef4e85496abd776b93c538d101488e2f2cca9e7086989f"
+    },
+    {
+      "path": "docs/demo/held-out/renamed_import-one_shot/review.html",
+      "previous_html_sha256": "44a3335ccc9abfe5180edadf83e6009187e6ff92812e839d35a441b8523a8505",
+      "updated_html_sha256": "0cc135892a5231ab02f0625bd4639a90398b3cea2426d52aeb51d503fa27d8bf",
+      "archive_path": "docs/demo/held-out/renamed_import-one_shot/evidence.zip",
+      "archive_sha256": "a82dd556cdb4dcb837a51b4b29f856d73c50dc0531010c21e92b2237ccf6e096",
+      "archived_html_sha256": "44a3335ccc9abfe5180edadf83e6009187e6ff92812e839d35a441b8523a8505"
+    }
+  ],
+  "preserved_archive_sha256": {
+    "docs/demo/f6-sandbox/evidence.zip": "ec8d789ded0c343dae4c9197893002389613cf42566ac4b80bb72d66062dd97c",
+    "docs/demo/f6/agent/evidence.zip": "ac8bd589d9455a897563e4cac1afab27ebd219d2ccb98c933ebde6a6a185944b",
+    "docs/demo/held-out/renamed_import-one_shot/evidence.zip": "a82dd556cdb4dcb837a51b4b29f856d73c50dc0531010c21e92b2237ccf6e096",
+    "docs/demo/held-out/changed_return_shape-agent/evidence.zip": "afa9a2faa6fda4cc1a329d49b096cf37c22068942a17f3923469a64da83bd3bc",
+    "docs/demo/held-out/changed_return_shape-one_shot/evidence.zip": "500b5718953cb4ec1e26cdaec8deccea8f53f2c8fe0692961fab248da67aa2f7",
+    "docs/demo/held-out/renamed_import-agent/evidence.zip": "fe885e9cede20ce013f0720bce566ba4a7b408789676c62a4616bd55f9adc31f",
+    "docs/demo/challenge/control/evidence.zip": "d19c45ed53d392b158503e2c02342032cc2af4d4ee146ce87e478d247727c4e2",
+    "docs/demo/challenge/discarded-result/evidence.zip": "e5eb0d03b6425dd86f998bfbb45baaa9a5ea6b40bc2fa5e7eeec3fade37acefd"
+  },
+  "inference_calls": 0,
+  "nebius_operations": 0,
+  "hosted_attempts_used": 0,
+  "note": "Loose review/comparison HTML gained persistent section navigation. Downloadable ZIPs keep their recorded HTML and manifest bytes. Provenance hashes for loose HTML were updated; saved reports, observed outputs, and verdicts were not rescored."
+}

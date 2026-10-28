@@ -246,6 +246,8 @@ def handler_factory(
                 self._error(404, "artifact_not_available")
                 return
             if name == "review.html":
+                from .review import refresh_review_navigation
+                body = refresh_review_navigation(body.decode('utf-8')).encode('utf-8')
                 self._send(200, body, "text/html; charset=utf-8", artifact_html=True)
             else:
                 self._send(200, body, "application/zip", headers={"Content-Disposition": f'attachment; filename="{archive_filename}"'})

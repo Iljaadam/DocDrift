@@ -119,6 +119,10 @@ consumed operation allowance and receipts; continue with saved evidence.
 - [x] Review source, history, evidence archives, and dependencies before publication;
   fix certifi trust bundle and model credential redirects; 1,027 tests pass.
   Shorten the README, judge quickstart, and submission draft; add a docs index.
+- [x] Improve review navigation (Oct 28): sticky desktop sidebar, compact mobile
+  section menu, selected-section highlighting, and keyboard access. Updated nine
+  public review/comparison pages and all six existing hosted reviews; eight
+  recorded evidence ZIPs retain their original bytes.
 - [ ] Check judge login and existing review/download in an external browser;
   avoid consuming another attempt for this access check
 - [ ] Resolve judging-period access/funding: Sandbox billing coverage and credit
@@ -171,6 +175,14 @@ bundle. HTTPS rejects unauthenticated access, accepts judge login/status, and
 downloads the unchanged saved ZIP with verified integrity. Five attempts are
 used and fifteen remain. Preserve all private state and frozen held-out results.
 The private acceptance and publication receipts are in `.docdrift/security-2026-10-28/`.
+Review pages now have persistent section navigation; hosted responses also upgrade
+existing reviews without rewriting private artifacts. Nine public HTML pages and
+their presentation hashes were refreshed; all eight recorded ZIPs were preserved.
+Six local browser layouts and two hosted browser layouts pass with JavaScript
+disabled, alongside all 1,027 tests. Navigation receipts are in
+`.docdrift/review-navigation-2026-10-28/` and the public presentation record is
+`docs/demo/navigation-refresh.json`. The VPS browser checks do not replace the
+remaining check from a separate external device.
 Next: video, external-browser acceptance, Devpost submission, and judging-period
 funding/quota resolution. No submission or new cloud run was performed.
 
@@ -777,6 +789,13 @@ Who decided what, and when. Don't reverse one without the user.
   bounds response bytes, and omits provider error bodies. Restart only the idle
   DocDrift web/worker units to load the fixes, then accept saved HTTPS evidence
   without another attempt. Keep prior model results and their controller freeze.
+- D44 (user request / agent design, Oct 28): User finds navigation within reviews
+  difficult and delegates the choice of separate tabs or side navigation. Add a
+  sticky desktop sidebar and compact mobile menu with complete section links,
+  selected-section highlighting, a back-to-top link, and keyboard skip access.
+  Keep HTML script-free and working from disk. Refresh loose presentation pages
+  and hosted responses while preserving pinned evidence ZIPs, private artifacts,
+  frozen evaluation, and the remaining fifteen hosted attempts.
 
 ## Session log
 
@@ -1059,6 +1078,17 @@ Who decided what, and when. Don't reverse one without the user.
   All 1,027 tests pass; sixty revised-document links and all eight evidence ZIPs
   validate. Next: video, external-browser access check, Devpost submission, and
   judging funding/quota resolution. No new inference or cloud operation.
+- 2026-10-28 (review navigation): Implemented D44 across generated reviews,
+  comparisons, nine public HTML presentations, and existing hosted responses.
+  Real Chromium checks with JavaScript disabled cover desktop/tablet/phone
+  widths, keyboard access, section targets/highlights, sticky navigation, native
+  log expansion, and print layout. Fixed the code-block overflow found on phones.
+  All 1,027 tests pass, plus the final 145 review/web regressions. Restarted only
+  the idle DocDrift units; HTTPS checks accepted all six saved/job reviews and
+  desktop/phone browser navigation. Eight ZIP hashes are unchanged and still
+  verify; fifteen attempts remain, with no inference or Nebius operations.
+  Next: record the video, finish Devpost, and resolve external-device access
+  and judging funding/quota.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

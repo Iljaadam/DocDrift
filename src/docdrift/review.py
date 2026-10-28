@@ -77,6 +77,47 @@ def _section(identifier: str, title: str, body: str) -> str:
     return f'<section id="{identifier}"><h2>{title}</h2>{body}</section>'
 
 
+_REVIEW_SECTIONS = (
+    ('outcome', 'Overview'), ('failure', 'Original failure'), ('patch', 'Repair & diff'),
+    ('regressions', 'Healthy examples'), ('provenance', 'Environment'),
+    ('usage', 'Model & usage'), ('operations', 'Logs'), ('limits', 'Coverage'),
+    ('evidence', 'Evidence files'),
+)
+_EVALUATION_SECTIONS = (
+    ('scope', 'Overview'), ('comparison', 'Strategies'), ('cases', 'Cases'),
+    ('unscored', 'Unscored inputs'), ('evaluation-limits', 'Coverage'),
+)
+
+
+def refresh_review_navigation(document: str) -> str:
+    """Add persistent navigation to our saved HTML without changing evidence.
+
+    Also used when serving existing reviews, so their recorded ZIP bytes and
+    manifests stay intact. Unknown HTML and already updated reviews pass through.
+    """
+    label, sections = ('Evaluation sections', _EVALUATION_SECTIONS) if '<nav aria-label="Evaluation sections">' in document else ('Review sections', _REVIEW_SECTIONS)
+    start = document.find(f'<nav aria-label="{label}">')
+    end = document.find('</nav><main>', start)
+    if start < 0 or end < 0 or '</main>\n<footer>' not in document:
+        return document
+    if any(f'<section id="{identifier}">' not in document for identifier, _ in sections):
+        return document
+    links = ''.join(f'<li><a href="#{identifier}">{_escape(label)}</a></li>'
+                    for identifier, label in sections)
+    navigation = (f'<div class="review-layout"><nav class="review-nav" aria-label="{label}">'
+                  '<p class="review-nav-title">In this review</p><ol class="review-links">' + links +
+                  '</ol><a class="review-top" href="#review-top">Back to top <span aria-hidden="true">↑</span></a>'
+                  '</nav><main>')
+    document = document[:start] + navigation + document[end + len('</nav><main>'):]
+    shell = 'shell comparison' if label == 'Evaluation sections' else 'shell'
+    document = document.replace(f'<div class="{shell}">',
+                                f'<a class="review-skip" href="#{sections[0][0]}">Skip to review</a>'
+                                f'<div class="{shell} review-shell">', 1)
+    document = document.replace('<header>', '<header id="review-top">', 1)
+    document = document.replace('</main>\n<footer>', '</main></div>\n<footer>', 1)
+    return document.replace('</style>', _REVIEW_NAV_CSS + '</style>', 1)
+
+
 def _diff(content: str) -> str:
     lines = []
     for line in content.splitlines():
@@ -314,12 +355,12 @@ def render_review(report: dict, run_root: Path, *, archive_available: bool | Non
     files += ''.join(f'<a href="{name}">{label}</a>' for name, label in links)
     files += '</div>'
     sections = summary + _section('failure', 'Synthetic original response' if simulated else 'Original failure', original_failure) + _section('patch', 'Proposed documentation repair', code) + _section('regressions', 'Synthetic healthy contracts' if simulated else 'Healthy example preservation', regression) + _section('provenance', 'Provenance & execution', provenance_body) + _section('usage', 'Model & usage', usage_body) + _section('operations', 'Operations & logs', operation_body) + _section('limits', 'Coverage & limitations', limits) + _section('evidence', 'Inspect the evidence', files)
-    return f'''<!doctype html>
+    return refresh_review_navigation(f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>DocDrift review · {_escape(run_id)}</title><style>{_CSS}</style></head><body>
 <div class="shell">{header}<nav aria-label="Review sections"><a href="#outcome">Outcome</a><a href="#patch">Repair</a><a href="#provenance">Provenance</a><a href="#operations">Logs</a><a href="#limits">Limits</a></nav><main>{sections}</main>
-<footer>DocDrift · frozen inputs, bounded repair, independent checks · review generated from saved evidence</footer></div></body></html>'''
+<footer>DocDrift · frozen inputs, bounded repair, independent checks · review generated from saved evidence</footer></div></body></html>''')
 
 
 def _evaluation_link(value: object) -> str | None:
@@ -461,14 +502,50 @@ def render_evaluation_review(report: dict, *, run_links: dict[str, str] | None =
     if isinstance(report.get('budget'), dict):
         limits += '<details><summary>Recorded per-case repair budget</summary>' + _facts(list(report['budget'].items())) + '</details>'
     sections = cards + _section('scope', 'Evidence & inventory scope', facts) + _section('comparison', 'Strategy comparison', comparison) + _section('cases', 'Scored case outcomes', cases) + _section('unscored', 'Unscored cases & public references', pending) + _section('evaluation-limits', 'Comparison limits', limits)
-    return f'''<!doctype html>
+    return refresh_review_navigation(f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>DocDrift evaluation comparison</title><style>{_CSS}{_EVALUATION_CSS}</style></head><body>
 <div class="shell comparison"><header><div class="brand"><span class="brand-mark" aria-hidden="true">D/</span> DocDrift <span>evaluation review</span></div>
 <div class="hero"><div><p class="eyebrow">Saved strategy results</p><h1>Evaluation comparison</h1><p class="subtitle">{_escape(evidence_label)}</p></div></div></header>
 <nav aria-label="Evaluation sections"><a href="#scope">Scope</a><a href="#comparison">Strategies</a><a href="#cases">Cases</a><a href="#unscored">Unscored</a><a href="#evaluation-limits">Limits</a></nav><main>{sections}</main>
-<footer>DocDrift · evaluation review generated from one saved report</footer></div></body></html>'''
+<footer>DocDrift · evaluation review generated from one saved report</footer></div></body></html>''')
+
+
+_REVIEW_NAV_CSS = '''
+.review-shell{max-width:1440px}
+.review-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:30px;align-items:start;margin-top:28px}
+.review-layout main{min-width:0}
+.review-layout .code-pair>div{min-width:0}
+.review-nav{display:block;position:sticky;top:24px;align-self:start;max-height:calc(100vh - 48px);overflow-y:auto;padding:8px 0 0;font-size:13px}
+.review-nav-title{margin:0 12px 12px;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+.review-links{list-style:none;margin:0;padding:3px}
+.review-links li{margin:0}
+.review-links a{display:block;min-height:40px;padding:10px 12px;border-radius:6px;border-left:3px solid transparent;line-height:20px;color:var(--muted);text-decoration:none}
+.review-links a:hover{background:#e8eeeb;color:var(--ink)}
+.review-nav .review-top{display:block;margin:16px 15px 6px;padding-top:15px;border-top:1px solid var(--line);font-size:12px}
+.review-shell section:target{outline:2px solid #7cab96;outline-offset:3px}
+.review-skip{position:absolute;top:8px;left:16px;z-index:10;transform:translateY(-150%);background:var(--paper);border:1px solid var(--green);padding:10px 16px;border-radius:6px}
+.review-skip:focus{transform:translateY(0)}
+.review-shell:not(:has(section:target)) .review-links li:first-child a{background:var(--mint);color:var(--green);border-left-color:var(--green);font-weight:650}
+@media(min-width:981px) and (max-width:1150px){.review-layout .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.review-layout .code-pair{grid-template-columns:1fr}.review-layout .facts>div{grid-template-columns:160px minmax(0,1fr)}}
+@media(max-width:980px){
+ .review-layout{display:block;margin-top:0}
+ .review-nav{position:sticky;top:0;z-index:5;max-height:none;overflow:visible;background:#f3f5f4;border-bottom:1px solid var(--line);padding:8px 0;margin-bottom:20px}
+ .review-nav-title,.review-nav .review-top{display:none}
+ .review-links{display:flex;gap:4px;overflow-x:auto;padding:4px 3px;scrollbar-width:thin}
+ .review-links li{flex:0 0 auto}
+ .review-links a{white-space:nowrap;padding:9px 12px;border-left:0;border-bottom:3px solid transparent;min-height:42px}
+ .review-shell section{scroll-margin-top:100px}
+ .review-layout .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .review-layout .code-pair{grid-template-columns:1fr}
+}
+@media print{.review-layout{display:block;margin-top:0}.review-nav,.review-skip{display:none}.review-shell section:target{outline:none}}
+''' + ''.join(
+    f'.review-shell:has(#{identifier}:target) .review-links a[href="#{identifier}"]'
+    '{background:var(--mint);color:var(--green);border-color:var(--green);font-weight:650}\n'
+    for identifier, _ in _REVIEW_SECTIONS + _EVALUATION_SECTIONS
+)
 
 
 _EVALUATION_CSS = '''

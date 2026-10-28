@@ -22,6 +22,7 @@ Sandboxes. Disclose cuts and time compression in recorded terminal footage.
 Before recording, check that every local link and download works from a fresh
 checkout. Show the hosted app already signed in and keep credentials out of the
 recording. Its landing page and existing completed review need no fresh attempt.
+Use the review's section menu to jump between the failure, repair, usage, and logs.
 Use the published copies and their provenance notes. The F6 source
 inventory hash is
 `24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c`.

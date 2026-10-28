@@ -114,13 +114,19 @@
     "agent/repair.json": "011ae5729ca0365aef4cd506850bd0b781b86b3b3bc62460430bc10364f4afb7",
     "agent/repair.patch": "3d71274b5a86e1eca5d77c3a8b92b4dfc123d16048531d2c4f77d6e64e03601a",
     "agent/report.json": "e11aba0dfdcf38e949a74af3958910657f23332985b9980a2f3296aa16eeb284",
-    "agent/review.html": "2d87222b2fafaa2fc0f5cc58caa472830bd25c8a66589ae1b88bb6682d7a86ad",
-    "comparison.html": "b05d4b572ce64a32423a7e85e5924b7689361bd537045292446494410d0ebdf0",
+    "agent/review.html": "e3b0512bbed79a12a34902a8c052da3b44236b1274a028e8d3be110a6ab0e92e",
+    "comparison.html": "c2781e5d8bb708f22afdcfdb4d2777fc009cde5c5a3baf29403f7fa2e4d6675f",
     "comparison.json": "85b9a4b781ed45a68da3a1dc861221c74850a057466d8eae03782c7b26eb5e6f",
     "comparison.md": "8b46b5da3b2519f0edfef49c213bcf748f4f449a53784d86209576250ffea9b6",
     "index.html": "e5c32c43201618f25774b00655a09ccf1c2022141461a785adc8a6428e6e1f4c",
     "proposals/agent.json": "bf2432df7af32780096e4591a6f331e3c0c5678203c1308dce3dbd026722e370",
     "proposals/one-shot.json": "e3ccb688f7ce575f3b3c3ff19f3f59fe0ef78f3112740ef58786f3e71243dd05"
   },
-  "limits": "Unsigned hashes establish internal consistency only. This packaging ran no model, examples, Docker or provider calls; saved verdicts are unchanged."
+  "limits": "Unsigned hashes establish internal consistency only. This packaging ran no model, examples, Docker or provider calls; saved verdicts are unchanged.",
+  "navigation_refresh": {
+    "date": "2026-10-28",
+    "details": "../navigation-refresh.json",
+    "recorded_zip_bytes_preserved": true,
+    "change": "Persistent section navigation in loose HTML presentation copies; recorded results, source, and evidence ZIPs retained."
+  }
 }

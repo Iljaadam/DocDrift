@@ -36,6 +36,10 @@ inference. `verify-evidence` checks ZIP structure, coverage, CRCs, and SHA-256
 hashes without extraction. `resume` reconciles saved operation IDs and keeps the
 original deadlines and limits. Frozen input changes prevent resumption.
 
+Review pages keep a section menu beside the evidence on desktop and at the top
+on smaller screens. Use it to jump between the repair, checks, usage, and logs;
+the selected section is highlighted. The menu also works with HTML opened from disk.
+
 ## A curated local repository
 
 Commit the target repository first. Put its curator profile, independent checks,

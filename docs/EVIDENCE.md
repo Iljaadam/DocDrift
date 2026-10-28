@@ -1,5 +1,10 @@
 # Offline evidence integrity
 
+Hosted and published review pages can receive navigation updates while keeping
+the recorded ZIP bytes. The ZIP includes its original HTML and manifest; the
+current page may have newer navigation. The [presentation refresh record](demo/navigation-refresh.json)
+lists the old/new HTML hashes and preserved archive hashes. Results are not rescored.
+
 Run from a checkout or installed wheel, with no Docker or provider credentials:
 
 ```sh

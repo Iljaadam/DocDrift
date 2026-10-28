@@ -3,7 +3,7 @@
   "source_report_sha256": "350ae93dda10417eeabc3efcd4bfb9ecd826f608bcfd010029d545fb97d09cb8",
   "controller_sha256": "a673ce0c333374e51a20c9f4530f1816169c600aa2876434b0d263056e61067b",
   "inventory_sha256": "90a372334f102a16fa10010fd94702ce7f611ea51ec416bf55b4d0abfbef4468",
-  "copied_public_artifacts": true,
+  "copied_public_artifacts": false,
   "artifact_reverification": "unsigned_manifest_integrity_only",
   "execution_attested": false,
   "authenticity_attested": false,
@@ -13,28 +13,34 @@
       "strategy": "agent",
       "archive_sha256": "afa9a2faa6fda4cc1a329d49b096cf37c22068942a17f3923469a64da83bd3bc",
       "files_checked": 28,
-      "review_sha256": "d9db77f28fea1f59ec383a6fe60acad223d433ec93cc8b1e13288812592b8596"
+      "review_sha256": "ae4ad0b451e76aaecaf6b2d1801885b8d97fb2a1eb9145cab6cf5d74f0e7e859"
     },
     {
       "case": "changed_return_shape",
       "strategy": "one_shot",
       "archive_sha256": "500b5718953cb4ec1e26cdaec8deccea8f53f2c8fe0692961fab248da67aa2f7",
       "files_checked": 28,
-      "review_sha256": "05b481d773757ff0c470f1b63c826d6d825d4a5d57746b985d407d024f101f60"
+      "review_sha256": "65c06527f08bc312dfab09a3a8301db763932ebc6d6e4998e33dd54e762cda0c"
     },
     {
       "case": "renamed_import",
       "strategy": "agent",
       "archive_sha256": "fe885e9cede20ce013f0720bce566ba4a7b408789676c62a4616bd55f9adc31f",
       "files_checked": 40,
-      "review_sha256": "3d85127a3d2480f41bef4e85496abd776b93c538d101488e2f2cca9e7086989f"
+      "review_sha256": "f256748e39abde35e000aa2bc162988f4bd4e736de4cb979534d6d59bf3b9177"
     },
     {
       "case": "renamed_import",
       "strategy": "one_shot",
       "archive_sha256": "a82dd556cdb4dcb837a51b4b29f856d73c50dc0531010c21e92b2237ccf6e096",
       "files_checked": 40,
-      "review_sha256": "44a3335ccc9abfe5180edadf83e6009187e6ff92812e839d35a441b8523a8505"
+      "review_sha256": "0cc135892a5231ab02f0625bd4639a90398b3cea2426d52aeb51d503fa27d8bf"
     }
-  ]
+  ],
+  "navigation_refresh": {
+    "date": "2026-10-28",
+    "details": "../navigation-refresh.json",
+    "recorded_zip_bytes_preserved": true,
+    "change": "Persistent section navigation in loose HTML presentation copies; recorded results, source, and evidence ZIPs retained."
+  }
 }
