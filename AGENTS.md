@@ -101,6 +101,8 @@ demo-able submission.
     to 2026.10.23 and hardened model requests against redirects/error-body leaks;
     both idle DocDrift units were restarted with the fixes (D43). Preserve the
     existing five used / fifteen remaining attempts and frozen held-out evidence.
+    The repository was made public at `https://github.com/Iljaadam/DocDrift`;
+    anonymous source-download and MIT-license checks passed at `0c1bcd3`.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

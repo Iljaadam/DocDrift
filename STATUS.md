@@ -114,8 +114,8 @@ consumed operation allowance and receipts; continue with saved evidence.
   after HTTPS acceptance; include the completed held-out comparison (Oct 28)
 - [ ] Record video under 3 minutes and upload it publicly to YouTube
   (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
-- [ ] Publish the code repository after a final tracked-file/history review;
-  confirm public access and visible MIT license (GitHub still private Oct 28)
+- [x] Publish the reviewed code repository (Oct 28): anonymous GitHub API/source
+  download passed, audited files match `0c1bcd3`, and MIT license is visible
 - [x] Review source, history, evidence archives, and dependencies before publication;
   fix certifi trust bundle and model credential redirects; 1,027 tests pass.
   Shorten the README, judge quickstart, and submission draft; add a docs index.
@@ -137,9 +137,9 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** finish public repository delivery, record and publicly upload the
-under-three-minute video, finish the Devpost write-up/testing instructions,
-and submit before October 30, 17:00 UTC. Publication review and the real Docker
+**Next:** record and publicly upload the under-three-minute video, finish the
+Devpost write-up/testing instructions, and submit before October 30, 17:00 UTC.
+The licensed repository is public. Publication review and the real Docker
 verification challenge are complete; see `docs/SECURITY_REVIEW.md` and
 `docs/demo/challenge/README.md`. Own-account Tailscale migration and
 public HTTPS acceptance are complete (D40/F15); both services and authenticated
@@ -150,7 +150,31 @@ funding and quota sufficiency against the
 Do not repeat activation, the fresh acceptance repair, or the once-only held-out
 comparison.
 
-## Resume handoff — October 25, 2026
+## Resume handoff — October 28, 2026
+
+The [repository](https://github.com/Iljaadam/DocDrift) is public and licensed MIT.
+Security fixes and the shorter README/quickstart/submission were pushed at
+`0c1bcd3`; anonymous source download matched the audited files. Gitleaks reviewed
+all fifty commits through that revision; its two findings are synthetic test
+values. No configured credential matched 431 reachable blobs or eight historical
+ZIP blobs. OSV reports no matches for the fifteen locked dependencies after the
+certifi upgrade; all 1,027 tests pass. Details: `docs/SECURITY_REVIEW.md`.
+
+The constructed runtime challenge is complete with real local Docker: seven bad
+replacements entered the engine, nine invalid payloads stopped at submission
+gates, no bad proposal behavior-verified, and the good control verified. Its 54
+snippet operations used no inference, Nebius operations, or hosted attempts.
+Sanitized reviews/ZIPs and the summary are in `docs/demo/challenge/`.
+
+Both idle DocDrift units were restarted with the audited code and certificate
+bundle. HTTPS rejects unauthenticated access, accepts judge login/status, and
+downloads the unchanged saved ZIP with verified integrity. Five attempts are
+used and fifteen remain. Preserve all private state and frozen held-out results.
+The private acceptance and publication receipts are in `.docdrift/security-2026-10-28/`.
+Next: video, external-browser acceptance, Devpost submission, and judging-period
+funding/quota resolution. No submission or new cloud run was performed.
+
+## Previous resume handoff — October 25, 2026
 
 The VPS is connected to the user's own Tailscale account as `iljas-vps`. Its
 only Funnel route is `https://iljas-vps.tail2832de.ts.net:8443`, forwarding to
@@ -745,7 +769,8 @@ Who decided what, and when. Don't reverse one without the user.
   challenge. Then requested less overloaded, neater writing. This authorizes
   local fixes, delivery to GitHub, and publication; no further publication
   confirmation is required. Use real local Docker for the challenge, preserving
-  all live Sandbox allowances and the once-only held-out results.
+  all live Sandbox allowances and the once-only held-out results. Publication
+  completed with anonymous source/license acceptance at `0c1bcd3`.
 - D43 (agent implementation, Oct 28): Fix the audited certificate trust issue
   with certifi 2026.10.23 and a >=2026.10.19 package minimum. Model inference now
   pins its HTTPS destination, rejects redirects, ignores environment proxies,
@@ -1025,6 +1050,15 @@ Who decided what, and when. Don't reverse one without the user.
   Both idle DocDrift units restarted with fixes; authenticated HTTPS is healthy
   and fifteen attempts remain. Next: final GitHub push/publication, video,
   external-browser acceptance, Devpost submission, and judging funding/quota.
+- 2026-10-28 (public delivery): Pushed `0c1bcd3`, made Iljaadam/DocDrift public,
+  replaced its placeholder description, and verified anonymous GitHub metadata,
+  MIT license, and exact audited source/archive bytes. Final source audit:
+  fifty commits, 431 blobs, eight ZIP blobs; no configured credentials and only
+  the two reviewed synthetic Gitleaks findings. Saved HTTPS download matches the
+  existing evidence; both services are active with fifteen attempts remaining.
+  All 1,027 tests pass; sixty revised-document links and all eight evidence ZIPs
+  validate. Next: video, external-browser access check, Devpost submission, and
+  judging funding/quota resolution. No new inference or cloud operation.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

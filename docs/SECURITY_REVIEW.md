@@ -19,9 +19,9 @@ boundary. This is a targeted review, not a guarantee of security.
 
 | Check | Outcome |
 |---|---|
-| Gitleaks 8.30.1, all 49 pre-publication commits | Two findings reviewed: a synthetic fixture key and a test idempotency UUID |
+| Gitleaks 8.30.1, all 50 commits through `0c1bcd3` | Two findings reviewed: a synthetic fixture key and a test idempotency UUID |
 | Current tracked files and nested evidence archives | Same two synthetic test values; no real credential identified |
-| Exact-match scan for five configured credential forms | No matches across 408 reachable blobs and six historical ZIP blobs |
+| Exact-match scan for five configured credential forms | No matches across 431 reachable blobs and eight historical ZIP blobs through `0c1bcd3` |
 | OSV query of all 15 locked third-party package versions | Zero advisory matches after the dependency update |
 | Full offline suite, including redirect/error/response-limit regressions | 1,027 passed |
 | Constructed challenge with real Docker execution | No bad proposal behavior-verified; good manual control verified |
