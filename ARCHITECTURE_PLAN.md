@@ -178,27 +178,33 @@ The requested judging update favors planning, writing, testing, and iteration on
 
 Award combinations are one Overall Award alone **or** one Track Award plus one Bonus Award. Do not stack overall plus bonus, or two bonuses. Prioritize Coding. Consider Tavily only after a measured dependency case benefits from a functional runtime search of official migration/release documentation. Otherwise omit it and produce useful feedback; feedback is required regardless of award targeting. [Prizes update](https://nebiusglobalaihackathon.devpost.com/updates/46206-did-someone-say-prizes), [organizer clarification](https://nebiusglobalaihackathon.devpost.com/forum_topics/45140-clarifications-submissions-award-stacking-and-tavily-credit-access).
 
-The concrete **2:45 video** uses the [saved real F6 bundle](docs/demo/f6/index.html).
-Use the narration and recording checklist in [the final script](docs/DEMO_VIDEO_SCRIPT.md).
-Keep a visible label: **Recorded Oct 15 · owned development fixture · live
-Nemotron / local Docker**. No new inference or cloud execution is needed.
+The current **2:45 video** uses only the hosted website: its homepage and the
+[completed Oct 22 hosted repair](https://iljas-vps.tail2832de.ts.net:8443/jobs/04afd40e6053471d91bd321cd93993dd/review.html)
+(F13). Use the exact clicks in [the website-only guide](docs/DEMO_VIDEO_SCRIPT.md)
+and [the spoken script](docs/DEMO_NARRATION.txt). This single recorded run has
+both real Nemotron generation and real Nebius Sandbox execution on an owned
+development fixture. Say that it is completed evidence; no new inference or
+cloud execution is needed for filming. This supersedes the mixed F6 video plan.
 
 | Time | Footage |
 |---|---|
-| 0:00–0:20 | Maintainer problem, bounded scope, and saved-run provenance on the bundle landing page. |
-| 0:20–0:40 | Saved original snippet and real `AttributeError`; pinned source and check identities. |
-| 0:40–1:00 | Retained failed one-shot proposal and static rejection before execution. |
-| 1:00–1:25 | Actual agent source reads, one probe, and generated Markdown diff. |
-| 1:25–1:55 | Saved fresh-container verification: three target inputs, three healthy regressions, protected hashes, and local Docker provenance. |
-| 1:55–2:15 | F6 agent 1/1, one-shot 0/1; 6 calls / 8,781 tokens / 15 local snippet operations; one exploratory supplemental case, not held out. |
-| 2:15–2:45 | Evidence download, integrity boundary, earlier 2/2 development results for both model strategies, and free judge quickstart. |
+| 0:00–0:20 | Hosted homepage: maintainer problem and the Nemotron/Token Factory/Sandbox pipeline. |
+| 0:20–0:35 | Prepared review tab: completed real development run, Behavior verified, 6/6 checks. |
+| 0:35–0:55 | Original failure section: missing method and recorded baseline. |
+| 0:55–1:20 | Repair & diff: generated method change, preserved empty strings, protected files. |
+| 1:20–1:40 | Healthy examples: three target and three healthy regression checks. |
+| 1:40–2:00 | Model & usage, then Environment: four calls, token usage, nebius_sandbox backend. |
+| 2:00–2:25 | Logs: expanded final_repaired/repeated result with output and separate checks. |
+| 2:25–2:45 | Back to top and Download evidence ZIP; bounded MVP scope and fresh judge access. |
 
-Record actual saved application evidence. Disclose edits or time compression if
-using recorded terminal footage. Keep full published logs downloadable. The
-constructed bad-patch challenge is optional footage outside this cut and must
-be labelled as constructed. Static evidence browsing and the separate manual
-Docker demo do not resolve free live-agent access. No award promise or invented
-performance results.
+Record actual saved application evidence. No terminal, local-file walkthrough,
+or open archive is needed. Keep the downloaded evidence available. Historical
+comparisons and the explicitly constructed bad-patch challenge remain separate
+evidence. The hosted fresh-repair path is available to judges with the private
+login, subject to the shared quota and unresolved funding/qualification limits
+in STATUS.md. The video, application, and repository URLs are separate Devpost
+fields; website footage does not replace the public YouTube upload. No award
+promise or invented performance results.
 
 Keep a feedback log from the first live probe: SDK/API/model/version, minimal reproduction, input hashes, expected/actual behavior, error codes, latency, separate usage, effect on DocDrift, and a concrete suggestion. Record model repair failures as well as successes. Include findings in the submission; do not contact providers during this planning task.
 

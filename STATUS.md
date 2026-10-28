@@ -113,7 +113,11 @@ consumed operation allowance and receipts; continue with saved evidence.
 - [x] Refresh stale hosted-access wording in the submission draft/video script
   after HTTPS acceptance; include the completed held-out comparison (Oct 28)
 - [ ] Record video under 3 minutes and upload it publicly to YouTube
-  (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
+  (website-only 2:45 guide in `docs/DEMO_VIDEO_SCRIPT.md`, full speech in
+  `docs/DEMO_NARRATION.txt`)
+- [x] Prepare exact browser navigation and full read-aloud narration (D49);
+  rehearse the completed hosted run, sidebar sections, expanded output, and ZIP
+  download using only reads, without a new attempt or provider call
 - [x] Recheck recording requirements and add practical AMD capture settings
   to the script (Oct 28): suggested 1080p/30 FPS/AVC/MP4, public YouTube link,
   English footage/narration or translation, and no stated hackathon file-size cap
@@ -203,6 +207,11 @@ nineteen extra form fields, with subjective ratings and personal confirmations
 explicitly separated from recorded technical results.
 Next: video, external-browser acceptance, Devpost submission, and judging-period
 funding/quota resolution. No submission or new cloud run was performed.
+The recording guide now uses only the website homepage and one existing hosted
+repair (D49/F13), with exact sidebar clicks and the complete spoken text in
+`docs/DEMO_NARRATION.txt`. A real-browser rehearsal checked all sections, the
+expanded repeated-input log, and the evidence download using only reads; no
+fresh repair was admitted. The older mixed F6 recording plan is superseded.
 
 ## Previous resume handoff — October 25, 2026
 
@@ -839,6 +848,14 @@ Who decided what, and when. Don't reverse one without the user.
   Nemotron is the product's runtime model. Ask the owner to confirm other tools
   and personal fields. A read-only check found six used/fourteen remaining judge
   attempts; do not attribute the additional attempt or change its allowance.
+- D49 (user request / agent recording plan, Oct 28): User asks for exact website
+  navigation and the entire speech, preferably with the website sufficient.
+  Use only the hosted homepage and existing F13 acceptance repair
+  `04afd40e6053471d91bd321cd93993dd`, containing real Nemotron generation and
+  Nebius Sandbox verification. Replace the mixed F6/local-file video plan with
+  a browser-only 2:45 walkthrough and separate narration text. Explicitly say
+  this is a completed owned-fixture run. Do not admit another repair for filming;
+  the video, repository, and application remain separate submission URLs.
 
 ## Session log
 
@@ -1163,6 +1180,15 @@ Who decided what, and when. Don't reverse one without the user.
   1,027-test validation applies. Hosted status now shows six used/fourteen left,
   zero pending; this turn made no admissions or provider calls. Next: owner
   confirmations, video, thumbnail, final form, and judging funding/quota.
+
+- 2026-10-28 (website-only recording guide): Replaced the mixed F6 footage plan
+  with the exact homepage/review tabs, sidebar actions, and eight read-aloud
+  paragraphs (D49). Rehearsed the real hosted F13 review, expanded repeated-input
+  output, and ZIP download in Chromium; every request was read-only and no
+  attempt/provider call was started. Checked narration parity, links, timing,
+  and recorded usage/verification claims. Source code is unchanged; the latest
+  1,027-test pass remains applicable. Next: owner recording/public YouTube upload,
+  external-device login check, final Devpost form, and judging funding/quota.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

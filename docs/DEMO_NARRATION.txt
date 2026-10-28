@@ -1,0 +1,15 @@
+DocDrift repairs broken Python documentation examples. When a library changes its API, a README can fall behind. NVIDIA Nemotron on Nebius Token Factory proposes a focused fix, and Nebius Sandboxes verify its behavior.
+
+This is a completed real run on our own development fixture. It includes recorded Nemotron generation and actual Sandbox execution, with a behavior-verified result backed by independent checks.
+
+The original example calls build, which this demo library does not provide. DocDrift reproduces and records that failure before repairing anything, so we have a concrete baseline for verification.
+
+Here are the original and repaired examples. The agent inspected source, ran a probe, and replaced build with positions. It also preserved empty strings. The diff changes only this Markdown example; source and checks stay protected.
+
+This run passed three repaired-input checks and three healthy regression checks. The empty, repeated, and exact-string cases test different behavior. Rechecking healthy examples helps catch a repair that fixes one snippet while breaking another.
+
+The usage section records the Nemotron model, four model calls, and token usage. These are the saved numbers for this repair. The environment section identifies Nebius Sandboxes as the execution backend.
+
+This is one of the repaired-input checks. You can inspect its actual output and its separate execution and behavior results. Exit zero alone is insufficient: the frozen expected output and meaningful API-result checks have to pass.
+
+The evidence ZIP contains the patch, source snapshots, checks, logs, and usage. Its hashes check file integrity. This MVP covers curated Python examples, and judges can request a fresh repair from the homepage.
