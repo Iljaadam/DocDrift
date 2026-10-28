@@ -135,6 +135,11 @@ consumed operation allowance and receipts; continue with saved evidence.
   `docs/FEEDBACK_LOG.md`); no external message sent
 - [ ] Finalize Devpost write-up and submit (`docs/SUBMISSION_DRAFT.md` now records
   actual development/held-out results and the accepted private judge URL)
+- [x] Prepare the fuller seven-part Devpost story with an actual owned-fixture
+  patch, comparison table, implementation detail, and twenty accurate Built with
+  options; Markdown/LaTeX tips describe editor capabilities, not required math
+- [ ] Prepare the Devpost gallery thumbnail: JPG/PNG/GIF, at most 5 MB;
+  Devpost recommends a 3:2 aspect ratio
 
 **Decision dates**
 - Oct 22 access fallback is no longer triggered: permission confirmed Oct 16;
@@ -805,6 +810,12 @@ Who decided what, and when. Don't reverse one without the user.
   suggested capture settings; the official delivery requirements are a video
   under three minutes, public YouTube visibility, and English materials or a
   translation. No video, upload, or submission is complete yet.
+- D46 (user request / agent editorial choice, Oct 28): User asks whether the
+  Markdown/LaTeX tips call for more detail and requests up to twenty-five stack
+  tags. Use a concrete saved repair, architecture explanation, and results table
+  in the seven-part story; equations are optional. Offer twenty implemented
+  language/library/provider/build/deployment tags, with sponsor tools prioritized.
+  Keep owned fixtures, exploratory results, and tied held-out results explicit.
 
 ## Session log
 
@@ -1106,6 +1117,15 @@ Who decided what, and when. Don't reverse one without the user.
   judging funding/quota questions through Dec 15. Documentation only; no model,
   Sandbox, hosted attempt, recording, upload, or submission was performed.
   All 1,027 tests pass.
+- 2026-10-28 (Devpost story): Expanded the draft into the seven requested story
+  sections with the actual OccurrenceIndex patch, verification/recovery design,
+  honest comparison table, and twenty stack tag options (D46). Checked Devpost's
+  official formatting/submission help and recorded the remaining thumbnail.
+  Validated the story headings, pitch length, tag count, and local links. Code is
+  unchanged; the latest 1,027-test pass remains applicable. No provider calls,
+  hosted attempts, external messages, or Devpost submission. Next: video/public
+  YouTube link, thumbnail, external-device access check, final form submission,
+  and judging funding/quota resolution.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
