@@ -140,6 +140,8 @@ consumed operation allowance and receipts; continue with saved evidence.
   options; Markdown/LaTeX tips describe editor capabilities, not required math
 - [x] Package the copy-ready story as `docs/SUBMISSION_STORY.md` for GitHub;
   link it from the submission draft and documentation index
+- [x] Draft all nineteen additional Devpost answers in `docs/SUBMISSION_ANSWERS.md`;
+  ratings are suggestions, personal declarations/event attendance need confirmation
 - [ ] Prepare the Devpost gallery thumbnail: JPG/PNG/GIF, at most 5 MB;
   Devpost recommends a 3:2 aspect ratio
 
@@ -157,8 +159,9 @@ The licensed repository is public. Publication review and the real Docker
 verification challenge are complete; see `docs/SECURITY_REVIEW.md` and
 `docs/demo/challenge/README.md`. Own-account Tailscale migration and
 public HTTPS acceptance are complete (D40/F15); both services and authenticated
-HTTPS page/status were rechecked Oct 28 without new provider calls. Five attempts
-are used and fifteen remain. Maintain the VPS through December 15 and resolve
+HTTPS page/status were rechecked Oct 28 without new provider calls. The later
+read-only form check reports six attempts used, fourteen remaining, and no pending
+jobs. Maintain the VPS through December 15 and resolve
 funding and quota sufficiency against the
 [official testing requirements](https://nebiusglobalaihackathon.devpost.com/rules).
 Do not repeat activation, the fresh acceptance repair, or the once-only held-out
@@ -193,6 +196,11 @@ disabled, alongside all 1,027 tests. Navigation receipts are in
 `.docdrift/review-navigation-2026-10-28/` and the public presentation record is
 `docs/demo/navigation-refresh.json`. The VPS browser checks do not replace the
 remaining check from a separate external device.
+The later form-answer check observed six attempts used and fourteen remaining,
+with no pending jobs. Its repository/license and saved-review checks were reads;
+it did not admit the additional attempt. `docs/SUBMISSION_ANSWERS.md` covers the
+nineteen extra form fields, with subjective ratings and personal confirmations
+explicitly separated from recorded technical results.
 Next: video, external-browser acceptance, Devpost submission, and judging-period
 funding/quota resolution. No submission or new cloud run was performed.
 
@@ -822,6 +830,15 @@ Who decided what, and when. Don't reverse one without the user.
   copy-ready seven-section Markdown as `docs/SUBMISSION_STORY.md`; keep the
   submission metadata, tags, testing instructions, and feedback in the linked
   draft. This does not authorize a Devpost submission or new provider work.
+- D48 (user request / agent draft, Oct 28): User requests answers to all nineteen
+  additional submission fields. Use saved model/provider evidence and repository
+  history; recommend three 8/10 ratings as drafts rather than measured scores.
+  Do not invent cross-model comparisons, self-hosted inference GPUs, fine-tuning,
+  Tavily calls, personal eligibility, event attendance, or career outcomes.
+  Git history credits Claude Opus 5.5; Codex assisted the current work, while
+  Nemotron is the product's runtime model. Ask the owner to confirm other tools
+  and personal fields. A read-only check found six used/fourteen remaining judge
+  attempts; do not attribute the additional attempt or change its allowance.
 
 ## Session log
 
@@ -1138,6 +1155,14 @@ Who decided what, and when. Don't reverse one without the user.
   prepared story and validated headings and local links. Documentation only;
   the latest 1,027-test pass remains applicable. Next: video, thumbnail, final
   Devpost form, external-device access, and judging funding/quota resolution.
+- 2026-10-28 (additional form answers): Drafted all nineteen fields (D48), verified
+  public GitHub/MIT and authenticated saved-demo access, checked NVIDIA's size
+  description, and found Claude Opus 5.5 co-authorship alongside Codex assistance.
+  No controlled cross-model/inference-hardware benchmark is claimed; ratings and
+  personal answers are marked for owner review. Source code is unchanged; latest
+  1,027-test validation applies. Hosted status now shows six used/fourteen left,
+  zero pending; this turn made no admissions or provider calls. Next: owner
+  confirmations, video, thumbnail, final form, and judging funding/quota.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

@@ -103,6 +103,9 @@ demo-able submission.
     existing five used / fifteen remaining attempts and frozen held-out evidence.
     The repository was made public at `https://github.com/Iljaadam/DocDrift`;
     anonymous source-download and MIT-license checks passed at `0c1bcd3`.
+    A later read-only status check on Oct 28 reports six attempts used and fourteen
+    remaining, with no pending jobs. The additional attempt was not initiated by
+    that answer-drafting turn. Preserve the twenty-attempt quota and all receipts.
 - Never claim more than happened: label owned fixtures as fixtures, the
   constructed bad-patch challenge as constructed, synthetic API fixtures as
   synthetic. No invented results.

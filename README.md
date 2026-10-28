@@ -7,6 +7,9 @@ try a repair, and propose a change to one Markdown code block. Independent
 checks verify the result and recheck healthy examples. You get a diff, an HTML
 review, and a downloadable evidence ZIP.
 
+Token Factory handles model serving, so development can focus on the repair
+tools and verification instead of maintaining an inference GPU server.
+
 ## Try it
 
 - **Run a fresh repair:** open the [hosted demo](https://iljas-vps.tail2832de.ts.net:8443).

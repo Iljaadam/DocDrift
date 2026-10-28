@@ -26,6 +26,10 @@ standard HTTP server and a custom agent loop.
 Copy the [seven-section Markdown story](SUBMISSION_STORY.md) into Devpost's
 Project Story field.
 
+Copy-ready drafts for the nineteen additional form questions are in
+[Additional submission answers](SUBMISSION_ANSWERS.md). The owner must review
+the suggested ratings and confirm personal declarations before submitting.
+
 ## Testing instructions
 
 Open the hosted demo and sign in as `judge` with the passphrase provided in the
