@@ -106,7 +106,17 @@ consumed operation allowance and receipts; continue with saved evidence.
   single worker, fresh model/Sandbox path, sanitized artifacts, and VPS setup
 - [x] Activate and accept the private judge HTTPS URL on this VPS (Oct 25, F15);
   keep its units/state/route available through Dec 15 and separate from NewsBias (D31)
-- [ ] Record video under 3 minutes (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
+- [x] Refresh stale hosted-access wording in the submission draft/video script
+  after HTTPS acceptance; include the completed held-out comparison (Oct 28)
+- [ ] Record video under 3 minutes and upload it publicly to YouTube
+  (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
+- [ ] Publish the code repository after a final tracked-file/history review;
+  confirm public access and visible MIT license (GitHub still private Oct 28)
+- [ ] Check judge login and existing review/download in an external browser;
+  avoid consuming another attempt for this access check
+- [ ] Resolve judging-period access/funding: Sandbox billing coverage and credit
+  expiry are unverified; acceptance of the fifteen-attempt shared limit under
+  the rules' unrestricted free testing requirement is unconfirmed
 - [x] Record Nebius/NVIDIA API feedback and actual failures/successes (F1–F15 in
   `docs/FEEDBACK_LOG.md`); no external message sent
 - [ ] Finalize Devpost write-up and submit (`docs/SUBMISSION_DRAFT.md` now records
@@ -120,12 +130,16 @@ consumed operation allowance and receipts; continue with saved evidence.
 - Keep inference bounded and log tokens: the approximately $30 balance is user-reported,
   not an independently verified budget (first repair ~7k tokens).
 
-**Next:** record the under-three-minute video, finish the Devpost write-up, and
-review repository publication. Own-account Tailscale migration and public HTTPS
-acceptance are complete (D40/F15). Maintain the VPS and granted-credit funding
-through December 15; billing clarification remains open. Both DocDrift services
-are active; five attempts are used and fifteen remain. Do not repeat activation,
-the fresh acceptance repair, or the once-only held-out comparison.
+**Next:** record and publicly upload the under-three-minute video, publish the
+licensed repository after review, finish the Devpost write-up/testing instructions,
+and submit before October 30, 17:00 UTC. Own-account Tailscale migration and
+public HTTPS acceptance are complete (D40/F15); both services and authenticated
+HTTPS page/status were rechecked Oct 28 without new provider calls. Five attempts
+are used and fifteen remain. Maintain the VPS through December 15 and resolve
+funding and quota sufficiency against the
+[official testing requirements](https://nebiusglobalaihackathon.devpost.com/rules).
+Do not repeat activation, the fresh acceptance repair, or the once-only held-out
+comparison.
 
 ## Resume handoff — October 25, 2026
 
@@ -711,6 +725,12 @@ Who decided what, and when. Don't reverse one without the user.
   no new model/Sandbox calls or attempts. Keep the existing password, twenty-run
   quota, frozen controller, and completed evidence. Fifteen attempts remain;
   public availability does not establish Sandbox billing coverage.
+- D41 (agent readiness audit, Oct 28): Prioritize video, public licensed source,
+  Devpost submission, and judging-period availability. Preserve the existing
+  allowance and frozen evaluation. Current rules require public YouTube footage,
+  public licensed code, and unrestricted free judge testing; acceptance of the
+  fifteen remaining hosted attempts as sufficient testing access is unconfirmed.
+  This audit does not expand the live-operation authorization or publish anything.
 
 ## Session log
 
@@ -960,6 +980,17 @@ Who decided what, and when. Don't reverse one without the user.
   remain; all 1,016 tests pass. Updated deployment/judge/submission handoff.
   Next: video, Devpost/final eligibility review, and repository publication review;
   keep the VPS and existing evidence available through December 15.
+- 2026-10-28: Audited readiness against current official rules; confirmed private
+  GitHub visibility, both active DocDrift services, authenticated HTTPS page/status,
+  and fifteen remaining attempts with no new inference/Sandbox work. Corrected
+  stale submission/video delivery wording and expanded the final checklist (D41).
+  All 1,016 tests pass with the documented persistent cache and host permissions;
+  the initial restricted run had three environment failures (missing default-cache
+  build dependency and blocked systemd sockets). Next: public repository/video,
+  external-browser access check, final Devpost submission by Oct 30, 17:00 UTC;
+  resolve Sandbox funding and whether the fixed hosted allowance meets free
+  judging-access requirements through Dec 15. Live bad-patch challenge remains
+  unrun; the existing static result is still 16/16 constructed rejections.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 

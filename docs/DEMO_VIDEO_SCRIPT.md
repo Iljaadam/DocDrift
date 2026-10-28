@@ -17,10 +17,12 @@ Sandboxes. Disclose cuts and time compression in recorded terminal footage.
 | 1:25–1:50 | Successful Docker review: target checks, healthy regressions, execution provenance. | “Fresh offline containers verify three frozen target inputs and three healthy regression inputs. Static data-flow checks require the API result to reach the printed output. The verdict covers those declared contracts, not every possible input.” |
 | 1:50–2:05 | Historical F6 comparison counts and usage. | “Agent verified one of one; one-shot zero of one. Total: six model calls, 8,781 tokens, fifteen local snippet operations. Earlier comparisons tied. This case is exploratory, not held out.” |
 | 2:05–2:25 | Separate Oct 21 Sandbox supplement: backend, saved proposal, checks and operation counts. | “We then verified the unchanged saved proposal on actual Nebius Sandboxes: twelve verifier operations, three runtime probes, zero new inference. The original still fails; repaired and healthy checks pass. Billing remains unverified.” |
-| 2:25–2:45 | Separate evidence downloads, provenance notes, judge quickstart. | “Download both evidence bundles. The integrity checker checks bytes, not authenticity. Judges can browse free or execute the separate manual Docker demo. Free live-agent access remains a delivery dependency.” |
+| 2:25–2:45 | Evidence downloads, held-out comparison, hosted judge landing page. | “Download the evidence; its hashes check bytes, not authenticity. Both strategies also verified two of two reserved cases on live Sandboxes. Judges can try a fresh repair through the hosted app using the private login.” |
 
 Before recording, check that every local link and download works from a fresh
-checkout. Use the published copies and their provenance notes. The F6 source
+checkout. Show the hosted app already signed in and keep credentials out of the
+recording. Its landing page and existing completed review need no fresh attempt.
+Use the published copies and their provenance notes. The F6 source
 inventory hash is
 `24edc73aa852e887ae55269d760ce2404bea10e701390c8e66e044bbd3d2f19c`.
 Exact usage and the earlier F4/F5 limitations are in [the feedback log](FEEDBACK_LOG.md).

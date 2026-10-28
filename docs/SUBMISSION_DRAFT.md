@@ -3,8 +3,9 @@
 Draft based on recorded development runs. The historical model comparisons use
 local Docker. A separate Oct 21 run verifies the saved F6 agent repair on Nebius
 Sandboxes without new inference. On October 22 both model strategies verified
-2/2 reserved held-out cases using live Sandbox execution. Track eligibility
-and public live-agent access through December 15 remain open in
+2/2 reserved held-out cases using live Sandbox execution. Public HTTPS judge
+access passed acceptance on October 25. Video, repository publication, final
+submission, and judging-period availability remain tracked in
 [STATUS.md](../STATUS.md). The [original demo](demo/f6/index.html),
 [Sandbox supplement](demo/f6-sandbox/index.html), and
 [2:45 video script](DEMO_VIDEO_SCRIPT.md) can be reviewed without new inference.
@@ -180,10 +181,13 @@ repair locally with no provider account or inference credits. This exercises
 failure reproduction, frozen checks, healthy preservation, and evidence export.
 It is a separate route from the recorded model repair.
 
-**Unresolved before submission:** confirm that the recorded owned-fixture evidence
-meets the chosen track's requirements, record the video, and finalize submission.
+**Unresolved before submission:** review the recorded owned-fixture evidence
+against the chosen track's requirements, publish the licensed repository,
+record and upload the video to public YouTube, and finalize submission.
 Maintain the hosted route and granted-credit funding through December 15;
-Sandbox billing coverage remains unverified.
+Sandbox billing coverage remains unverified. The shared fifteen-attempt allowance
+needs reconciliation with the official rules' unrestricted free testing
+requirement; acceptance of that limit has not been established.
 
 The fixed-case private controller and bounded live worker are running on the
 owner's VPS. Startup, a fresh local HTTP acceptance repair, and the once-only
