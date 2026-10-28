@@ -1,5 +1,23 @@
 # DocDrift demo video — 2:45
 
+## Recording setup
+
+AMD Software is suitable for this screen recording. Suggested settings:
+**1920×1080, landscape 16:9, 30 FPS, AVC/H.264, MP4, 8–10 Mb/s**, with the
+microphone enabled. These are practical defaults, not hackathon requirements.
+A 2:45 recording at that bitrate is roughly 170–210 MB including audio.
+Record a ten-second sample first and check voice volume and code readability.
+
+The [official rules](https://nebiusglobalaihackathon.devpost.com/rules) call for
+a video under three minutes, showing the software working, publicly visible on
+YouTube, with English materials or an English translation. They list no specific
+resolution, codec, or file-size cap; submit the YouTube link in Devpost.
+YouTube recommends [MP4/H.264 and 8 Mb/s for 1080p at 30 FPS](https://support.google.com/youtube/answer/1722171?hl=en).
+Use screen footage with English narration or captions; a face camera is optional.
+Sign in before recording and keep passwords, keys, and notifications off screen.
+
+## Footage and narration
+
 Record this from the [committed F6 bundle](demo/f6/index.html) and separate
 [Sandbox supplement](demo/f6-sandbox/index.html), opened from disk. Label the
 original comparison **Oct 15 · owned development fixture · live Nemotron /

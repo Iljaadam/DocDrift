@@ -114,6 +114,9 @@ consumed operation allowance and receipts; continue with saved evidence.
   after HTTPS acceptance; include the completed held-out comparison (Oct 28)
 - [ ] Record video under 3 minutes and upload it publicly to YouTube
   (2:45 saved-F6 script in `docs/DEMO_VIDEO_SCRIPT.md`)
+- [x] Recheck recording requirements and add practical AMD capture settings
+  to the script (Oct 28): suggested 1080p/30 FPS/AVC/MP4, public YouTube link,
+  English footage/narration or translation, and no stated hackathon file-size cap
 - [x] Publish the reviewed code repository (Oct 28): anonymous GitHub API/source
   download passed, audited files match `0c1bcd3`, and MIT license is visible
 - [x] Review source, history, evidence archives, and dependencies before publication;
@@ -796,6 +799,12 @@ Who decided what, and when. Don't reverse one without the user.
   Keep HTML script-free and working from disk. Refresh loose presentation pages
   and hosted responses while preserving pinned evidence ZIPs, private artifacts,
   frozen evaluation, and the remaining fifteen hosted attempts.
+- D45 (user plan / agent recommendation, Oct 28): User plans to record the demo
+  with AMD Software. Recommend a 2:45 screen recording at 1080p, 30 FPS,
+  AVC/H.264 in MP4, 8–10 Mb/s, with narration and readable code. These are
+  suggested capture settings; the official delivery requirements are a video
+  under three minutes, public YouTube visibility, and English materials or a
+  translation. No video, upload, or submission is complete yet.
 
 ## Session log
 
@@ -1089,6 +1098,14 @@ Who decided what, and when. Don't reverse one without the user.
   verify; fifteen attempts remain, with no inference or Nebius operations.
   Next: record the video, finish Devpost, and resolve external-device access
   and judging funding/quota.
+- 2026-10-28 (recording handoff): Rechecked current Devpost rules and official
+  YouTube/AMD recording guidance; added suggested capture settings and a
+  ten-second audio/readability rehearsal to the 2:45 script (D45). Restated the
+  remaining public video, private testing instructions, external-device saved
+  review/download check, final Devpost submission by Oct 30, 17:00 UTC, and
+  judging funding/quota questions through Dec 15. Documentation only; no model,
+  Sandbox, hosted attempt, recording, upload, or submission was performed.
+  All 1,027 tests pass.
 
 ## Evidence detail (historical: written before the first live call on October 14)
 
